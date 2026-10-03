@@ -1,7 +1,9 @@
 # Phase-0 acceptance record
 
-This branch adds a tracked-file disclosure audit to CI and records the foundation's
-review boundary. It does not start market-data ingestion or Phase-1 work.
+This branch adds a tracked-file disclosure audit to CI, updates checkout/Python
+setup actions to their Node 24 versions without persisting checkout credentials,
+and records the foundation's review boundary. It does not start market-data
+ingestion or Phase-1 work.
 
 ## Foundation delivered on main
 

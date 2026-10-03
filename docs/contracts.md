@@ -30,3 +30,10 @@ during decoding and Binance normalization.
 
 The bounded FIFO bus is implemented. State reduction, risk policy, durable
 storage, and order lifecycle remain unimplemented.
+
+Phase 2 adds optional/defaulted `source_epoch` (nonnegative integer),
+`provider_sequence` (opaque string), `continuity` (`contiguous`, `snapshot`,
+`unverified`) and `delivery_kind` (`live`, `backfill`). Old v1 records decode with
+epoch 0 / unknown provider sequence / unverified continuity / live delivery.
+These additive fields do not make venue sequences comparable. Backfill records
+retain historical source times and are rejected by the live admission path.

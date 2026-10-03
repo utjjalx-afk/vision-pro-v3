@@ -113,6 +113,7 @@ class NoRedirect(HTTPRedirectHandler):
 class BinanceREST:
     """Bounded, paced GET requests on a fixed public-data endpoint allowlist."""
 
+    BASE = REST_BASE + "/api/v3"
     PATHS = {"exchangeInfo", "aggTrades", "klines", "time", "ping"}
 
     def __init__(
@@ -141,7 +142,7 @@ class BinanceREST:
         if endpoint not in self.PATHS:
             raise ValueError("Endpoint is outside the public market-data allowlist")
         query = urlencode(params or {})
-        url = f"{REST_BASE}/api/v3/{endpoint}" + (f"?{query}" if query else "")
+        url = f"{self.BASE}/{endpoint}" + (f"?{query}" if query else "")
         for attempt in range(self.attempts):
             if self._last_request is not None:
                 delay = self.min_request_interval - (self._monotonic() - self._last_request)
@@ -213,7 +214,14 @@ class BinanceREST:
             raise MalformedMarketData("Expected public aggregate trade array")
         return result
 
-    def bars(self, subscription: Subscription, *, limit: int = 100) -> list:
+    def bars(
+        self,
+        subscription: Subscription,
+        *,
+        limit: int = 100,
+        start: int | None = None,
+        end: int | None = None,
+    ) -> list:
         result = self.get(
             "klines",
             {
@@ -221,6 +229,8 @@ class BinanceREST:
                 "interval": subscription.interval,
                 "timeZone": "0",
                 "limit": _limit(limit),
+                **({"startTime": integer(start)} if start is not None else {}),
+                **({"endTime": integer(end)} if end is not None else {}),
             },
         )
         if not isinstance(result, list):
@@ -250,6 +260,8 @@ class BinanceNormalizer:
             sequence=seq,
             payload=payload,
             timestamp_basis=basis,
+            provider_sequence=str(seq),
+            continuity="snapshot" if kind is EventType.QUOTE else "contiguous",
         )
 
     def trade(self, data: dict, received: datetime) -> CanonicalMarketEvent:

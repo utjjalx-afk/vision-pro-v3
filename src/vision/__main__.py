@@ -14,7 +14,8 @@ def main() -> int:
         "--component", choices=("core", "api", "worker", "dashboard"), default="core"
     )
     commands = parser.add_subparsers(dest="command")
-    market = commands.add_parser("market-data", help="Read Binance Spot public data; no execution")
+    market = commands.add_parser("market-data", help="Read public Spot data; no execution")
+    market.add_argument("--provider", choices=("binance", "bybit", "failover"), default="binance")
     market.add_argument("--symbol", default="BTCUSDT")
     market.add_argument("--transport", choices=("rest", "ws"), default="ws")
     market.add_argument("--streams", help="Comma-separated trade,quote,bar (REST: trade/bar)")
@@ -42,11 +43,13 @@ def main() -> int:
         json.dumps(
             {
                 "version": __version__,
-                "phase": "phase-1",
+                "phase": "phase-2",
                 "component": args.component,
                 "mode": "offline-diagnostic",
                 "live_trading_enabled": settings.live_trading_enabled,
                 "mt5_execution_enabled": settings.mt5_execution_enabled,
+                "paper_trading_enabled": settings.paper_trading_enabled,
+                "agents_enabled": settings.agents_enabled,
             },
             sort_keys=True,
         )

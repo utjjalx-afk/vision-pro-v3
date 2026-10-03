@@ -58,11 +58,36 @@
         "receipt"
       ],
       "default": "exchange"
+    },
+    "source_epoch": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "provider_sequence": {
+      "type": "string",
+      "pattern": "^\\S(?:.*\\S)?$",
+      "default": "unknown"
+    },
+    "continuity": {
+      "enum": [
+        "contiguous",
+        "snapshot",
+        "unverified"
+      ],
+      "default": "unverified"
+    },
+    "delivery_kind": {
+      "enum": [
+        "live",
+        "backfill"
+      ],
+      "default": "live"
     }
   },
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "CanonicalMarketEvent v1",
-  "description": "Phase-1 wire contract; exact decimals, UTC and explicit timestamp provenance.",
+  "description": "Phase-2 exact decimal contract with source epochs and continuity provenance.",
   "oneOf": [
     {
       "properties": {

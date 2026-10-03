@@ -14,7 +14,15 @@ def test_safe_defaults():
     assert settings.mt5_execution_enabled is False
 
 
-@pytest.mark.parametrize("key", ["VISION_LIVE_TRADING_ENABLED", "VISION_MT5_EXECUTION_ENABLED"])
+@pytest.mark.parametrize(
+    "key",
+    [
+        "VISION_LIVE_TRADING_ENABLED",
+        "VISION_MT5_EXECUTION_ENABLED",
+        "VISION_PAPER_TRADING_ENABLED",
+        "VISION_AGENTS_ENABLED",
+    ],
+)
 @pytest.mark.parametrize("value", ["true", "1", "yes", "on", "", "unknown"])
 def test_enabling_and_ambiguous_flags_rejected(key, value):
     with pytest.raises(Phase0ExecutionDisabled):
@@ -60,7 +68,15 @@ def test_installed_cli_runs_outside_checkout_without_reading_secrets(tmp_path, c
     assert "synthetic-do-not-echo" not in result.stdout + result.stderr
 
 
-@pytest.mark.parametrize("key", ["VISION_LIVE_TRADING_ENABLED", "VISION_MT5_EXECUTION_ENABLED"])
+@pytest.mark.parametrize(
+    "key",
+    [
+        "VISION_LIVE_TRADING_ENABLED",
+        "VISION_MT5_EXECUTION_ENABLED",
+        "VISION_PAPER_TRADING_ENABLED",
+        "VISION_AGENTS_ENABLED",
+    ],
+)
 def test_cli_rejects_enabled_execution(tmp_path, key):
     result = subprocess.run(
         [sys.executable, "-m", "vision"],
@@ -71,11 +87,19 @@ def test_cli_rejects_enabled_execution(tmp_path, key):
         timeout=10,
     )
     assert result.returncode == 2
-    assert "must be false in Phase-1" in result.stderr
+    assert "must be false in Phase-2" in result.stderr
     assert result.stdout == ""
 
 
-@pytest.mark.parametrize("key", ["VISION_LIVE_TRADING_ENABLED", "VISION_MT5_EXECUTION_ENABLED"])
+@pytest.mark.parametrize(
+    "key",
+    [
+        "VISION_LIVE_TRADING_ENABLED",
+        "VISION_MT5_EXECUTION_ENABLED",
+        "VISION_PAPER_TRADING_ENABLED",
+        "VISION_AGENTS_ENABLED",
+    ],
+)
 def test_market_data_cli_rejects_execution_before_network(tmp_path, key):
     result = subprocess.run(
         [sys.executable, "-m", "vision", "market-data"],
@@ -86,7 +110,7 @@ def test_market_data_cli_rejects_execution_before_network(tmp_path, key):
         timeout=10,
     )
     assert result.returncode == 2
-    assert "must be false in Phase-1" in result.stderr
+    assert "must be false in Phase-2" in result.stderr
     assert result.stdout == ""
 
 

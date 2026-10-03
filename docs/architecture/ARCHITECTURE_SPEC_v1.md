@@ -164,3 +164,13 @@ REST/WebSocket, and Data Health Gate on the foundation branch. See
 health semantics, limits, and validation. Section 5 records the original Phase-0
 state. Execution remains unimplemented/off; the missing complete frozen-spec
 text remains an acknowledged provenance limitation.
+
+## 9. User-authorized Phase-2 implementation
+
+Phase 2 extends the data-only layer with Bybit public Spot market data, controlled
+Binance-to-Bybit source selection, divergence checks, connection epochs and atomic
+bounded candle recovery. Details and explicit continuity limitations are in
+[PHASE2_FAILOVER.md](../PHASE2_FAILOVER.md). The historical frozen baseline above
+is preserved; the full-spec provenance limitation remains. Main stays at Phase 0
+while implementation is reviewed on the draft foundation PR. All execution, MT5,
+paper and agent capabilities remain disabled and unimplemented.

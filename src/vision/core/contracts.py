@@ -152,12 +152,23 @@ class CanonicalMarketEvent:
     payload: TradePayload | QuotePayload | BarPayload
     schema_version: str = "1"
     timestamp_basis: TimestampBasis = TimestampBasis.EXCHANGE
+    source_epoch: int = 0
+    provider_sequence: str = "unknown"
+    continuity: str = "unverified"
+    delivery_kind: str = "live"
 
     def __post_init__(self) -> None:
         for value in (self.event_id, self.source, self.instrument_id):
             _identifier(value)
         _utc(self.source_ts)
         _utc(self.received_ts)
+        if type(self.source_epoch) is not int or self.source_epoch < 0:
+            raise ValueError("Source epoch must be a nonnegative integer")
+        _identifier(self.provider_sequence)
+        if self.continuity not in {"contiguous", "snapshot", "unverified"}:
+            raise ValueError("Unsupported continuity provenance")
+        if self.delivery_kind not in {"live", "backfill"}:
+            raise ValueError("Unsupported delivery kind")
         if type(self.sequence) is not int or self.sequence < 0:
             raise ValueError("Sequence must be a nonnegative integer")
         if not isinstance(self.event_type, EventType) or self.schema_version != "1":
@@ -198,5 +209,9 @@ class CanonicalMarketEvent:
             "source_ts": _utc(self.source_ts),
             "received_ts": _utc(self.received_ts),
             "sequence": self.sequence,
+            "source_epoch": self.source_epoch,
+            "provider_sequence": self.provider_sequence,
+            "continuity": self.continuity,
+            "delivery_kind": self.delivery_kind,
             "payload": payload,
         }

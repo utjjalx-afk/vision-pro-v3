@@ -94,3 +94,13 @@ jobs:
             echo 'Public data CLI unexpectedly accepted MT5 execution' >&2
             exit 1
           fi
+          for flag in VISION_PAPER_TRADING_ENABLED VISION_AGENTS_ENABLED; do
+            if docker compose run --rm -e "$flag=true" api; then
+              echo 'Disabled capability was unexpectedly accepted' >&2
+              exit 1
+            fi
+          done
+      - name: Full deterministic suite in Docker
+        run: |
+          docker build -f docker/Dockerfile.test -t vision-pro-v3-tests .
+          docker run --rm --network none --cap-drop ALL --security-opt no-new-privileges vision-pro-v3-tests

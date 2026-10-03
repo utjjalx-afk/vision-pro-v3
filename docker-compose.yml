@@ -9,6 +9,8 @@ services:
     environment:
       VISION_LIVE_TRADING_ENABLED: ${VISION_LIVE_TRADING_ENABLED:-false}
       VISION_MT5_EXECUTION_ENABLED: ${VISION_MT5_EXECUTION_ENABLED:-false}
+      VISION_PAPER_TRADING_ENABLED: ${VISION_PAPER_TRADING_ENABLED:-false}
+      VISION_AGENTS_ENABLED: ${VISION_AGENTS_ENABLED:-false}
     read_only: true
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
@@ -20,6 +22,8 @@ services:
     environment:
       VISION_LIVE_TRADING_ENABLED: ${VISION_LIVE_TRADING_ENABLED:-false}
       VISION_MT5_EXECUTION_ENABLED: ${VISION_MT5_EXECUTION_ENABLED:-false}
+      VISION_PAPER_TRADING_ENABLED: ${VISION_PAPER_TRADING_ENABLED:-false}
+      VISION_AGENTS_ENABLED: ${VISION_AGENTS_ENABLED:-false}
     network_mode: none
     read_only: true
     cap_drop: [ALL]
@@ -33,6 +37,8 @@ services:
     environment:
       VISION_LIVE_TRADING_ENABLED: ${VISION_LIVE_TRADING_ENABLED:-false}
       VISION_MT5_EXECUTION_ENABLED: ${VISION_MT5_EXECUTION_ENABLED:-false}
+      VISION_PAPER_TRADING_ENABLED: ${VISION_PAPER_TRADING_ENABLED:-false}
+      VISION_AGENTS_ENABLED: ${VISION_AGENTS_ENABLED:-false}
     network_mode: none
     read_only: true
     cap_drop: [ALL]
@@ -46,6 +52,8 @@ services:
     environment:
       VISION_LIVE_TRADING_ENABLED: ${VISION_LIVE_TRADING_ENABLED:-false}
       VISION_MT5_EXECUTION_ENABLED: ${VISION_MT5_EXECUTION_ENABLED:-false}
+      VISION_PAPER_TRADING_ENABLED: ${VISION_PAPER_TRADING_ENABLED:-false}
+      VISION_AGENTS_ENABLED: ${VISION_AGENTS_ENABLED:-false}
     network_mode: none
     read_only: true
     cap_drop: [ALL]

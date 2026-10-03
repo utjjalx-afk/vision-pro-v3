@@ -1,12 +1,12 @@
 # Vision Pro V3
 
 An Apache-2.0 foundation for multi-asset market intelligence and governed research.
-**Phase 1 implements public Binance Spot market data. Execution remains unimplemented.**
+**Phase 2 adds Bybit Spot, controlled Binance-to-Bybit failover and candle recovery.**
 No account API, order endpoint, MT5 bridge, strategy, paper fills, dashboard, or API
-server is included. Enabling live trading or MT5 execution fails before network I/O.
+server is included. Enabling live trading, MT5, paper trading or agents fails before network I/O.
 
 ```text
-Public Binance REST/WS -> Canonical normalization -> Data Health Gate -> Bounded Event Bus
+Binance / Bybit public REST/WS -> Canonical normalization -> Data Health Gate -> Bounded Event Bus
 ```
 
 The longer-term design adds deterministic state, analysis lanes, intents, risk
@@ -53,6 +53,9 @@ Run in the virtual environment, or pass these arguments to the platform run scri
 
 ```bash
 python -m vision market-data --symbol BTCUSDT --streams trade,quote --max-events 10 --duration 30
+python -m vision market-data --provider bybit --streams trade,quote --duration 30
+python -m vision market-data --provider failover --streams trade,quote --duration 30
+python -m vision market-data --provider bybit --transport rest --streams bar
 python -m vision market-data --transport rest --symbol BTCUSDT --max-events 10
 python -m vision market-data --streams bar --interval 1s --max-events 2 --duration 15
 python -m vision market-data --transport rest --streams bar --interval 1m --max-events 1
@@ -61,10 +64,11 @@ python -m vision market-data --transport rest --streams bar --interval 1m --max-
 Accepted events are JSON lines on stdout; health summary is on stderr. WS mode
 stops at the event or duration limit. Final status is disconnected because the
 socket is closed. REST returns a single snapshot. Exit 3 means unavailable data,
-exhausted reconnects, or no accepted events; exit 2 means invalid configuration.
+exhausted reconnects, or no selected output events; exit 2 means invalid configuration.
 
-WS streams: aggregate trades, best bid/ask, and closed UTC candles. REST: trades
-and latest closed candles. Default WS selection includes all three kinds.
+WS streams: Binance aggregate trades / Bybit public trades, best bid/ask snapshots,
+and closed UTC candles. Binance REST: trades and latest closed candles. Bybit REST:
+latest closed candles. Default WS selection includes all three kinds.
 Fixed-duration intervals are supported; calendar-month candles are excluded.
 
 ## Data quality
@@ -72,14 +76,18 @@ Fixed-duration intervals are supported; calendar-month candles are excluded.
 Exact decimals, UTC timestamps, stable IDs, instrument metadata, typed payloads,
 and strict JSON decoding feed the health gate. It drops stale/future data,
 duplicates, out-of-order events, unknown streams, and gaps before publication.
-Malformed frames are counted without logging raw bodies. Quotes carry receipt-time
+Malformed frames are counted without logging raw bodies. Binance quotes carry receipt-time
 provenance and degraded health because their exchange timestamps are unavailable.
 
-Trade continuity uses aggregate IDs; candle continuity uses open times per interval.
-Quote update IDs may jump normally. Gaps stay blocked across reconnects. Explicit
-reset starts a new epoch without claiming historical repair. There is no automatic
-gap backfill, full depth book, or durable journal. See [Phase 1 details](docs/PHASE1_MARKET_DATA.md)
-and [contracts](docs/contracts.md).
+Binance trade continuity uses aggregate IDs; Bybit trade continuity is explicitly
+unverified because provider IDs are not contiguous. Candle continuity uses open
+times per interval. Cursors survive reconnects with source-epoch provenance.
+Same-venue bounded candle recovery validates complete missing ranges atomically;
+historical bars stay in a separate recovery journal. Controlled failover requires
+fresh standby streams and recent quote agreement; divergence latches output closed.
+Actual venue IDs remain intact. There is no trade history repair, full depth book,
+automatic failback or durable journal. See [Phase 2 details](docs/PHASE2_FAILOVER.md),
+[historical Phase 1 details](docs/PHASE1_MARKET_DATA.md) and [contracts](docs/contracts.md).
 
 ## Containers
 
@@ -101,6 +109,6 @@ override remains a reserved extension point.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). CI covers synthetic fixtures,
-Windows/Linux scripts, Python 3.11/3.12, packaging, and container diagnostics.
-Live public Binance smoke checks run explicitly outside CI, so network availability
+Windows/Linux scripts, Python 3.11/3.12, packaging, container diagnostics, and the full fixture suite inside Docker.
+Live public Binance/Bybit smoke checks run explicitly outside CI, so network availability
 and regional restrictions do not make the fixture suite nondeterministic.

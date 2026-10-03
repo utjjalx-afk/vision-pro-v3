@@ -107,6 +107,8 @@ class DataHealthGate:
             rejection, status = "stale_source", HealthStatus.STALE
         elif (key, event.event_id) in self._seen:
             rejection = "duplicate"
+        elif last is not None and event.source_epoch < last.source_epoch:
+            rejection = "source_epoch_regression"
         elif last is not None and (
             event.sequence <= last.sequence
             or event.source_ts < last.source_ts

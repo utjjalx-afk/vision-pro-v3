@@ -7,13 +7,15 @@ import sys
 from contextlib import aclosing
 
 from vision.market_data.adapters.binance import BinanceREST, BinanceWebSocket, Subscription
+from vision.market_data.adapters.bybit import BybitNormalizer, BybitREST, BybitWebSocket, topics
+from vision.market_data.failover import controlled_stream
 from vision.market_data.hub import MarketDataHub
 
 
-async def _websocket(hub: MarketDataHub, adapter: BinanceWebSocket, args) -> None:
+async def _websocket(hub: MarketDataHub, iterator, args) -> int:
     count = 0
     try:
-        async with asyncio.timeout(args.duration), aclosing(hub.stream(adapter)) as iterator:
+        async with asyncio.timeout(args.duration), aclosing(iterator) as iterator:
             async for event in iterator:
                 print(json.dumps(event.to_dict(), sort_keys=True), flush=True)
                 count += 1
@@ -21,6 +23,7 @@ async def _websocket(hub: MarketDataHub, adapter: BinanceWebSocket, args) -> Non
                     break
     except TimeoutError:
         pass
+    return count
 
 
 def run_market_data(args) -> int:
@@ -34,14 +37,44 @@ def run_market_data(args) -> int:
         else (("trade",) if args.transport == "rest" else ("trade", "quote", "bar"))
     )
     subscription = Subscription(args.symbol, kinds, args.interval)
-    rest = BinanceREST()
+    provider = getattr(args, "provider", "binance")
+    if provider != "binance":
+        topics(subscription)
+    if provider == "failover" and (args.transport != "ws" or "quote" not in kinds):
+        raise ValueError("Controlled failover requires WebSocket quotes and matching streams")
+    if provider == "bybit" and args.transport == "rest" and kinds != ("bar",):
+        raise ValueError("Bybit REST snapshot currently supports closed bars only")
+    rest = BybitREST() if provider == "bybit" else BinanceREST()
     hub = MarketDataHub()
+    emitted = 0
     if args.transport == "rest":
-        for event in hub.snapshot(rest, subscription, limit=args.max_events)[: args.max_events]:
+        if provider == "bybit":
+            hub.register(rest.instrument(subscription.symbol), subscription)
+            normalizer = BybitNormalizer(subscription)
+            events = [
+                normalizer.rest_bar(row, hub.clock()) for row in rest.bars(subscription, limit=2)
+            ]
+            closed = [event for event in events if event is not None]
+            if closed:
+                hub.ingest(max(closed, key=lambda event: event.sequence))
+            events = hub.bus.drain()
+        else:
+            events = hub.snapshot(rest, subscription, limit=args.max_events)
+        for event in events[: args.max_events]:
             print(json.dumps(event.to_dict(), sort_keys=True), flush=True)
+            emitted += 1
     else:
         hub.register(rest.instrument(subscription.symbol), subscription)
-        adapter = BinanceWebSocket(subscription)
-        asyncio.run(_websocket(hub, adapter, args))
-    print(json.dumps({"phase": "phase-1", "health": hub.status()}, sort_keys=True), file=sys.stderr)
-    return 0 if hub.accepted else 3
+        adapter = (
+            BybitWebSocket(subscription) if provider == "bybit" else BinanceWebSocket(subscription)
+        )
+        iterator = hub.stream(adapter, rest=rest)
+        if provider == "failover":
+            standby_rest = BybitREST()
+            hub.register(standby_rest.instrument(subscription.symbol), subscription)
+            iterator = controlled_stream(
+                hub, adapter, BybitWebSocket(subscription), rest, standby_rest
+            )
+        emitted = asyncio.run(_websocket(hub, iterator, args))
+    print(json.dumps({"phase": "phase-2", "health": hub.status()}, sort_keys=True), file=sys.stderr)
+    return 0 if emitted else 3

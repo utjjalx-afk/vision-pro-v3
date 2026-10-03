@@ -5,7 +5,9 @@ are JSON Schema Draft 2020-12 wire stubs. Python counterparts are in
 `vision.core.contracts`. These contracts are provisional pending the full frozen spec.
 
 Use synthetic fixtures. Prices/increments/contract size must be positive finite
-decimals; quantities may be zero. Floats, NaN, and infinity are rejected by the
+decimals; quantities may be unsigned zero. Negative-zero quantities are rejected
+to keep serialized output consistent with the unsigned decimal wire format.
+Floats, NaN, and infinity are rejected by the
 Python constructors. Decimal wire values are strings, including scientific notation.
 UTC timestamps include a `Z` suffix in serialized output. Event sequence is a
 nonnegative integer; its source scope is a future connector design concern.

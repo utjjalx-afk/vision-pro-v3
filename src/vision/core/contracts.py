@@ -29,7 +29,7 @@ def _positive_decimal(value: Decimal) -> None:
 
 
 def _quantity(value: Decimal) -> None:
-    if not isinstance(value, Decimal) or not value.is_finite() or value < 0:
+    if not isinstance(value, Decimal) or not value.is_finite() or value.is_signed():
         raise ValueError("Quantity must be a nonnegative finite Decimal")
 
 

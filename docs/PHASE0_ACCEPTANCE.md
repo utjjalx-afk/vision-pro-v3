@@ -2,6 +2,7 @@
 
 This branch adds a tracked-file disclosure audit to CI, updates checkout/Python
 setup actions to their Node 24 versions without persisting checkout credentials,
+fixes rejection of signed-zero quantities to match the public wire contract,
 and records the foundation's review boundary. It does not start market-data
 ingestion or Phase-1 work.
 
@@ -19,7 +20,8 @@ ingestion or Phase-1 work.
 
 ## Verified locally before publication
 
-- Ruff lint and formatting passed; 48 tests passed on Windows/Python 3.11.
+- Ruff lint and formatting passed; 49 tests passed on Windows/Python 3.11,
+  including the signed-zero quantity regression added on this branch.
 - Offline native diagnostic/check/stop scripts passed.
 - Wheel build and isolated wheel import/diagnostic passed outside the checkout.
 - Tracked-file content audit found no high-confidence tokens, private keys,

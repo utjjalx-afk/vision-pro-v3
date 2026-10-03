@@ -87,7 +87,9 @@ def test_invalid_price_and_tick_size_rejected(bad):
         replace(instrument(), tick_size=bad)
 
 
-@pytest.mark.parametrize("bad", [Decimal("-1"), Decimal("NaN"), Decimal("Infinity"), 1.0])
+@pytest.mark.parametrize(
+    "bad", [Decimal("-1"), Decimal("-0"), Decimal("NaN"), Decimal("Infinity"), 1.0]
+)
 def test_invalid_quantities_rejected(bad):
     with pytest.raises(ValueError):
         TradePayload(Decimal("1"), bad)

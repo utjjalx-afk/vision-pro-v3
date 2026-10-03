@@ -1,5 +1,20 @@
 name: vision-pro-v3
 services:
+  market-data:
+    profiles: [market-data]
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.worker
+    command: [python, -m, vision, market-data, --max-events, "10", --duration, "30"]
+    environment:
+      VISION_LIVE_TRADING_ENABLED: ${VISION_LIVE_TRADING_ENABLED:-false}
+      VISION_MT5_EXECUTION_ENABLED: ${VISION_MT5_EXECUTION_ENABLED:-false}
+      VISION_PAPER_TRADING_ENABLED: ${VISION_PAPER_TRADING_ENABLED:-false}
+      VISION_AGENTS_ENABLED: ${VISION_AGENTS_ENABLED:-false}
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: "no"
   api:
     build:
       context: .
@@ -7,6 +22,8 @@ services:
     environment:
       VISION_LIVE_TRADING_ENABLED: ${VISION_LIVE_TRADING_ENABLED:-false}
       VISION_MT5_EXECUTION_ENABLED: ${VISION_MT5_EXECUTION_ENABLED:-false}
+      VISION_PAPER_TRADING_ENABLED: ${VISION_PAPER_TRADING_ENABLED:-false}
+      VISION_AGENTS_ENABLED: ${VISION_AGENTS_ENABLED:-false}
     network_mode: none
     read_only: true
     cap_drop: [ALL]
@@ -20,6 +37,8 @@ services:
     environment:
       VISION_LIVE_TRADING_ENABLED: ${VISION_LIVE_TRADING_ENABLED:-false}
       VISION_MT5_EXECUTION_ENABLED: ${VISION_MT5_EXECUTION_ENABLED:-false}
+      VISION_PAPER_TRADING_ENABLED: ${VISION_PAPER_TRADING_ENABLED:-false}
+      VISION_AGENTS_ENABLED: ${VISION_AGENTS_ENABLED:-false}
     network_mode: none
     read_only: true
     cap_drop: [ALL]
@@ -33,6 +52,8 @@ services:
     environment:
       VISION_LIVE_TRADING_ENABLED: ${VISION_LIVE_TRADING_ENABLED:-false}
       VISION_MT5_EXECUTION_ENABLED: ${VISION_MT5_EXECUTION_ENABLED:-false}
+      VISION_PAPER_TRADING_ENABLED: ${VISION_PAPER_TRADING_ENABLED:-false}
+      VISION_AGENTS_ENABLED: ${VISION_AGENTS_ENABLED:-false}
     network_mode: none
     read_only: true
     cap_drop: [ALL]

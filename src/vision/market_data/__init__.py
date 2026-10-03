@@ -1,1 +1,1 @@
-"""Market Data Hub boundary; no feeds or network I/O implemented."""
+"""Public market-data orchestration; execution capabilities are absent."""

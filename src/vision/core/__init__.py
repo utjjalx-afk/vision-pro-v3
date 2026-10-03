@@ -1,1 +1,1 @@
-"""Canonical contract stubs; bus, reduction, and replay are future work."""
+"""Canonical contracts, JSON codec and bounded bus; state reduction is future work."""

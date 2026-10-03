@@ -9,10 +9,13 @@ behavior, evidence, and validation in the pull request.
 4. Keep all fixtures synthetic and all timestamps timezone-aware UTC.
 5. Use decimal strings on the wire and `Decimal` in monetary/quantity stubs.
 
-Phase-0 scope is packaging, contracts, documentation, and infrastructure skeletons.
-Do not add network connectors, strategies, paper fills, live broker calls, or MT5
-dependencies to a Phase-0 change. Analysis produces intents; risk owns hard vetoes;
-broker I/O belongs outside the deterministic core.
+Current scope is canonical events, Market Data Hub, Binance/Bybit public REST/WS,
+controlled failover, data health, bounded candle recovery, instrument registries and
+read-only synchronized portfolio valuation. Use explicit units and spec revisions;
+never introduce a fallback multiplier or implicit currency conversion. Use synthetic fixtures in CI and bounded public smoke checks
+separately. Do not add strategies, paper fills, authenticated account endpoints,
+live broker calls, or MT5 dependencies. Analysis will produce intents; risk owns
+hard vetoes; broker I/O belongs outside the deterministic core.
 
 Do not copy old Git history, private URLs, local machine paths, secrets, account
 data, or source from reference projects. Any future third-party incorporation

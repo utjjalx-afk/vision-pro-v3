@@ -1,11 +1,14 @@
-# Phase-0 contract stubs
+# Phase-1 canonical contracts
 
 `schemas/canonical-market-event.schema.json` and `schemas/instrument-spec.schema.json`
-are JSON Schema Draft 2020-12 wire stubs. Python counterparts are in
-`vision.core.contracts`. These contracts are provisional pending the full frozen spec.
+are JSON Schema Draft 2020-12 wire contracts. Python counterparts are in
+`vision.core.contracts`; strict decoding is in `vision.core.codec`. Alignment
+to the missing full frozen architecture text remains provisional.
 
 Use synthetic fixtures. Prices/increments/contract size must be positive finite
-decimals; quantities may be zero. Floats, NaN, and infinity are rejected by the
+decimals; quantities may be unsigned zero. Negative-zero quantities are rejected
+to keep serialized output consistent with the unsigned decimal wire format.
+Floats, NaN, and infinity are rejected by the
 Python constructors. Decimal wire values are strings, including scientific notation.
 UTC timestamps include a `Z` suffix in serialized output. Event sequence is a
 nonnegative integer; its source scope is a future connector design concern.
@@ -17,4 +20,27 @@ JSON Schema validates wire structure and numeric string syntax. Python construct
 also validate semantic numeric relationships; JSON Schema alone is insufficient
 for positivity/OHLC/crossed-quote validation. Deserialization is not implemented.
 
-The exact event bus, state reducer, risk policy, and order lifecycle remain unimplemented.
+Phase 1 adds optional `timestamp_basis` (exchange/receipt), `buyer_is_maker` on
+trades, and UTC `open_ts` on bars. Unknown optional fields are omitted on output;
+explicitly supplied fields must have their declared types. Receipt provenance
+requires source and receive timestamps to agree. Identity is stable across
+REST/WS for the same symbol/kind/sequence (and candle interval).
+Wire numeric strings are bounded to 64 characters and exponent magnitude 1000
+during decoding and Binance normalization.
+
+The bounded FIFO bus is implemented. State reduction, risk policy, durable
+storage, and order lifecycle remain unimplemented.
+
+Phase 2 adds optional/defaulted `source_epoch` (nonnegative integer),
+`provider_sequence` (opaque string), `continuity` (`contiguous`, `snapshot`,
+`unverified`) and `delivery_kind` (`live`, `backfill`). Old v1 records decode with
+epoch 0 / unknown provider sequence / unverified continuity / live delivery.
+These additive fields do not make venue sequences comparable. Backfill records
+retain historical source times and are rejected by the live admission path.
+
+Phase 3 wraps InstrumentSpec v1 in immutable InstrumentRecord with canonical
+economics, explicit base/contracts units, declared valuation model and hashed
+metadata provenance. The existing InstrumentSpec v1 wire schema is preserved.
+Position, Mark and PortfolioSnapshot use immutable typed inputs and decimal
+strings; the strict portable replay codec is in core/state/replay.py. See
+[Phase 3 portfolio contracts](PHASE3_PORTFOLIO.md) for semantics and readiness.

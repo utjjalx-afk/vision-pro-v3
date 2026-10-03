@@ -1,1 +1,1 @@
-"""Reserved canonical event-bus boundary."""
+"""Bounded canonical-event FIFO handoff."""

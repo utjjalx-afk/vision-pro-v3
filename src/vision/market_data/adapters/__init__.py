@@ -1,1 +1,1 @@
-"""Reserved Binance/Bybit/Dukascopy/OANDA adapter boundary."""
+"""Public Binance data adapter; other providers remain future boundaries."""

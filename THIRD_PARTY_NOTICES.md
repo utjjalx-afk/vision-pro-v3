@@ -9,12 +9,13 @@ Referencing these ideas does not imply incorporating those projects' code.
 The LICENSE file is the unmodified Apache License 2.0 text from
 <https://www.apache.org/licenses/LICENSE-2.0.txt>.
 
-Runtime uses Python's standard library. Development/build tools are installed
-separately rather than vendored:
+Phase 1 adds `websockets` alongside Python's standard library. Runtime and
+development/build tools are installed separately rather than vendored:
 
 | Tool | Upstream | License |
 | --- | --- | --- |
 | Python | https://www.python.org/ | PSF License |
+| websockets | https://github.com/python-websockets/websockets | BSD-3-Clause |
 | Hatchling | https://github.com/pypa/hatch | MIT |
 | pytest | https://github.com/pytest-dev/pytest | MIT |
 | Ruff | https://github.com/astral-sh/ruff | MIT |

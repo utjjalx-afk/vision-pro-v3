@@ -10,5 +10,4 @@ data
 logs
 dist
 build
-tests
 .github

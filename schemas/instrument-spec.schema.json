@@ -63,6 +63,6 @@
     }
   },
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "InstrumentSpec v1 (Phase-0 stub)",
+  "title": "InstrumentSpec v1",
   "description": "Wire structure only; Python additionally validates numeric semantics."
 }

@@ -1,1 +1,1 @@
-"""Reserved data-health gate; no quality engine implemented."""
+"""Deterministic freshness, ordering, continuity and feed-health admission."""

@@ -51,11 +51,43 @@
     },
     "payload": {
       "type": "object"
+    },
+    "timestamp_basis": {
+      "enum": [
+        "exchange",
+        "receipt"
+      ],
+      "default": "exchange"
+    },
+    "source_epoch": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "provider_sequence": {
+      "type": "string",
+      "pattern": "^\\S(?:.*\\S)?$",
+      "default": "unknown"
+    },
+    "continuity": {
+      "enum": [
+        "contiguous",
+        "snapshot",
+        "unverified"
+      ],
+      "default": "unverified"
+    },
+    "delivery_kind": {
+      "enum": [
+        "live",
+        "backfill"
+      ],
+      "default": "live"
     }
   },
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "CanonicalMarketEvent v1 (Phase-0 stub)",
-  "description": "Exact decimal strings and UTC envelopes; semantic validation is in Python.",
+  "title": "CanonicalMarketEvent v1",
+  "description": "Phase-2 exact decimal contract with source epochs and continuity provenance.",
   "oneOf": [
     {
       "properties": {
@@ -77,6 +109,9 @@
             "quantity": {
               "type": "string",
               "pattern": "^[0-9]+(?:\\.[0-9]+)?(?:[Ee][+-]?[0-9]+)?$"
+            },
+            "buyer_is_maker": {
+              "type": "boolean"
             }
           }
         }
@@ -157,6 +192,11 @@
             "interval_seconds": {
               "type": "integer",
               "minimum": 1
+            },
+            "open_ts": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "Z$"
             }
           }
         }

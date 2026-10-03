@@ -1,3 +1,3 @@
-"""Vision Pro V3: offline Phase-0 foundation."""
+"""Vision Pro V3: public market-data foundation with execution disabled."""
 
-__version__ = "0.0.1"
+__version__ = "0.1.0"

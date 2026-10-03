@@ -22,11 +22,32 @@ def main() -> int:
     market.add_argument("--interval", default="1m")
     market.add_argument("--max-events", type=int, default=10)
     market.add_argument("--duration", type=float, default=30)
+    specs = commands.add_parser("instrument-specs", help="Read public Spot specs with provenance")
+    specs.add_argument("--symbol", default="BTCUSDT")
+    specs.add_argument("--provider", choices=("binance", "bybit", "both"), default="both")
     args = parser.parse_args()
     try:
         settings = load_settings(os.environ)
     except Phase0ExecutionDisabled as error:
         parser.exit(2, f"{error}\n")
+    if args.command == "instrument-specs":
+        from vision.core.instruments import InstrumentRegistry
+        from vision.market_data.adapters.binance import BinanceREST, MarketDataError, symbol_name
+        from vision.market_data.adapters.bybit import BybitREST
+        from vision.market_data.instruments import refresh_public_spec
+
+        try:
+            symbol_name(args.symbol)
+            registry = InstrumentRegistry()
+            providers = {"binance": BinanceREST, "bybit": BybitREST}
+            for provider in providers if args.provider == "both" else (args.provider,):
+                record = refresh_public_spec(registry, providers[provider](), args.symbol)
+                print(json.dumps(record.to_dict(), sort_keys=True), flush=True)
+            return 0
+        except ValueError as error:
+            parser.exit(2, f"{error}\n")
+        except MarketDataError as error:
+            parser.exit(3, f"{error}\n")
     if args.command == "market-data":
         from vision.market_data.adapters.binance import MarketDataError
         from vision.market_data.cli import run_market_data
@@ -43,7 +64,7 @@ def main() -> int:
         json.dumps(
             {
                 "version": __version__,
-                "phase": "phase-2",
+                "phase": "phase-3",
                 "component": args.component,
                 "mode": "offline-diagnostic",
                 "live_trading_enabled": settings.live_trading_enabled,

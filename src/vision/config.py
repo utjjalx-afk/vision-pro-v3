@@ -29,7 +29,7 @@ class Settings:
                 self.agents_enabled,
             )
         ):
-            raise Phase0ExecutionDisabled("Execution is unimplemented in Phase-2")
+            raise Phase0ExecutionDisabled("Execution is unimplemented in Phase-3")
 
 
 def load_settings(environment: Mapping[str, str]) -> Settings:
@@ -42,5 +42,5 @@ def load_settings(environment: Mapping[str, str]) -> Settings:
     ):
         value = environment.get(key, "false").strip().lower()
         if value not in {"false", "0", "no", "off"}:
-            raise Phase0ExecutionDisabled(f"{key} must be false in Phase-2")
+            raise Phase0ExecutionDisabled(f"{key} must be false in Phase-3")
     return Settings()

@@ -37,3 +37,10 @@ Phase 2 adds optional/defaulted `source_epoch` (nonnegative integer),
 epoch 0 / unknown provider sequence / unverified continuity / live delivery.
 These additive fields do not make venue sequences comparable. Backfill records
 retain historical source times and are rejected by the live admission path.
+
+Phase 3 wraps InstrumentSpec v1 in immutable InstrumentRecord with canonical
+economics, explicit base/contracts units, declared valuation model and hashed
+metadata provenance. The existing InstrumentSpec v1 wire schema is preserved.
+Position, Mark and PortfolioSnapshot use immutable typed inputs and decimal
+strings; the strict portable replay codec is in core/state/replay.py. See
+[Phase 3 portfolio contracts](PHASE3_PORTFOLIO.md) for semantics and readiness.

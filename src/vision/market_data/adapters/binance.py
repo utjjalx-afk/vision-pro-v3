@@ -181,8 +181,11 @@ class BinanceREST:
 
     def instrument(self, symbol: str) -> InstrumentSpec:
         symbol_name(symbol)
+        return self.parse_instrument(symbol, self.get("exchangeInfo", {"symbol": symbol}))
+
+    def parse_instrument(self, symbol: str, data) -> InstrumentSpec:
+        symbol_name(symbol)
         try:
-            data = self.get("exchangeInfo", {"symbol": symbol})
             items = data["symbols"]
             if len(items) != 1:
                 raise ValueError("Expected one instrument")

@@ -87,7 +87,7 @@ def test_cli_rejects_enabled_execution(tmp_path, key):
         timeout=10,
     )
     assert result.returncode == 2
-    assert "must be false in Phase-2" in result.stderr
+    assert "must be false in Phase-3" in result.stderr
     assert result.stdout == ""
 
 
@@ -110,7 +110,7 @@ def test_market_data_cli_rejects_execution_before_network(tmp_path, key):
         timeout=10,
     )
     assert result.returncode == 2
-    assert "must be false in Phase-2" in result.stderr
+    assert "must be false in Phase-3" in result.stderr
     assert result.stdout == ""
 
 
@@ -135,3 +135,36 @@ def test_invalid_cli_data_options_fail_before_network(tmp_path, arguments):
     )
     assert result.returncode == 2
     assert result.stdout == ""
+
+
+@pytest.mark.parametrize(
+    "key",
+    [
+        "VISION_LIVE_TRADING_ENABLED",
+        "VISION_MT5_EXECUTION_ENABLED",
+        "VISION_PAPER_TRADING_ENABLED",
+        "VISION_AGENTS_ENABLED",
+    ],
+)
+def test_specs_cli_rejects_enabling_before_network(tmp_path, key):
+    result = subprocess.run(
+        [sys.executable, "-m", "vision", "instrument-specs"],
+        cwd=tmp_path,
+        env={**safe_environment(), key: "true"},
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    assert result.returncode == 2 and result.stdout == ""
+
+
+def test_specs_cli_invalid_symbol_fails_without_network(tmp_path):
+    result = subprocess.run(
+        [sys.executable, "-m", "vision", "instrument-specs", "--symbol", "bad"],
+        cwd=tmp_path,
+        env=safe_environment(),
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    assert result.returncode == 2 and result.stdout == ""

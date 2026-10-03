@@ -1,7 +1,7 @@
 # Vision Pro V3
 
 An Apache-2.0 foundation for multi-asset market intelligence and governed research.
-**Phase 2 adds Bybit Spot, controlled Binance-to-Bybit failover and candle recovery.**
+**Phase 3 adds a provenance-bearing instrument registry and read-only portfolio state.**
 No account API, order endpoint, MT5 bridge, strategy, paper fills, dashboard, or API
 server is included. Enabling live trading, MT5, paper trading or agents fails before network I/O.
 
@@ -9,9 +9,15 @@ server is included. Enabling live trading, MT5, paper trading or agents fails be
 Binance / Bybit public REST/WS -> Canonical normalization -> Data Health Gate -> Bounded Event Bus
 ```
 
-The longer-term design adds deterministic state, analysis lanes, intents, risk
+The longer-term design adds analysis lanes, intents, risk
 vetoes, research gates, and guarded execution. See the [architecture baseline](docs/architecture/ARCHITECTURE_SPEC_v1.md)
 for provenance and its missing full-spec limitation. The old Vision Pro remains separate.
+
+Phase 2 public Binance/Bybit ingestion and controlled failover remain available.
+[Phase 3 details](docs/PHASE3_PORTFOLIO.md) cover explicit quantity units and spec
+revisions, immutable positions/marks, atomic snapshots, Decimal PnL/exposure,
+readiness states, currency safety and portable deterministic replay. Position
+inputs are supplied explicitly; no account connector or synthetic fills are added.
 
 ## Install and check
 
@@ -46,6 +52,17 @@ python -m pytest
 configures execution guards; `.env.example` is not automatically loaded by Python.
 No credentials are needed or read. WebSocket uses `websockets`; REST uses the Python
 standard library with TLS verification enabled.
+
+## Inspect public instrument specs
+
+```bash
+python -m vision instrument-specs --provider both --symbol BTCUSDT
+python -m vision instrument-specs --provider both --symbol ETHUSDT
+```
+
+These bounded calls print current venue specs, canonical mapping, explicit units,
+metadata provenance hashes and revisions. There is no fallback contract multiplier.
+XAU/EURUSD/XAG mappings require separately supplied complete venue specifications.
 
 ## Read public market data
 

@@ -11,6 +11,8 @@ from datetime import UTC, datetime
 from vision.config import load_settings
 from vision.core.bus.events import EventBus
 from vision.core.contracts import BarPayload, CanonicalMarketEvent, InstrumentSpec
+from vision.core.instruments import InstrumentRegistry
+from vision.core.state.portfolio import PortfolioState
 from vision.market_data.adapters.binance import (
     INTERVALS,
     SOURCE,
@@ -42,6 +44,8 @@ class MarketDataHub:
         self.gate = gate if gate is not None else DataHealthGate()
         self.bus = bus if bus is not None else EventBus()
         self.clock = clock
+        self.registry = InstrumentRegistry()
+        self.portfolio = PortfolioState(self.registry, clock=clock)
         self.instruments: dict[str, InstrumentSpec] = {}
         self.sequence_steps: dict[str, int | None] = {}
         self.epochs: dict[str, int] = {}
@@ -50,7 +54,9 @@ class MarketDataHub:
         self.rejected: Counter[str] = Counter()
         self.quarantine: deque[tuple[str, str]] = deque(maxlen=128)
 
-    def register(self, instrument: InstrumentSpec, subscription: Subscription) -> None:
+    def register(
+        self, instrument: InstrumentSpec, subscription: Subscription, *, record=None
+    ) -> None:
         venue = instrument.venue.removesuffix("_SPOT")
         if (
             venue not in {"BINANCE", "BYBIT"}
@@ -68,6 +74,10 @@ class MarketDataHub:
             additions[key] = None if venue == "BYBIT" and kind == "trade" else step
         if len(self.sequence_steps.keys() | additions.keys()) > self.gate.policy.max_streams:
             raise ValueError("Subscription capacity exceeded")
+        if record is not None:
+            if record.spec != instrument or record.provenance.source != source:
+                raise ValueError("Instrument record and subscription provenance disagree")
+            self.registry.register(record)
         self.instruments[instrument.instrument_id] = instrument
         self.sequence_steps.update(additions)
         for key in additions:
@@ -90,6 +100,10 @@ class MarketDataHub:
             for reason in decision.reasons:
                 self.rejected[reason] += 1
                 self.quarantine.append((event.event_id, reason))
+        try:
+            self.portfolio.marks.admit(event, decision)
+        except ValueError:
+            self.portfolio.marks._health[event.instrument_id] = "degraded"
         return decision
 
     def malformed(self, keys: tuple[str, ...] | None = None) -> None:
@@ -101,7 +115,13 @@ class MarketDataHub:
         """Admit recent REST trades/latest finalized bar, rejecting old history as live data."""
         if "quote" in subscription.kinds:
             raise ValueError("REST snapshot supports trades and closed bars; quotes use WebSocket")
-        self.register(rest.instrument(subscription.symbol), subscription)
+        if isinstance(rest, BinanceREST):
+            from vision.market_data.instruments import refresh_public_spec
+
+            record = refresh_public_spec(self.registry, rest, subscription.symbol, clock=self.clock)
+            self.register(record.spec, subscription, record=record)
+        else:
+            self.register(rest.instrument(subscription.symbol), subscription)
         normalizer = BinanceNormalizer(subscription)
         if "trade" in subscription.kinds:
             rows = rest.trades(subscription.symbol, limit=limit)
@@ -267,6 +287,7 @@ class MarketDataHub:
             replace(bar, source_epoch=event.source_epoch, delivery_kind="backfill") for bar in bars
         )
         self.accepted += 1
+        self.portfolio.marks.admit(event, decision)
         return decision
 
     def status(self) -> dict:
@@ -279,6 +300,10 @@ class MarketDataHub:
             "paper_trading_enabled": False,
             "agents_enabled": False,
             "source_epochs": dict(self.epochs),
+            "instrument_spec_revisions": {
+                record.spec.instrument_id: record.revision for record in self.registry.records()
+            },
+            "cached_marks": len(self.portfolio.marks._marks),
             "recovered_bars": len(self.recovered),
             "failover": self.failover.status() if hasattr(self, "failover") else None,
         }

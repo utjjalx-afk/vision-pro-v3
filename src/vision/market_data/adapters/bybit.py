@@ -88,8 +88,12 @@ class BybitREST(BinanceREST):
 
     def instrument(self, symbol: str) -> InstrumentSpec:
         symbol_name(symbol)
+        return self.parse_instrument(symbol, self.get("instruments-info", {"symbol": symbol}))
+
+    def parse_instrument(self, symbol: str, data) -> InstrumentSpec:
+        symbol_name(symbol)
         try:
-            rows = self.get("instruments-info", {"symbol": symbol})["list"]
+            rows = data["list"]
             if len(rows) != 1 or rows[0]["symbol"] != symbol or rows[0]["status"] != "Trading":
                 raise ValueError("Unavailable instrument")
             row = rows[0]

@@ -174,3 +174,14 @@ bounded candle recovery. Details and explicit continuity limitations are in
 is preserved; the full-spec provenance limitation remains. Main stays at Phase 0
 while implementation is reviewed on the draft foundation PR. All execution, MT5,
 paper and agent capabilities remain disabled and unimplemented.
+
+## 10. User-authorized Phase-3 implementation
+
+Phase 3 implements the explicit InstrumentSpec Registry and read-only Portfolio
+State Foundation. Canonical mappings retain venue identity, positions pin metadata
+revisions/units, and synchronized snapshots evaluate exact Decimal PnL/exposure
+with currency, health, age and skew gates. Replay includes immutable provenance
+inputs. [PHASE3_PORTFOLIO.md](../PHASE3_PORTFOLIO.md) defines the current contract.
+The frozen historical baseline is preserved. Main remains at Phase 0 while this
+work stays on the draft PR. Fills, orders, strategies, agents, MT5 and live execution
+remain unimplemented. The full-spec provenance limitation remains documented.

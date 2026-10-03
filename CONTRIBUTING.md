@@ -10,7 +10,9 @@ behavior, evidence, and validation in the pull request.
 5. Use decimal strings on the wire and `Decimal` in monetary/quantity stubs.
 
 Current scope is canonical events, Market Data Hub, Binance/Bybit public REST/WS,
-controlled failover, data health and bounded candle recovery. Use synthetic fixtures in CI and bounded public smoke checks
+controlled failover, data health, bounded candle recovery, instrument registries and
+read-only synchronized portfolio valuation. Use explicit units and spec revisions;
+never introduce a fallback multiplier or implicit currency conversion. Use synthetic fixtures in CI and bounded public smoke checks
 separately. Do not add strategies, paper fills, authenticated account endpoints,
 live broker calls, or MT5 dependencies. Analysis will produce intents; risk owns
 hard vetoes; broker I/O belongs outside the deterministic core.

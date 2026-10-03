@@ -1,0 +1,68 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "instrument_id",
+    "venue",
+    "symbol",
+    "asset_class",
+    "base_currency",
+    "quote_currency",
+    "tick_size",
+    "lot_size",
+    "minimum_quantity",
+    "contract_size"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "instrument_id": {
+      "type": "string",
+      "pattern": "^\\S(?:.*\\S)?$"
+    },
+    "venue": {
+      "type": "string",
+      "pattern": "^\\S(?:.*\\S)?$"
+    },
+    "symbol": {
+      "type": "string",
+      "pattern": "^\\S(?:.*\\S)?$"
+    },
+    "asset_class": {
+      "enum": [
+        "crypto",
+        "forex",
+        "metals"
+      ]
+    },
+    "base_currency": {
+      "type": "string",
+      "pattern": "^\\S(?:.*\\S)?$"
+    },
+    "quote_currency": {
+      "type": "string",
+      "pattern": "^\\S(?:.*\\S)?$"
+    },
+    "tick_size": {
+      "type": "string",
+      "pattern": "^[0-9]+(?:\\.[0-9]+)?(?:[Ee][+-]?[0-9]+)?$"
+    },
+    "lot_size": {
+      "type": "string",
+      "pattern": "^[0-9]+(?:\\.[0-9]+)?(?:[Ee][+-]?[0-9]+)?$"
+    },
+    "minimum_quantity": {
+      "type": "string",
+      "pattern": "^[0-9]+(?:\\.[0-9]+)?(?:[Ee][+-]?[0-9]+)?$"
+    },
+    "contract_size": {
+      "type": "string",
+      "pattern": "^[0-9]+(?:\\.[0-9]+)?(?:[Ee][+-]?[0-9]+)?$"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "InstrumentSpec v1 (Phase-0 stub)",
+  "description": "Wire structure only; Python additionally validates numeric semantics."
+}

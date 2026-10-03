@@ -1,0 +1,40 @@
+name: vision-pro-v3
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    environment:
+      VISION_LIVE_TRADING_ENABLED: ${VISION_LIVE_TRADING_ENABLED:-false}
+      VISION_MT5_EXECUTION_ENABLED: ${VISION_MT5_EXECUTION_ENABLED:-false}
+    network_mode: none
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: "no"
+  worker:
+    profiles: [scaffolding]
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.worker
+    environment:
+      VISION_LIVE_TRADING_ENABLED: ${VISION_LIVE_TRADING_ENABLED:-false}
+      VISION_MT5_EXECUTION_ENABLED: ${VISION_MT5_EXECUTION_ENABLED:-false}
+    network_mode: none
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: "no"
+  dashboard:
+    profiles: [scaffolding]
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dashboard
+    environment:
+      VISION_LIVE_TRADING_ENABLED: ${VISION_LIVE_TRADING_ENABLED:-false}
+      VISION_MT5_EXECUTION_ENABLED: ${VISION_MT5_EXECUTION_ENABLED:-false}
+    network_mode: none
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: "no"

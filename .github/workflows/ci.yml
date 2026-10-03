@@ -1,0 +1,85 @@
+name: Phase-0 CI
+on:
+  push:
+    branches: [main, phase/market-data-foundation]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    name: Python ${{ matrix.python }} / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.11', '3.12']
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install development tools
+        run: python -m pip install -e ".[dev]"
+      - name: Lint
+        run: python -m ruff check .
+      - name: Formatting
+        run: python -m ruff format --check .
+      - name: Unit and wire-contract tests
+        run: python -m pytest
+      - name: Build wheel
+        run: python -m pip wheel --no-deps --wheel-dir dist .
+      - name: Install built wheel
+        shell: pwsh
+        run: |
+          $wheel = (Get-ChildItem dist/*.whl).FullName
+          python -m pip install --force-reinstall --no-deps $wheel
+          if ($LASTEXITCODE -ne 0) { throw 'Wheel installation failed' }
+      - name: Run outside source tree
+        shell: pwsh
+        run: |
+          Push-Location $env:RUNNER_TEMP
+          python -m vision
+          if ($LASTEXITCODE -ne 0) { throw 'Diagnostic failed' }
+          Pop-Location
+      - name: Verify Windows scripts
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          ./scripts/setup-windows.ps1
+          ./scripts/run-windows.ps1
+          if ($LASTEXITCODE -ne 0) { throw 'Native diagnostic failed' }
+          ./scripts/stop-windows.ps1
+      - name: Verify Linux scripts
+        if: runner.os == 'Linux'
+        run: |
+          bash -n scripts/*.sh
+          ./scripts/setup-linux.sh
+          ./scripts/run-linux.sh
+          ./scripts/stop-linux.sh
+  containers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Compose skeletons
+        run: |
+          docker compose --profile scaffolding config --quiet
+          docker compose -f docker-compose.yml -f docker-compose.dev.yml config --quiet
+      - name: Build and smoke-test offline app placeholders
+        run: |
+          docker compose --profile scaffolding build
+          docker compose run --rm api
+          docker compose run --rm worker
+          docker compose run --rm dashboard
+      - name: Confirm container execution enabling fails
+        run: |
+          if docker compose run --rm -e VISION_LIVE_TRADING_ENABLED=true api; then
+            echo 'Execution guard unexpectedly accepted live mode' >&2
+            exit 1
+          fi

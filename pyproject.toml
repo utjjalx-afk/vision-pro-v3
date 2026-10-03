@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vision-pro-v3"
+version = "0.0.1"
+description = "Phase-0 foundation for multi-asset market intelligence and governed research"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3,<9", "ruff>=0.11,<1", "jsonschema>=4.23,<5"]
+
+[project.scripts]
+vision = "vision.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/vision"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]

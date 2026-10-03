@@ -1,0 +1,4 @@
+# Reserved extension point; no host directories, secrets, or ports are mounted.
+services:
+  api:
+    command: [python, -m, vision, --component, api]

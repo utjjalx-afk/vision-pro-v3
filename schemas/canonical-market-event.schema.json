@@ -1,0 +1,166 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "source",
+    "instrument_id",
+    "event_type",
+    "source_ts",
+    "received_ts",
+    "sequence",
+    "payload"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "event_id": {
+      "type": "string",
+      "pattern": "^\\S(?:.*\\S)?$"
+    },
+    "source": {
+      "type": "string",
+      "pattern": "^\\S(?:.*\\S)?$"
+    },
+    "instrument_id": {
+      "type": "string",
+      "pattern": "^\\S(?:.*\\S)?$"
+    },
+    "event_type": {
+      "enum": [
+        "trade",
+        "quote",
+        "bar"
+      ]
+    },
+    "source_ts": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "received_ts": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "payload": {
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CanonicalMarketEvent v1 (Phase-0 stub)",
+  "description": "Exact decimal strings and UTC envelopes; semantic validation is in Python.",
+  "oneOf": [
+    {
+      "properties": {
+        "event_type": {
+          "const": "trade"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "price",
+            "quantity"
+          ],
+          "properties": {
+            "price": {
+              "type": "string",
+              "pattern": "^[0-9]+(?:\\.[0-9]+)?(?:[Ee][+-]?[0-9]+)?$"
+            },
+            "quantity": {
+              "type": "string",
+              "pattern": "^[0-9]+(?:\\.[0-9]+)?(?:[Ee][+-]?[0-9]+)?$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "quote"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "bid",
+            "ask",
+            "bid_quantity",
+            "ask_quantity"
+          ],
+          "properties": {
+            "bid": {
+              "type": "string",
+              "pattern": "^[0-9]+(?:\\.[0-9]+)?(?:[Ee][+-]?[0-9]+)?$"
+            },
+            "ask": {
+              "type": "string",
+              "pattern": "^[0-9]+(?:\\.[0-9]+)?(?:[Ee][+-]?[0-9]+)?$"
+            },
+            "bid_quantity": {
+              "type": "string",
+              "pattern": "^[0-9]+(?:\\.[0-9]+)?(?:[Ee][+-]?[0-9]+)?$"
+            },
+            "ask_quantity": {
+              "type": "string",
+              "pattern": "^[0-9]+(?:\\.[0-9]+)?(?:[Ee][+-]?[0-9]+)?$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "bar"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "interval_seconds"
+          ],
+          "properties": {
+            "open": {
+              "type": "string",
+              "pattern": "^[0-9]+(?:\\.[0-9]+)?(?:[Ee][+-]?[0-9]+)?$"
+            },
+            "high": {
+              "type": "string",
+              "pattern": "^[0-9]+(?:\\.[0-9]+)?(?:[Ee][+-]?[0-9]+)?$"
+            },
+            "low": {
+              "type": "string",
+              "pattern": "^[0-9]+(?:\\.[0-9]+)?(?:[Ee][+-]?[0-9]+)?$"
+            },
+            "close": {
+              "type": "string",
+              "pattern": "^[0-9]+(?:\\.[0-9]+)?(?:[Ee][+-]?[0-9]+)?$"
+            },
+            "volume": {
+              "type": "string",
+              "pattern": "^[0-9]+(?:\\.[0-9]+)?(?:[Ee][+-]?[0-9]+)?$"
+            },
+            "interval_seconds": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      }
+    }
+  ]
+}

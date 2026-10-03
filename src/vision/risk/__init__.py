@@ -1,1 +1,1 @@
-"""Reserved hard-veto Risk Governor boundary."""
+"""Mandatory hard entry vetoes for explicit paper research simulations."""

@@ -13,7 +13,8 @@ Current scope is canonical events, Market Data Hub, Binance/Bybit public REST/WS
 controlled failover, data health, bounded candle recovery, instrument registries and
 read-only synchronized portfolio valuation. Use explicit units and spec revisions;
 never introduce a fallback multiplier or implicit currency conversion. Use synthetic fixtures in CI and bounded public smoke checks
-separately. Do not add strategies, paper fills, authenticated account endpoints,
+separately. Phase 4 paper fills belong only in execution/paper with mandatory governor checks.
+Do not add strategies, authenticated account endpoints,
 live broker calls, or MT5 dependencies. Analysis will produce intents; risk owns
 hard vetoes; broker I/O belongs outside the deterministic core.
 

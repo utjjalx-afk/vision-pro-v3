@@ -1,1 +1,1 @@
-"""Reserved paper broker; no simulated fills implemented."""
+"""Explicit research-only paper broker; no authenticated or live routing."""

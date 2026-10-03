@@ -1,9 +1,9 @@
 # Vision Pro V3
 
 An Apache-2.0 foundation for multi-asset market intelligence and governed research.
-**Phase 3 adds a provenance-bearing instrument registry and read-only portfolio state.**
-No account API, order endpoint, MT5 bridge, strategy, paper fills, dashboard, or API
-server is included. Enabling live trading, MT5, paper trading or agents fails before network I/O.
+**Phase 4 adds an explicit offline paper broker and mandatory hard risk governor.**
+No authenticated account/order API, MT5 bridge, strategy, agent, dashboard or API
+server is included. Paper fills use the explicit research simulator only. Enabling live trading, MT5, paper trading or agents fails before network I/O.
 
 ```text
 Binance / Bybit public REST/WS -> Canonical normalization -> Data Health Gate -> Bounded Event Bus
@@ -17,7 +17,14 @@ Phase 2 public Binance/Bybit ingestion and controlled failover remain available.
 [Phase 3 details](docs/PHASE3_PORTFOLIO.md) cover explicit quantity units and spec
 revisions, immutable positions/marks, atomic snapshots, Decimal PnL/exposure,
 readiness states, currency safety and portable deterministic replay. Position
-inputs are supplied explicitly; no account connector or synthetic fills are added.
+inputs remain explicit. [Phase 4 details](docs/PHASE4_PAPER_RISK.md) describe realistic
+bid/ask paper fills, costs, cash/equity, hard risk gates and restart-safe checkpoints.
+Phase 4 is stacked on Phase 3; main remains untouched.
+
+```bash
+python examples/paper_research.py
+python -m vision paper-replay path/to/explicit-paper-checkpoint.json
+```
 
 ## Install and check
 

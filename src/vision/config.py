@@ -29,7 +29,9 @@ class Settings:
                 self.agents_enabled,
             )
         ):
-            raise Phase0ExecutionDisabled("Execution is unimplemented in Phase-3")
+            raise Phase0ExecutionDisabled(
+                "Global enabling is unavailable; paper uses an explicit offline simulator"
+            )
 
 
 def load_settings(environment: Mapping[str, str]) -> Settings:
@@ -42,5 +44,5 @@ def load_settings(environment: Mapping[str, str]) -> Settings:
     ):
         value = environment.get(key, "false").strip().lower()
         if value not in {"false", "0", "no", "off"}:
-            raise Phase0ExecutionDisabled(f"{key} must be false in Phase-3")
+            raise Phase0ExecutionDisabled(f"{key} must be false in Phase-4")
     return Settings()

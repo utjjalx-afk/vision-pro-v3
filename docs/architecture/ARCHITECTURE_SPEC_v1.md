@@ -185,3 +185,12 @@ inputs. [PHASE3_PORTFOLIO.md](../PHASE3_PORTFOLIO.md) defines the current contra
 The frozen historical baseline is preserved. Main remains at Phase 0 while this
 work stays on the draft PR. Fills, orders, strategies, agents, MT5 and live execution
 remain unimplemented. The full-spec provenance limitation remains documented.
+
+## 11. User-authorized Phase-4 paper/risk extension
+
+Phase 4 is isolated on phase/paper-risk-foundation, stacked on the Phase-3 branch.
+It adds explicit offline cash-Spot research simulation, bid/ask-aware fills, costs,
+ledger/equity, SL-based hard risk vetoes and deterministic checkpoint replay.
+[PHASE4_PAPER_RISK.md](../PHASE4_PAPER_RISK.md) defines supported economics and
+fail-closed limitations. Main and the frozen historical baseline remain untouched.
+Live execution, MT5, strategies and agents remain absent.

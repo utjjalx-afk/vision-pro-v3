@@ -1,9 +1,9 @@
 name: Foundation CI
 on:
   push:
-    branches: [main, phase/market-data-foundation]
+    branches: [main, phase/market-data-foundation, phase/paper-risk-foundation]
   pull_request:
-    branches: [main]
+    branches: [main, phase/market-data-foundation]
   workflow_dispatch:
 
 permissions:

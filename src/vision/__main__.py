@@ -25,11 +25,22 @@ def main() -> int:
     specs = commands.add_parser("instrument-specs", help="Read public Spot specs with provenance")
     specs.add_argument("--symbol", default="BTCUSDT")
     specs.add_argument("--provider", choices=("binance", "bybit", "both"), default="both")
+    paper = commands.add_parser("paper-replay", help="Validate/replay an offline paper checkpoint")
+    paper.add_argument("path")
     args = parser.parse_args()
     try:
         settings = load_settings(os.environ)
     except Phase0ExecutionDisabled as error:
         parser.exit(2, f"{error}\n")
+    if args.command == "paper-replay":
+        from vision.execution.paper.broker import PaperBroker
+
+        try:
+            broker = PaperBroker.load(args.path)
+            print(json.dumps(broker.snapshot(broker.last_at).to_dict(), sort_keys=True))
+            return 0
+        except (ValueError, OSError) as error:
+            parser.exit(2, f"Paper checkpoint rejected: {type(error).__name__}\n")
     if args.command == "instrument-specs":
         from vision.core.instruments import InstrumentRegistry
         from vision.market_data.adapters.binance import BinanceREST, MarketDataError, symbol_name
@@ -64,7 +75,7 @@ def main() -> int:
         json.dumps(
             {
                 "version": __version__,
-                "phase": "phase-3",
+                "phase": "phase-4",
                 "component": args.component,
                 "mode": "offline-diagnostic",
                 "live_trading_enabled": settings.live_trading_enabled,

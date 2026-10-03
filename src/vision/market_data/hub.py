@@ -200,6 +200,12 @@ class MarketDataHub:
             or state.last_event is None
         ):
             raise ValueError("Recovery requires a registered candle gap")
+        if (
+            event.delivery_kind != "live"
+            or event.payload.open_ts is None
+            or epoch_ms(event.payload.open_ts) != event.sequence
+        ):
+            raise ValueError("Recovery requires an aligned pending live candle")
         expected_source = "bybit.spot" if isinstance(rest, BybitREST) else "binance.spot"
         if event.source_epoch < state.last_event.source_epoch:
             raise ValueError("Recovery cannot regress a source epoch")

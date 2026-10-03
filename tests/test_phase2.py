@@ -638,3 +638,48 @@ def test_bybit_same_venue_gap_recovery(now, binance_instrument, market_event):
 
     assert hub.recover_bar(current, Rest(), sub).accepted
     assert hub.recovered[0].source == "bybit.spot"
+
+
+def test_saturated_dual_queue_cancels_without_deadlock(now, binance_instrument, market_event):
+    async def run():
+        hub, selector, clock, quote, observe = setup_selector(now, binance_instrument, market_event)
+        closed = []
+
+        class Adapter:
+            subscription = Subscription("BTCUSDT", ("quote",))
+
+            def __init__(self, venue):
+                self.venue = venue
+
+        async def stream(adapter, *, rest):
+            try:
+                for seq in range(10000):
+                    event = quote(adapter.venue, seq)
+                    hub.gate.commit(event)
+                    yield event
+            finally:
+                closed.append(adapter.venue)
+
+        hub.stream = stream
+        iterator = controlled_stream(hub, Adapter("BINANCE"), Adapter("BYBIT"), None, None)
+        async with asyncio.timeout(2):
+            await anext(iterator)
+            await asyncio.sleep(0.02)  # Producers fill the bounded queue while consumer is paused.
+            await iterator.aclose()
+        assert sorted(closed) == ["BINANCE", "BYBIT"]
+
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("change", ["backfill", "unaligned"])
+def test_pending_recovery_requires_aligned_live_candle(
+    now, binance_instrument, market_event, change
+):
+    hub, sub, current, row = recovery_case(now, binance_instrument, market_event)
+    if change == "backfill":
+        current = replace(current, delivery_kind="backfill")
+    else:
+        current = replace(current, payload=replace(current.payload, open_ts=now))
+    with pytest.raises(ValueError):
+        hub.recover_bar(current, RecoveryREST([row]), sub)
+    assert hub.gate.streams[stream_key(current)].gap

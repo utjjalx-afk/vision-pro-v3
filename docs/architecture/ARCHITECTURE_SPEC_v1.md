@@ -121,7 +121,7 @@ environment configuration, and portable subprocesses. Future x86_64 and ARM64
 support depends on dependency compatibility; Phase-0 does not claim ARM validation.
 The MT5 bridge is a separate Windows-only boundary, not a core dependency.
 
-## 5. Phase-0 implementation boundary
+## 5. Phase-0 implementation boundary (historical baseline)
 
 Phase-0 adds original documentation, licensing, Python packaging, schema stubs,
 placeholder packages/apps, portable scripts, container skeletons, and CI/tests.
@@ -155,3 +155,12 @@ Insert the complete frozen Architecture Spec v1 once supplied, preserving its
 wording and reconciling the provisional package map and schema fields against it.
 Until then, exact full-spec alignment cannot be verified. This limitation must
 remain visible in any foundation pull request.
+
+## 8. Current Phase 1 implementation
+
+The user explicitly authorized Canonical Events, Market Data Hub, Binance public
+REST/WebSocket, and Data Health Gate on the foundation branch. See
+[Phase 1 implementation](../PHASE1_MARKET_DATA.md) for current behavior, contracts,
+health semantics, limits, and validation. Section 5 records the original Phase-0
+state. Execution remains unimplemented/off; the missing complete frozen-spec
+text remains an acknowledged provenance limitation.

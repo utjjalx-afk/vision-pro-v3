@@ -1,32 +1,21 @@
 # Vision Pro V3
 
-An Apache-2.0 foundation for market intelligence, research, paper trading,
-risk governance, and eventually guarded execution across Crypto, Forex, and Metals.
-
-**Phase-0 only.** The current program prints an offline diagnostic and exits.
-It does not connect to feeds, serve an API/dashboard, simulate trades, or place orders.
-Live trading and MT5 execution are unimplemented; enabling either flag fails at startup.
-
-## Architecture
+An Apache-2.0 foundation for multi-asset market intelligence and governed research.
+**Phase 1 implements public Binance Spot market data. Execution remains unimplemented.**
+No account API, order endpoint, MT5 bridge, strategy, paper fills, dashboard, or API
+server is included. Enabling live trading or MT5 execution fails before network I/O.
 
 ```text
-Market Data Hub -> Data Health Gate -> Canonical Event Bus -> Deterministic State
-    -> Technical / Flow / Macro / Narrative lanes -> Reliability Synthesizer
-    -> Trade Intent -> Risk Governor -> Paper / Execution Control
-    -> Order State Machine -> Event Store -> Outcome / Journal / Failure Memory
+Public Binance REST/WS -> Canonical normalization -> Data Health Gate -> Bounded Event Bus
 ```
 
-Strategies will produce intents. They will never call broker order APIs directly.
-Research promotion will require failure-rulebook, lookahead, execution-assumption,
-backtest, statistical-overfit, cost-stress, walk-forward, OOS, and paper gates.
+The longer-term design adds deterministic state, analysis lanes, intents, risk
+vetoes, research gates, and guarded execution. See the [architecture baseline](docs/architecture/ARCHITECTURE_SPEC_v1.md)
+for provenance and its missing full-spec limitation. The old Vision Pro remains separate.
 
-See [Architecture Spec v1](docs/architecture/ARCHITECTURE_SPEC_v1.md) for baseline
-provenance, intended boundaries, and the missing full-spec limitation.
-Phase-0 establishes folder boundaries and schema stubs, not these engines.
+## Install and check
 
-## Native setup (Python 3.11 or 3.12)
-
-Windows PowerShell:
+Python 3.11/3.12, Windows PowerShell:
 
 ```powershell
 .\scripts\setup-windows.ps1
@@ -42,8 +31,8 @@ Linux:
 ./scripts/check-linux.sh
 ```
 
-Both setups create `.venv` and install the package with development tools.
-Direct equivalent in an activated virtual environment:
+Setup creates `.venv` and installs the package plus development tools. Direct
+equivalent in an activated virtual environment:
 
 ```bash
 python -m pip install -e '.[dev]'
@@ -53,44 +42,65 @@ python -m ruff format --check .
 python -m pytest
 ```
 
-Configuration uses process environment variables. `.env.example` is documentation
-and is not loaded automatically. There are no runtime third-party dependencies.
+`python -m vision` stays offline and exits with a diagnostic. Process environment
+configures execution guards; `.env.example` is not automatically loaded by Python.
+No credentials are needed or read. WebSocket uses `websockets`; REST uses the Python
+standard library with TLS verification enabled.
 
-## Containers (skeleton)
+## Read public market data
+
+Run in the virtual environment, or pass these arguments to the platform run script:
 
 ```bash
-docker compose config --quiet
-docker compose build
+python -m vision market-data --symbol BTCUSDT --streams trade,quote --max-events 10 --duration 30
+python -m vision market-data --transport rest --symbol BTCUSDT --max-events 10
+python -m vision market-data --streams bar --interval 1s --max-events 2 --duration 15
+python -m vision market-data --transport rest --streams bar --interval 1m --max-events 1
+```
+
+Accepted events are JSON lines on stdout; health summary is on stderr. WS mode
+stops at the event or duration limit. Final status is disconnected because the
+socket is closed. REST returns a single snapshot. Exit 3 means unavailable data,
+exhausted reconnects, or no accepted events; exit 2 means invalid configuration.
+
+WS streams: aggregate trades, best bid/ask, and closed UTC candles. REST: trades
+and latest closed candles. Default WS selection includes all three kinds.
+Fixed-duration intervals are supported; calendar-month candles are excluded.
+
+## Data quality
+
+Exact decimals, UTC timestamps, stable IDs, instrument metadata, typed payloads,
+and strict JSON decoding feed the health gate. It drops stale/future data,
+duplicates, out-of-order events, unknown streams, and gaps before publication.
+Malformed frames are counted without logging raw bodies. Quotes carry receipt-time
+provenance and degraded health because their exchange timestamps are unavailable.
+
+Trade continuity uses aggregate IDs; candle continuity uses open times per interval.
+Quote update IDs may jump normally. Gaps stay blocked across reconnects. Explicit
+reset starts a new epoch without claiming historical repair. There is no automatic
+gap backfill, full depth book, or durable journal. See [Phase 1 details](docs/PHASE1_MARKET_DATA.md)
+and [contracts](docs/contracts.md).
+
+## Containers
+
+```bash
+docker compose --profile scaffolding config --quiet
+docker compose --profile scaffolding build
 docker compose up --abort-on-container-exit
 ```
 
-The default API placeholder prints a diagnostic and exits successfully. Future
-worker/dashboard boundaries can be inspected with `docker compose --profile scaffolding up`.
-No listeners, credentials, databases, broker bridges, or persistent services are configured.
-The development override is a reserved extension point:
+API/worker/dashboard remain offline placeholders. Default containers have no network.
+Public network access is opt-in through a separate profile:
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.dev.yml config --quiet
+docker compose --profile market-data run --rm market-data
 ```
 
-## Repository map
-
-| Path | Phase-0 role |
-| --- | --- |
-| `src/vision/core` | Canonical event and InstrumentSpec stubs |
-| `src/vision/market_data` | Feed adapters and health boundaries |
-| `src/vision/analysis` | Independent lane and synthesis boundaries |
-| `src/vision/risk`, `execution`, `orders` | Reserved governance/lifecycle boundaries |
-| `src/vision/research`, `storage`, `journal`, `failure_memory` | Reserved research and outcome boundaries |
-| `src/vision/apps`, `apps` | Offline app placeholders and future app contracts |
-| `schemas`, `tests` | Public wire-schema stubs and contract/safety tests |
-| `scripts`, `docker`, `.github/workflows` | Portable setup, containers, and CI |
-
-The Windows-only MT5 bridge is a future isolated boundary. No MT5 package is installed.
-The existing Vision Pro repository is separate; this repository has an independent history.
-
-## Development and security
+No secrets, host directories, account data, or ports are mounted. The development
+override remains a reserved extension point.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). CI checks Python 3.11/3.12 on
-Windows/Linux, packaging, native scripts, and Compose skeleton validity.
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). CI covers synthetic fixtures,
+Windows/Linux scripts, Python 3.11/3.12, packaging, and container diagnostics.
+Live public Binance smoke checks run explicitly outside CI, so network availability
+and regional restrictions do not make the fixture suite nondeterministic.

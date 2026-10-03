@@ -1,4 +1,4 @@
-"""Initial immutable wire-contract stubs, not a market-data engine."""
+"""Immutable canonical market contracts shared by ingestion and replay."""
 
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -16,6 +16,11 @@ class EventType(StrEnum):
     TRADE = "trade"
     QUOTE = "quote"
     BAR = "bar"
+
+
+class TimestampBasis(StrEnum):
+    EXCHANGE = "exchange"
+    RECEIPT = "receipt"
 
 
 def _identifier(value: str) -> None:
@@ -88,10 +93,13 @@ class InstrumentSpec:
 class TradePayload:
     price: Decimal
     quantity: Decimal
+    buyer_is_maker: bool | None = None
 
     def __post_init__(self) -> None:
         _positive_decimal(self.price)
         _quantity(self.quantity)
+        if self.buyer_is_maker is not None and type(self.buyer_is_maker) is not bool:
+            raise ValueError("Buyer maker flag must be boolean when known")
 
 
 @dataclass(frozen=True, slots=True)
@@ -118,6 +126,7 @@ class BarPayload:
     close: Decimal
     volume: Decimal
     interval_seconds: int
+    open_ts: datetime | None = None
 
     def __post_init__(self) -> None:
         for value in (self.open, self.high, self.low, self.close):
@@ -127,6 +136,8 @@ class BarPayload:
             raise ValueError("Invalid OHLC bounds")
         if type(self.interval_seconds) is not int or self.interval_seconds <= 0:
             raise ValueError("Bar interval must be a positive integer")
+        if self.open_ts is not None:
+            _utc(self.open_ts)
 
 
 @dataclass(frozen=True, slots=True)
@@ -140,6 +151,7 @@ class CanonicalMarketEvent:
     sequence: int
     payload: TradePayload | QuotePayload | BarPayload
     schema_version: str = "1"
+    timestamp_basis: TimestampBasis = TimestampBasis.EXCHANGE
 
     def __post_init__(self) -> None:
         for value in (self.event_id, self.source, self.instrument_id):
@@ -150,6 +162,10 @@ class CanonicalMarketEvent:
             raise ValueError("Sequence must be a nonnegative integer")
         if not isinstance(self.event_type, EventType) or self.schema_version != "1":
             raise ValueError("Unsupported event type or schema version")
+        if not isinstance(self.timestamp_basis, TimestampBasis):
+            raise ValueError("Unsupported timestamp provenance")
+        if self.timestamp_basis is TimestampBasis.RECEIPT and self.source_ts != self.received_ts:
+            raise ValueError("Receipt-time events must use received_ts as their source timestamp")
         expected = {
             EventType.TRADE: TradePayload,
             EventType.QUOTE: QuotePayload,
@@ -165,12 +181,16 @@ class CanonicalMarketEvent:
             field.name: (
                 str(value)
                 if isinstance(value := getattr(self.payload, field.name), Decimal)
+                else _utc(value)
+                if isinstance(value, datetime)
                 else value
             )
             for field in fields(self.payload)
+            if getattr(self.payload, field.name) is not None
         }
         return {
             "schema_version": self.schema_version,
+            "timestamp_basis": self.timestamp_basis.value,
             "event_id": self.event_id,
             "source": self.source,
             "instrument_id": self.instrument_id,

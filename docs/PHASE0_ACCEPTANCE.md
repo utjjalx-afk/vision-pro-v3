@@ -43,5 +43,7 @@ recoverable excerpt, audit decisions, platform requirement, and provisional
 mapping explicitly. Full-spec preservation and exact folder/schema alignment
 remain blocked pending the complete source text. No new architecture freeze is claimed.
 
-Keep this PR in draft. Do not implement live/MT5 execution or promote to Phase-1
-as a workaround for the missing source.
+This record describes the original Phase-0 milestone. The user subsequently
+authorized the Phase 1 market-data scope explicitly; see PHASE1_MARKET_DATA.md.
+The PR remains draft and live/MT5 execution remains unimplemented. The missing
+source remains acknowledged rather than represented as a complete frozen spec.

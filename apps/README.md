@@ -8,4 +8,5 @@
 | MT5 bridge | Documentation only | Isolated Windows bridge; execution disabled |
 
 All current container entry points run `python -m vision --component <name>` and exit.
-There is no HTTP service, UI, network bridge, or order endpoint in Phase-0.
+There is no HTTP service, UI, MT5 bridge, or order endpoint in Phase 1.
+The separate market-data CLI/profile reads Binance public data explicitly.

@@ -1,4 +1,4 @@
-name: Phase-0 CI
+name: Foundation CI
 on:
   push:
     branches: [main, phase/market-data-foundation]
@@ -76,6 +76,7 @@ jobs:
       - name: Validate Compose skeletons
         run: |
           docker compose --profile scaffolding config --quiet
+          docker compose --profile market-data config --quiet
           docker compose -f docker-compose.yml -f docker-compose.dev.yml config --quiet
       - name: Build and smoke-test offline app placeholders
         run: |
@@ -87,5 +88,9 @@ jobs:
         run: |
           if docker compose run --rm -e VISION_LIVE_TRADING_ENABLED=true api; then
             echo 'Execution guard unexpectedly accepted live mode' >&2
+            exit 1
+          fi
+          if docker compose --profile market-data run --build --rm -e VISION_MT5_EXECUTION_ENABLED=true market-data; then
+            echo 'Public data CLI unexpectedly accepted MT5 execution' >&2
             exit 1
           fi

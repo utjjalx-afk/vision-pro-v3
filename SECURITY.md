@@ -12,7 +12,7 @@ Do not submit broker accounts, API tokens, database credentials, `.env` files,
 terminal snapshots containing secrets, or production datasets. Use synthetic fixtures.
 If a credential is exposed, revoke it at its provider before discussing the incident.
 
-Live trading, MT5 and autonomous agents are deliberately unimplemented. Phase 6
+Live trading, MT5 and autonomous agents are deliberately unimplemented. Phase 7
 startup rejects attempts to enable them. Portfolio inputs are caller-supplied
 research records; READY never authorizes live execution. The explicit paper API
 uses local synthetic/supplied data only. Checkpoint digests are integrity checks,
@@ -23,8 +23,12 @@ Phase-5 lanes have no order submission or LLM control path. Macro/Narrative sign
 are labelled replay fixtures with zero predictive confidence, not verified news.
 Canonical context hashes check consistency, not authenticity or trading edge.
 
-Prospective grading records verify timing and pinned evidence, not authenticated
-data or durable registration receipts. Fixture outcomes cannot enable reliability.
+The durable ResearchJournal verifies prospective registration timing and pinned
+evidence with committed local SQLite receipts. This does not authenticate provider
+data, the host clock, or a database/export replaced by its filesystem owner.
+Hash chains and append-only SQL triggers are consistency controls, not signatures.
+Exports can contain supplied research metadata; review them before publishing.
+Fixture outcomes cannot enable reliability.
 TradeIntent is unsized and candidate-only; strategy eligibility and risk validation
 are still required before any future execution path. Directional synthesis is
 research plumbing and does not demonstrate trading edge.

@@ -28,5 +28,9 @@ data, or source from reference projects. Any future third-party incorporation
 requires a license review and an update to THIRD_PARTY_NOTICES.md.
 
 Core Python must run on Windows and Linux. Keep a future MT5 bridge isolated.
+Phase-7 paper outcomes must come from replayed broker records and never update
+directional reliability. Use transactional append, prospective registration
+receipts and superseding corrections; never UPDATE or DELETE finalized history.
+Export/replay must work offline and reject semantically invalid re-signed records.
 Architecture amendments require explicit versioned documentation; do not silently
 replace a frozen baseline. The full frozen-spec text remains an input dependency.

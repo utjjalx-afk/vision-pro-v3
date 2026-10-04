@@ -1,7 +1,7 @@
 # Vision Pro V3
 
 An Apache-2.0 foundation for multi-asset market intelligence and governed research.
-**Phase 6 adds prospective reliability synthesis and unsized TradeIntent candidates.**
+**Phase 7 adds a durable Outcome Journal, paper outcome grading and Failure Memory.**
 No authenticated account/order API, MT5 bridge, strategy, autonomous agent, dashboard or API
 server is included. Paper fills use the explicit research simulator only. Enabling live trading, MT5, paper trading or agents fails before network I/O.
 
@@ -30,6 +30,12 @@ LONG/SHORT/WAIT synthesis, provenance and unsized candidates. Phase 6 is stacked
 on Phase 5. No synthesizer or candidate submits orders. No eligible real outcome
 dataset is shipped; the synthetic example stays UNPROVEN and returns WAIT.
 
+[Phase 7 details](docs/PHASE7_OUTCOME_JOURNAL.md) cover append-only SQLite research
+records, durable prospective registration, actual paper outcomes and corrections,
+full lineage, duplicate/family warnings and strict offline export/replay.
+Paper profitability and directional reliability remain separate evidence paths.
+Phase 7 is stacked on Phase 6; no signal or journal submits orders.
+
 ```bash
 python examples/paper_research.py
 python -m vision paper-replay path/to/explicit-paper-checkpoint.json
@@ -37,6 +43,7 @@ python examples/lanes_research.py
 python -m vision lanes-replay tests/fixtures/lanes/research_context.json
 python examples/synthesis_research.py
 python -m vision synthesis-replay tests/fixtures/synthesis/unproven_input.json
+python -m vision research-replay tests/fixtures/journal/paper_research.json
 ```
 
 ## Install and check
@@ -123,7 +130,7 @@ Same-venue bounded candle recovery validates complete missing ranges atomically;
 historical bars stay in a separate recovery journal. Controlled failover requires
 fresh standby streams and recent quote agreement; divergence latches output closed.
 Actual venue IDs remain intact. There is no trade history repair, full depth book,
-automatic failback or durable journal. See [Phase 2 details](docs/PHASE2_FAILOVER.md),
+automatic failback or durable raw ingestion journal. See [Phase 2 details](docs/PHASE2_FAILOVER.md),
 [historical Phase 1 details](docs/PHASE1_MARKET_DATA.md) and [contracts](docs/contracts.md).
 
 ## Containers

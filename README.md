@@ -1,15 +1,15 @@
 # Vision Pro V3
 
 An Apache-2.0 foundation for multi-asset market intelligence and governed research.
-**Phase 4 adds an explicit offline paper broker and mandatory hard risk governor.**
-No authenticated account/order API, MT5 bridge, strategy, agent, dashboard or API
+**Phase 5 adds independent deterministic intelligence lanes and canonical replay.**
+No authenticated account/order API, MT5 bridge, strategy, autonomous agent, dashboard or API
 server is included. Paper fills use the explicit research simulator only. Enabling live trading, MT5, paper trading or agents fails before network I/O.
 
 ```text
 Binance / Bybit public REST/WS -> Canonical normalization -> Data Health Gate -> Bounded Event Bus
 ```
 
-The longer-term design adds analysis lanes, intents, risk
+The longer-term design adds synthesis, intents, risk
 vetoes, research gates, and guarded execution. See the [architecture baseline](docs/architecture/ARCHITECTURE_SPEC_v1.md)
 for provenance and its missing full-spec limitation. The old Vision Pro remains separate.
 
@@ -19,11 +19,16 @@ revisions, immutable positions/marks, atomic snapshots, Decimal PnL/exposure,
 readiness states, currency safety and portable deterministic replay. Position
 inputs remain explicit. [Phase 4 details](docs/PHASE4_PAPER_RISK.md) describe realistic
 bid/ask paper fills, costs, cash/equity, hard risk gates and restart-safe checkpoints.
-Phase 4 is stacked on Phase 3; main remains untouched.
+Phase 4 is stacked on Phase 3; [Phase 5 details](docs/PHASE5_INTELLIGENCE_LANES.md)
+cover Technical/Flow descriptors, explicit Macro/Narrative replay fixtures, immutable
+assessments, evidence provenance and health propagation. Phase 5 is stacked on
+Phase 4; main remains untouched. No lane submits orders or reads another lane's result.
 
 ```bash
 python examples/paper_research.py
 python -m vision paper-replay path/to/explicit-paper-checkpoint.json
+python examples/lanes_research.py
+python -m vision lanes-replay tests/fixtures/lanes/research_context.json
 ```
 
 ## Install and check

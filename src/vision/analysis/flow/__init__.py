@@ -1,1 +1,1 @@
-"""Reserved flow analysis lane."""
+"""Canonical trade and best-level quote descriptors."""

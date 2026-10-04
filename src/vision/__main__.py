@@ -43,11 +43,57 @@ def main() -> int:
     )
     research_replay.add_argument("path")
     research_replay.add_argument("--expected-head")
+    backtest = commands.add_parser("backtest-run", help="Run frozen offline canonical-bar research")
+    backtest.add_argument("path")
+    backtest.add_argument("output")
+    backtest_replay = commands.add_parser("backtest-replay", help="Verify a stored backtest run")
+    backtest_replay.add_argument("path")
     args = parser.parse_args()
     try:
         settings = load_settings(os.environ)
     except Phase0ExecutionDisabled as error:
         parser.exit(2, f"{error}\n")
+    if args.command in {"backtest-run", "backtest-replay"}:
+        from pathlib import Path
+
+        from vision.analysis.contracts import wire
+        from vision.research.backtest import inputs_from_dict, replay, run
+
+        try:
+            with Path(args.path).open("rb") as handle:
+                raw = handle.read(50000001)
+            if len(raw) > 50000000:
+                raise ValueError("Backtest input exceeds size limit")
+            value = json.loads(raw)
+            if args.command == "backtest-run":
+                inputs = inputs_from_dict(value)
+                result = run(inputs)
+                with Path(args.output).open("x", encoding="utf-8") as handle:
+                    json.dump(
+                        {"input": wire(inputs), "run": result.to_dict()},
+                        handle,
+                        sort_keys=True,
+                        indent=2,
+                        allow_nan=False,
+                    )
+                    handle.write("\n")
+            else:
+                result = replay(value)
+            print(
+                json.dumps(
+                    {
+                        "run_id": result.run_id,
+                        "status": result.status.value,
+                        "dataset_hash": result.dataset_hash,
+                        "config_hash": result.config_hash,
+                        "result": json.loads(result.result_json),
+                    },
+                    sort_keys=True,
+                )
+            )
+            return 0
+        except (ValueError, OSError, TypeError, KeyError, IndexError, OverflowError) as error:
+            parser.exit(2, f"Backtest rejected: {type(error).__name__}\n")
     if args.command in {"research-export", "research-replay"}:
         import sqlite3
         from pathlib import Path
@@ -158,7 +204,7 @@ def main() -> int:
         json.dumps(
             {
                 "version": __version__,
-                "phase": "phase-7",
+                "phase": "phase-8",
                 "component": args.component,
                 "mode": "offline-diagnostic",
                 "live_trading_enabled": settings.live_trading_enabled,

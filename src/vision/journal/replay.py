@@ -107,6 +107,14 @@ def replay_entries(entries):
                 raise ValueError("Failure evidence array required")
             data["evidence_ids"] = tuple(data["evidence_ids"])
             journal.failure(entry.experiment_id, FailureRecord(**data))
+        elif entry.kind == "backtest":
+            from vision.research.backtest import inputs_from_dict as backtest_input
+
+            journal.backtest(entry.experiment_id, backtest_input(value["input"]))
+        elif entry.kind == "backtest_suite":
+            from vision.research.audit import suite_from_dict
+
+            journal.backtest_suite(entry.experiment_id, suite_from_dict(value["definition"]))
     return repository.entries()
 
 
@@ -133,6 +141,8 @@ def replay(value, *, expected_head=None):
             ],
             "directional_outcome_ids": [e.key for e in entries if e.kind == "directional_grade"],
             "failures": [e.payload["failure"] for e in entries if e.kind == "failure"],
+            "backtest_runs": [e.payload["run"] for e in entries if e.kind == "backtest"],
+            "backtest_suites": [e.payload["report"] for e in entries if e.kind == "backtest_suite"],
         }
     except (TypeError, KeyError, IndexError, OverflowError) as error:
         raise ValueError("Invalid research export structure") from error

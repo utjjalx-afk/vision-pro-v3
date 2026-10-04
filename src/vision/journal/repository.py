@@ -24,6 +24,8 @@ KINDS = frozenset(
         "failure",
         "prospective_registration",
         "directional_grade",
+        "backtest",
+        "backtest_suite",
     }
 )
 GENESIS = digest({"journal": "vision-research-v1"})

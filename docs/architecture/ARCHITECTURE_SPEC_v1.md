@@ -228,3 +228,15 @@ preserve lineage without providers or automatic execution.
 [Phase-7 semantics](../PHASE7_OUTCOME_JOURNAL.md) define durability and trust limits.
 Live/MT5, strategies and autonomous agents remain absent. This amendment preserves
 the frozen historical baseline and its documented provenance limitation.
+
+## 15. User-authorized Phase-8 backtest/failure-audit extension
+
+Phase 8 is stacked on `phase/outcome-journal-foundation` at
+`49b23a23f91bada0a1ece799af996dc45c2532a4` in `phase/backtest-audit-foundation`.
+Frozen rule -> failure audit -> shared-paper-economics backtest -> cost stress ->
+walk-forward -> regime/source/parameter diagnostics -> holdout -> append-only
+result journal and Failure Memory. Immutable runs/replay preserve dataset/config/code
+lineage. Ambiguity and missing evidence remain INCONCLUSIVE; PASS never promotes to
+VERIFIED/LIVE. Directional reliability stays separate.
+[Phase-8 semantics](../PHASE8_BACKTEST_AUDIT.md) specify assumptions and bounds.
+The historical baseline, main and earlier phase branches remain unchanged.

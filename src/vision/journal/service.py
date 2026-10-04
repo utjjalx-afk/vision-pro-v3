@@ -502,6 +502,76 @@ class ResearchJournal:
 
         return self._transact(at, build)
 
+    def backtest(self, experiment_id, inputs):
+        """Append replayable historical research; never prospective reliability."""
+        from vision.research.backtest import BacktestInput, run
+
+        if not isinstance(inputs, BacktestInput):
+            raise ValueError("BacktestInput required")
+        result = run(inputs)
+        at = self.clock()
+
+        def build(entries):
+            metadata = experiment(entries, experiment_id)
+            if (
+                metadata.commit_sha != inputs.commit_sha
+                or metadata.costs != inputs.costs
+                or inputs.record.revision not in metadata.spec_revisions
+                or metadata.config_json != canonical(inputs.config())
+                or any(
+                    (e.source, e.source_epoch) not in metadata.source_provenance
+                    or e.received_ts > at
+                    for e in inputs.events + inputs.lower_events
+                )
+            ):
+                raise ValueError("Backtest requires pinned historical experiment metadata")
+            return pending(
+                "backtest",
+                experiment_id,
+                result.run_id,
+                {"input": wire(inputs), "run": result.to_dict()},
+            )
+
+        return self._transact(at, build)
+
+    def backtest_suite(self, experiment_id, definition):
+        from vision.research.audit import SuiteDefinition
+
+        if not isinstance(definition, SuiteDefinition):
+            raise ValueError("SuiteDefinition required")
+        report, at = definition.evaluate(), self.clock()
+
+        def build(entries):
+            metadata = experiment(entries, experiment_id)
+            base = definition.base
+            if (
+                metadata.config_json != canonical(definition.config())
+                or metadata.commit_sha != base.commit_sha
+                or metadata.costs != base.costs
+                or any(
+                    v.commit_sha != base.commit_sha
+                    or v.record.revision not in metadata.spec_revisions
+                    or any(
+                        (e.source, e.source_epoch) not in metadata.source_provenance
+                        or e.received_ts > at
+                        for e in v.events + v.lower_events
+                    )
+                    for v in (base,) + definition.source_alternatives
+                )
+            ):
+                raise ValueError("Suite requires pinned historical protocol and metadata")
+            key = digest(
+                {"protocol": definition.config(), "report": report, "version": "phase8-v1"}
+            )
+            return pending(
+                "backtest_suite",
+                experiment_id,
+                key,
+                {"definition": wire(definition), "report": report},
+            )
+
+        return self._transact(at, build)
+
 
 class FailureMemory:
     def __init__(self, journal):

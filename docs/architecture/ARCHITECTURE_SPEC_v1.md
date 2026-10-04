@@ -268,3 +268,16 @@ DSL strategy support for FX/metals is granted by this amendment.
 [Phase-10 semantics](../PHASE10_FOREX_METALS.md) define contracts, operator calendar
 attestations and unavailable real second-source failover. The frozen historical
 baseline, main and prior phase branches remain unchanged.
+
+## 18. User-authorized Phase-11 broker-truth extension
+
+Phase 11 is stacked on `phase/forex-metals-data-foundation` at
+`280f0679592b6fabd432f174b203f38671173b67` in `phase/mt5-sizing-foundation`.
+Optional Windows demo MT5 reader -> authenticated loopback truth API -> explicit
+eligibility/risk request -> one-lot native loss -> floored broker volume -> actual
+final-risk/margin/open-risk recalculation -> immutable calculation audit/replay.
+Broker/account/spec/quote lineage is independent of OANDA analysis truth. No
+order dispatch, account switching or execution enabling is added. Local demo
+acceptance remains pending the BTC/USD instrument and four-asset operator review.
+[Phase-11 contracts](../PHASE11_MT5_SIZING.md) specify trust and sizing boundaries.
+The frozen baseline, main and earlier phase branches remain unchanged.

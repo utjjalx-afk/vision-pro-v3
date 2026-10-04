@@ -81,6 +81,6 @@ def run_market_data(args) -> int:
             )
         emitted = asyncio.run(_websocket(hub, iterator, args))
     print(
-        json.dumps({"phase": "phase-10", "health": hub.status()}, sort_keys=True), file=sys.stderr
+        json.dumps({"phase": "phase-11", "health": hub.status()}, sort_keys=True), file=sys.stderr
     )
     return 0 if emitted else 3

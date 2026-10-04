@@ -14,6 +14,10 @@ def main() -> int:
         "--component", choices=("core", "api", "worker", "dashboard"), default="core"
     )
     commands = parser.add_subparsers(dest="command")
+    sizing_replay = commands.add_parser(
+        "broker-sizing-replay", help="Replay offline broker sizing audit"
+    )
+    sizing_replay.add_argument("path")
     forex = commands.add_parser("forex-data", help="Explicit authorized OANDA data snapshot")
     forex.add_argument("--symbol", required=True, choices=("EUR_USD", "XAU_USD", "XAG_USD"))
     forex.add_argument("--environment", required=True, choices=("practice", "live"))
@@ -80,6 +84,19 @@ def main() -> int:
         settings = load_settings(os.environ)
     except Phase0ExecutionDisabled as error:
         parser.exit(2, f"{error}\n")
+    if args.command == "broker-sizing-replay":
+        from pathlib import Path
+
+        from vision.broker.codec import replay
+        from vision.strategies.dsl import strict_json
+
+        try:
+            with Path(args.path).open("rb") as handle:
+                value = strict_json(handle.read(2000001).decode(), limit=2000000)
+            print(json.dumps(replay(value).to_dict(), allow_nan=False, sort_keys=True))
+            return 0
+        except (ValueError, TypeError, KeyError, OSError, StopIteration, OverflowError):
+            parser.exit(2, "Broker sizing BLOCKED: invalid offline audit\n")
     if args.command in {"forex-data", "forex-replay"}:
         from datetime import UTC, datetime
         from pathlib import Path
@@ -328,7 +345,7 @@ def main() -> int:
         json.dumps(
             {
                 "version": __version__,
-                "phase": "phase-10",
+                "phase": "phase-11",
                 "component": args.component,
                 "mode": "offline-diagnostic",
                 "live_trading_enabled": settings.live_trading_enabled,

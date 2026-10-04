@@ -1,7 +1,7 @@
 # Vision Pro V3
 
 An Apache-2.0 foundation for multi-asset market intelligence and governed research.
-**Phase 5 adds independent deterministic intelligence lanes and canonical replay.**
+**Phase 6 adds prospective reliability synthesis and unsized TradeIntent candidates.**
 No authenticated account/order API, MT5 bridge, strategy, autonomous agent, dashboard or API
 server is included. Paper fills use the explicit research simulator only. Enabling live trading, MT5, paper trading or agents fails before network I/O.
 
@@ -9,8 +9,8 @@ server is included. Paper fills use the explicit research simulator only. Enabli
 Binance / Bybit public REST/WS -> Canonical normalization -> Data Health Gate -> Bounded Event Bus
 ```
 
-The longer-term design adds synthesis, intents, risk
-vetoes, research gates, and guarded execution. See the [architecture baseline](docs/architecture/ARCHITECTURE_SPEC_v1.md)
+The longer-term design adds strategy eligibility, research validation and guarded execution.
+See the [architecture baseline](docs/architecture/ARCHITECTURE_SPEC_v1.md)
 for provenance and its missing full-spec limitation. The old Vision Pro remains separate.
 
 Phase 2 public Binance/Bybit ingestion and controlled failover remain available.
@@ -24,11 +24,19 @@ cover Technical/Flow descriptors, explicit Macro/Narrative replay fixtures, immu
 assessments, evidence provenance and health propagation. Phase 5 is stacked on
 Phase 4; main remains untouched. No lane submits orders or reads another lane's result.
 
+[Phase 6 details](docs/PHASE6_RELIABILITY_INTENT.md) cover prospective directional
+Outcome Grader records, sample gates and neutral shrinkage, reliability-gated
+LONG/SHORT/WAIT synthesis, provenance and unsized candidates. Phase 6 is stacked
+on Phase 5. No synthesizer or candidate submits orders. No eligible real outcome
+dataset is shipped; the synthetic example stays UNPROVEN and returns WAIT.
+
 ```bash
 python examples/paper_research.py
 python -m vision paper-replay path/to/explicit-paper-checkpoint.json
 python examples/lanes_research.py
 python -m vision lanes-replay tests/fixtures/lanes/research_context.json
+python examples/synthesis_research.py
+python -m vision synthesis-replay tests/fixtures/synthesis/unproven_input.json
 ```
 
 ## Install and check

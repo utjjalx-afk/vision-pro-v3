@@ -17,8 +17,10 @@ separately. Phase 4 paper fills belong only in execution/paper with mandatory go
 Do not add strategies, authenticated account endpoints,
 live broker calls, or MT5 dependencies. Phase-5 lanes consume only immutable canonical
 contexts and produce independent assessments. Missing data is UNAVAILABLE; fixture
-signals must be labelled. Do not add synthesizers, TradeIntent, LLM control or
-order submission to this phase. Future synthesis will produce intents; risk owns
+signals must be labelled. Phase-6 synthesizer/intents are separate from lanes and
+must preserve prospective outcome gates, sample thresholds and unsized candidates.
+Do not add LLM control, strategy execution or order submission. Strategy validation
+remains separate; risk owns
 hard vetoes; broker I/O belongs outside the deterministic core.
 
 Do not copy old Git history, private URLs, local machine paths, secrets, account

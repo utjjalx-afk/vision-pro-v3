@@ -44,5 +44,5 @@ def load_settings(environment: Mapping[str, str]) -> Settings:
     ):
         value = environment.get(key, "false").strip().lower()
         if value not in {"false", "0", "no", "off"}:
-            raise Phase0ExecutionDisabled(f"{key} must be false in Phase-5")
+            raise Phase0ExecutionDisabled(f"{key} must be false in Phase-6")
     return Settings()

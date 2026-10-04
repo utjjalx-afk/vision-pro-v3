@@ -14,6 +14,16 @@ def main() -> int:
         "--component", choices=("core", "api", "worker", "dashboard"), default="core"
     )
     commands = parser.add_subparsers(dest="command")
+    forex = commands.add_parser("forex-data", help="Explicit authorized OANDA data snapshot")
+    forex.add_argument("--symbol", required=True, choices=("EUR_USD", "XAU_USD", "XAG_USD"))
+    forex.add_argument("--environment", required=True, choices=("practice", "live"))
+    forex.add_argument("--granularity", required=True, choices=("M1", "M5", "M15", "H1"))
+    forex.add_argument("--calendar", required=True)
+    forex.add_argument("--source-epoch", required=True, type=int)
+    forex_replay = commands.add_parser(
+        "forex-replay", help="Replay synthetic FX/metals data offline"
+    )
+    forex_replay.add_argument("path")
     market = commands.add_parser("market-data", help="Read public Spot data; no execution")
     market.add_argument("--provider", choices=("binance", "bybit", "failover"), default="binance")
     market.add_argument("--symbol", default="BTCUSDT")
@@ -70,6 +80,43 @@ def main() -> int:
         settings = load_settings(os.environ)
     except Phase0ExecutionDisabled as error:
         parser.exit(2, f"{error}\n")
+    if args.command in {"forex-data", "forex-replay"}:
+        from datetime import UTC, datetime
+        from pathlib import Path
+
+        from vision.market_data.adapters.binance import MarketDataError
+        from vision.market_data.adapters.oanda import OandaREST
+        from vision.market_data.forex import replay, snapshot
+        from vision.market_data.sessions import calendar_from_dict
+        from vision.strategies.dsl import strict_json
+
+        try:
+            path = args.path if args.command == "forex-replay" else args.calendar
+            with Path(path).open("rb") as handle:
+                raw = handle.read(2000001)
+            value = strict_json(raw.decode("utf-8"), limit=2000000)
+            if args.command == "forex-replay":
+                result = replay(value)
+            else:
+                rest = OandaREST(
+                    token=os.environ.get("OANDA_API_TOKEN", ""),
+                    account_id=os.environ.get("OANDA_ACCOUNT_ID", ""),
+                    environment=args.environment,
+                )
+                result = snapshot(
+                    rest,
+                    args.symbol,
+                    args.granularity,
+                    calendar_from_dict(value),
+                    clock=lambda: datetime.now(UTC),
+                    source_epoch=args.source_epoch,
+                )
+            print(json.dumps(result, sort_keys=True, allow_nan=False))
+            return 0
+        except (ValueError, OSError, TypeError, KeyError, IndexError, OverflowError):
+            parser.exit(2, "Forex data BLOCKED: invalid or unavailable data/configuration\n")
+        except MarketDataError:
+            parser.exit(3, "Forex data BLOCKED: authorized market-data request failed\n")
     if args.command in {"strategy-preview", "strategy-audit", "strategy-run", "strategy-replay"}:
         from datetime import UTC, datetime
         from pathlib import Path
@@ -281,7 +328,7 @@ def main() -> int:
         json.dumps(
             {
                 "version": __version__,
-                "phase": "phase-9",
+                "phase": "phase-10",
                 "component": args.component,
                 "mode": "offline-diagnostic",
                 "live_trading_enabled": settings.live_trading_enabled,

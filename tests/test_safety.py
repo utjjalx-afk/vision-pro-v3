@@ -87,7 +87,7 @@ def test_cli_rejects_enabled_execution(tmp_path, key):
         timeout=10,
     )
     assert result.returncode == 2
-    assert "must be false in Phase-9" in result.stderr
+    assert "must be false in Phase-10" in result.stderr
     assert result.stdout == ""
 
 
@@ -110,7 +110,7 @@ def test_market_data_cli_rejects_execution_before_network(tmp_path, key):
         timeout=10,
     )
     assert result.returncode == 2
-    assert "must be false in Phase-9" in result.stderr
+    assert "must be false in Phase-10" in result.stderr
     assert result.stdout == ""
 
 

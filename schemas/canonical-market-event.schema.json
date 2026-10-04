@@ -197,7 +197,17 @@
               "type": "string",
               "format": "date-time",
               "pattern": "Z$"
+            },
+            "price_basis": {
+              "enum": ["bid", "ask"]
+            },
+            "volume_basis": {
+              "const": "price_count"
             }
+          },
+          "dependentRequired": {
+            "price_basis": ["volume_basis"],
+            "volume_basis": ["price_basis"]
           }
         }
       }

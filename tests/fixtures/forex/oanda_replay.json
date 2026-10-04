@@ -1,0 +1,143 @@
+{
+  "version": "phase10-v1",
+  "symbol": "EUR_USD",
+  "environment": "practice",
+  "granularity": "M1",
+  "source_epoch": 1,
+  "calendar": {
+    "calendar_id": "synthetic-EUR_USD-2026",
+    "reference": "synthetic-calendar-fixture",
+    "timezone": "America/New_York",
+    "valid_from": "2026-01-01T00:00:00Z",
+    "valid_until": "2027-01-01T00:00:00Z",
+    "weekly": [
+      [
+        6,
+        1025,
+        1440
+      ],
+      [
+        4,
+        0,
+        1019
+      ],
+      [
+        0,
+        0,
+        1019
+      ],
+      [
+        0,
+        1025,
+        1440
+      ],
+      [
+        1,
+        0,
+        1019
+      ],
+      [
+        1,
+        1025,
+        1440
+      ],
+      [
+        2,
+        0,
+        1019
+      ],
+      [
+        2,
+        1025,
+        1440
+      ],
+      [
+        3,
+        0,
+        1019
+      ],
+      [
+        3,
+        1025,
+        1440
+      ]
+    ],
+    "overrides": [
+      [
+        "2026-12-25",
+        []
+      ]
+    ],
+    "exceptions_verified": true,
+    "timezone_rules_version": "2026.5"
+  },
+  "metadata": {
+    "name": "EUR_USD",
+    "type": "CURRENCY",
+    "pipLocation": -4,
+    "displayPrecision": 5,
+    "tradeUnitsPrecision": 0,
+    "minimumTradeSize": "1"
+  },
+  "observed_at": "2026-03-06T20:00:00Z",
+  "actions": [
+    {
+      "at": "2026-03-06T20:00:01Z",
+      "kind": "quote",
+      "payload": {
+        "instrument": "EUR_USD",
+        "time": "2026-03-06T20:00:00.123456789Z",
+        "status": "tradeable",
+        "bids": [
+          {
+            "price": "1.10000",
+            "liquidity": 100
+          }
+        ],
+        "asks": [
+          {
+            "price": "1.10020",
+            "liquidity": 150
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-03-06T20:01:01Z",
+      "kind": "candles",
+      "payload": {
+        "instrument": "EUR_USD",
+        "granularity": "M1",
+        "candles": [
+          {
+            "time": "2026-03-06T20:00:00Z",
+            "complete": true,
+            "volume": 23,
+            "bid": {
+              "o": "1.1",
+              "h": "1.2",
+              "l": "1.0",
+              "c": "1.15"
+            },
+            "ask": {
+              "o": "1.1002",
+              "h": "1.2002",
+              "l": "1.0002",
+              "c": "1.1502"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-03-06T20:01:02Z",
+      "kind": "disconnect",
+      "payload": null
+    },
+    {
+      "at": "2026-03-07T12:00:00Z",
+      "kind": "status",
+      "payload": null
+    }
+  ]
+}

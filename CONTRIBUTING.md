@@ -40,5 +40,11 @@ Phase-9 DSL fields must stay explicit and versioned. Preserve exact preview hash
 confirmation binding, mandatory preflight and Phase-8 parity. Unknown/ambiguous
 semantics are BLOCKED; never infer stops, targets, sizing or execution capabilities.
 Artifact changes require new versions. No lifecycle label grants deployment authority.
+Phase-10 price metadata must never supply guessed execution ticks or contract sizes.
+Preserve bid/ask and price-count candle semantics; keep closed sessions distinct
+from transport failures. Calendar/timezone revisions and all exceptions must be
+explicit. Only scheduled closed opens may be skipped during continuity recovery;
+missing open-session bars remain fail-closed. Use synthetic provider fixtures and
+never commit credentials, accounts, private request URLs or authorized raw responses.
 Architecture amendments require explicit versioned documentation; do not silently
 replace a frozen baseline. The full frozen-spec text remains an input dependency.

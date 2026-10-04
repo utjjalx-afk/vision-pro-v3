@@ -127,6 +127,8 @@ class BarPayload:
     volume: Decimal
     interval_seconds: int
     open_ts: datetime | None = None
+    price_basis: str | None = None
+    volume_basis: str | None = None
 
     def __post_init__(self) -> None:
         for value in (self.open, self.high, self.low, self.close):
@@ -138,6 +140,12 @@ class BarPayload:
             raise ValueError("Bar interval must be a positive integer")
         if self.open_ts is not None:
             _utc(self.open_ts)
+        if self.price_basis not in {None, "bid", "ask"}:
+            raise ValueError("Unsupported explicit bar price basis")
+        if self.volume_basis not in {None, "price_count"}:
+            raise ValueError("Unsupported explicit bar volume basis")
+        if (self.price_basis is None) != (self.volume_basis is None):
+            raise ValueError("Explicit price and volume basis must be declared together")
 
 
 @dataclass(frozen=True, slots=True)

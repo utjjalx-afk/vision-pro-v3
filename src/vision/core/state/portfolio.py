@@ -169,7 +169,16 @@ class DataQuality:
             raise ValueError("Duplicate instrument health")
         for key, state in self.states:
             _identifier(key)
-            if state not in {"healthy", "degraded", "stale", "disconnected", "gap", "warming_up"}:
+            if state not in {
+                "healthy",
+                "degraded",
+                "stale",
+                "disconnected",
+                "gap",
+                "warming_up",
+                "market_closed",
+                "calendar_unknown",
+            }:
                 raise ValueError("Unknown health state")
 
 
@@ -607,11 +616,13 @@ class PortfolioState:
                         and mark.timestamp_basis is TimestampBasis.RECEIPT
                     ):
                         state = "healthy"
-                for bad in ("gap", "disconnected", "stale"):
+                for bad in ("market_closed", "calendar_unknown", "gap", "disconnected", "stale"):
                     if any(value == bad for _, value in relevant):
                         state = bad
                         break
-                if any(hub.gate.streams[key].last_rejection is not None for key, _ in relevant):
+                if state not in {"market_closed", "calendar_unknown"} and any(
+                    hub.gate.streams[key].last_rejection is not None for key, _ in relevant
+                ):
                     state = "degraded"
                 health.append((instrument, state))
             failover = getattr(hub, "failover", None)

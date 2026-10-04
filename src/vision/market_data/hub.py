@@ -6,7 +6,7 @@ from collections import Counter, deque
 from collections.abc import AsyncIterator, Callable
 from copy import deepcopy
 from dataclasses import replace
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 from vision.config import load_settings
 from vision.core.bus.events import EventBus
@@ -30,6 +30,7 @@ from vision.market_data.health.gate import (
     HealthStatus,
     stream_key,
 )
+from vision.market_data.sessions import SessionCalendar, SessionHealthGate
 
 
 class MarketDataHub:
@@ -41,18 +42,56 @@ class MarketDataHub:
         clock: Callable[[], datetime] = lambda: datetime.now(UTC),
     ):
         load_settings(os.environ)
-        self.gate = gate if gate is not None else DataHealthGate()
+        self.gate = gate if gate is not None else SessionHealthGate()
         self.bus = bus if bus is not None else EventBus()
         self.clock = clock
         self.registry = InstrumentRegistry()
         self.portfolio = PortfolioState(self.registry, clock=clock)
         self.instruments: dict[str, InstrumentSpec] = {}
+        self.market_instruments = {}
         self.sequence_steps: dict[str, int | None] = {}
         self.epochs: dict[str, int] = {}
         self.recovered: deque[CanonicalMarketEvent] = deque(maxlen=1000)
         self.accepted = 0
         self.rejected: Counter[str] = Counter()
         self.quarantine: deque[tuple[str, str]] = deque(maxlen=128)
+
+    def register_market(self, metadata, calendar, *, granularity, record=None):
+        """Register read-only FX/metals pricing without inventing execution economics."""
+        from vision.market_data.adapters.oanda import GRANULARITIES, MarketMetadata
+
+        if not isinstance(metadata, MarketMetadata) or granularity not in GRANULARITIES:
+            raise ValueError("Explicit supported market metadata required")
+        if not isinstance(calendar, SessionCalendar):
+            raise ValueError("Explicit session calendar required")
+        if not isinstance(self.gate, SessionHealthGate):
+            raise ValueError("FX/metals require session-aware health")
+        seconds = GRANULARITIES[granularity]
+        prefix = f"{metadata.source}:{metadata.instrument_id}"
+        additions = {
+            f"{prefix}:quote": None,
+            f"{prefix}:bar:{seconds}:bid": seconds * 1000,
+            f"{prefix}:bar:{seconds}:ask": seconds * 1000,
+        }
+        if len(self.sequence_steps.keys() | additions.keys()) > self.gate.policy.max_streams:
+            raise ValueError("Subscription capacity exceeded")
+        previous = self.market_instruments.get(metadata.instrument_id)
+        if previous is not None and metadata.observed_at < previous.observed_at:
+            raise ValueError("Market metadata observation cannot regress")
+        for key in additions:
+            if (
+                key in self.gate.calendars
+                and self.gate.calendars[key].revision != calendar.revision
+            ):
+                raise ValueError("Calendar revision requires new hub")
+        if record is not None:
+            self.registry.register(metadata.verify_record(record))
+        elif previous is not None and metadata.metadata_digest != previous.metadata_digest:
+            self.registry.invalidate(metadata.instrument_id)
+        self.market_instruments[metadata.instrument_id] = metadata
+        self.sequence_steps.update(additions)
+        for key in additions:
+            self.gate.register_session(key, calendar)
 
     def register(
         self, instrument: InstrumentSpec, subscription: Subscription, *, record=None
@@ -87,7 +126,10 @@ class MarketDataHub:
         key = stream_key(event)
         if event.delivery_kind != "live":
             return HealthDecision(False, HealthStatus.DEGRADED, ("backfill_is_not_live",))
-        if event.instrument_id not in self.instruments or key not in self.sequence_steps:
+        if (
+            event.instrument_id not in (self.instruments.keys() | self.market_instruments.keys())
+            or key not in self.sequence_steps
+        ):
             decision = HealthDecision(False, HealthStatus.DEGRADED, ("unregistered_stream",))
         else:
             decision = self.gate.assess(event, self.clock(), sequence_step=self.sequence_steps[key])
@@ -104,6 +146,61 @@ class MarketDataHub:
             self.portfolio.marks.admit(event, decision)
         except ValueError:
             self.portfolio.marks._health[event.instrument_id] = "degraded"
+        return decision
+
+    def recover_market_bar(self, event, history):
+        """Atomic same-source/calendar recovery; history stays outside the live bus."""
+        from vision.core.bus.events import BackpressureError
+
+        key = stream_key(event)
+        state = self.gate.streams.get(key)
+        if (
+            event.instrument_id not in self.market_instruments
+            or not isinstance(event.payload, BarPayload)
+            or state is None
+            or not state.gap
+            or state.last_event is None
+            or event.delivery_kind != "live"
+            or type(history) is not tuple
+            or len(history) > 1000
+        ):
+            raise ValueError(
+                "Registered pending session gap and bounded immutable history required"
+            )
+        calendar = self.gate.calendars[key]
+        expected = calendar.expected_opens(
+            state.last_event.payload.open_ts + timedelta(seconds=event.payload.interval_seconds),
+            event.payload.open_ts,
+            event.payload.interval_seconds,
+        )
+        if not expected or tuple(bar.payload.open_ts for bar in history) != expected:
+            raise ValueError("Recovery missing, duplicated or closed-session candles")
+        candidate = deepcopy(self.gate)
+        candidate.streams[key].gap = False
+        for bar in history:
+            if (
+                stream_key(bar) != key
+                or bar.source_epoch != event.source_epoch
+                or bar.delivery_kind != "backfill"
+                or bar.source_epoch < state.last_event.source_epoch
+                or bar.payload.open_ts + timedelta(seconds=bar.payload.interval_seconds)
+                != bar.source_ts
+                or bar.sequence != epoch_ms(bar.payload.open_ts)
+                or bar.source_ts > bar.received_ts
+                or bar.received_ts > self.clock()
+            ):
+                raise ValueError("Recovery provenance mismatch")
+            candidate.commit(replace(bar, received_ts=state.last_event.received_ts))
+        decision = candidate.assess(event, self.clock(), sequence_step=self.sequence_steps[key])
+        if not decision.accepted:
+            raise ValueError("Recovered live candle remains unhealthy")
+        if len(self.bus) >= self.bus.capacity:
+            raise BackpressureError("Canonical event bus is full")
+        self.bus.publish(event)
+        candidate.commit(event)
+        self.gate = candidate
+        self.recovered.extend(history)
+        self.accepted += 1
         return decision
 
     def malformed(self, keys: tuple[str, ...] | None = None) -> None:
@@ -305,5 +402,19 @@ class MarketDataHub:
             },
             "cached_marks": len(self.portfolio.marks._marks),
             "recovered_bars": len(self.recovered),
+            "market_metadata": {
+                key: {
+                    "revision": value.revision,
+                    "canonical": value.canonical.key,
+                    "pip_size": str(value.pip_size),
+                    "display_quantum": str(value.display_quantum),
+                    "execution_spec_ready": self.registry.get(key) is not None,
+                }
+                for key, value in sorted(self.market_instruments.items())
+            },
+            "calendar_revisions": {
+                key: value.revision
+                for key, value in sorted(getattr(self.gate, "calendars", {}).items())
+            },
             "failover": self.failover.status() if hasattr(self, "failover") else None,
         }

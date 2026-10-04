@@ -252,3 +252,19 @@ compiled inputs and review receipts remain immutable/replayable.
 Unsupported rules are BLOCKED; lifecycle metadata never grants deployment permission.
 [Phase-9 semantics](../PHASE9_STRATEGY_DSL.md) define the bounded compiler and trust model.
 The historical baseline and main remain unchanged; live/MT5/autonomous paths stay absent.
+
+## 17. User-authorized Phase-10 Forex/metals market-data extension
+
+Phase 10 is stacked on `phase/strategy-dsl-foundation` at
+`57c0bd834aecb8a804a0936ad3533c44225d6370` in `phase/forex-metals-data-foundation`.
+OANDA authorized read-only pricing and bid/ask candles normalize EURUSD, XAUUSD
+and XAGUSD into the canonical hub. Explicit, bounded, versioned calendars and
+packaged timezone rules distinguish closure from stale/disconnected transport.
+Open-session gaps require validated backfill; historical data does not enter the
+live bus. Market metadata and verified execution InstrumentSpecs remain separate.
+Independent FX-source selection and conversion interfaces fail closed when
+providers/economics/rates are unavailable. No MT5, sizing, margin, execution or
+DSL strategy support for FX/metals is granted by this amendment.
+[Phase-10 semantics](../PHASE10_FOREX_METALS.md) define contracts, operator calendar
+attestations and unavailable real second-source failover. The frozen historical
+baseline, main and prior phase branches remain unchanged.

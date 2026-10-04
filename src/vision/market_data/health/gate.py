@@ -15,6 +15,8 @@ class HealthStatus(StrEnum):
     STALE = "stale"
     DISCONNECTED = "disconnected"
     GAP = "gap"
+    MARKET_CLOSED = "market_closed"
+    CALENDAR_UNKNOWN = "calendar_unknown"
 
 
 @dataclass(frozen=True)
@@ -57,6 +59,8 @@ class StreamState:
 
 def stream_key(event: CanonicalMarketEvent) -> str:
     interval = f":{event.payload.interval_seconds}" if isinstance(event.payload, BarPayload) else ""
+    if isinstance(event.payload, BarPayload) and event.payload.price_basis is not None:
+        interval += f":{event.payload.price_basis}"
     return f"{event.source}:{event.instrument_id}:{event.event_type.value}{interval}"
 
 

@@ -1,12 +1,12 @@
 # Vision Pro V3
 
 An Apache-2.0 foundation for multi-asset market intelligence and governed research.
-**Phase 9 adds versioned Strategy DSL artifacts and deterministic research compilation.**
-No authenticated account/order API, MT5 bridge, autonomous strategy execution, agent, dashboard or API
+**Phase 10 adds authorized read-only Forex/Metals pricing with session-aware health.**
+No order/account-state API, MT5 bridge, autonomous strategy execution, agent, dashboard or API
 server is included. Paper fills use the explicit research simulator only. Enabling live trading, MT5, paper trading or agents fails before network I/O.
 
 ```text
-Binance / Bybit public REST/WS -> Canonical normalization -> Data Health Gate -> Bounded Event Bus
+Binance / Bybit public REST/WS + OANDA authorized GET -> Canonical normalization -> Session/Data Health -> Bounded Event Bus
 ```
 
 The longer-term design adds strategy eligibility, research validation and guarded execution.
@@ -171,3 +171,15 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and
 Windows/Linux scripts, Python 3.11/3.12, packaging, container diagnostics, and the full fixture suite inside Docker.
 Live public Binance/Bybit smoke checks run explicitly outside CI, so network availability
 and regional restrictions do not make the fixture suite nondeterministic.
+## Phase 10: Forex and metals data
+
+Authorized OANDA read-only pricing and bid/ask candles now support EURUSD, XAUUSD
+and XAGUSD. Explicit calendars distinguish market closure from stale/disconnected
+feeds; no execution contract size or FX conversion is inferred. Offline replay:
+
+```bash
+python -m vision forex-replay tests/fixtures/forex/oanda_replay.json
+```
+
+See [Phase 10 contracts, limits and authorized usage](docs/PHASE10_FOREX_METALS.md).
+Real second-provider FX failover and MT5 remain outside this phase.

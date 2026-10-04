@@ -15,7 +15,10 @@ read-only synchronized portfolio valuation. Use explicit units and spec revision
 never introduce a fallback multiplier or implicit currency conversion. Use synthetic fixtures in CI and bounded public smoke checks
 separately. Phase 4 paper fills belong only in execution/paper with mandatory governor checks.
 Do not add strategies, authenticated account endpoints,
-live broker calls, or MT5 dependencies. Analysis will produce intents; risk owns
+live broker calls, or MT5 dependencies. Phase-5 lanes consume only immutable canonical
+contexts and produce independent assessments. Missing data is UNAVAILABLE; fixture
+signals must be labelled. Do not add synthesizers, TradeIntent, LLM control or
+order submission to this phase. Future synthesis will produce intents; risk owns
 hard vetoes; broker I/O belongs outside the deterministic core.
 
 Do not copy old Git history, private URLs, local machine paths, secrets, account

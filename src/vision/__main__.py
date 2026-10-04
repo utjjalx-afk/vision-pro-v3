@@ -27,11 +27,27 @@ def main() -> int:
     specs.add_argument("--provider", choices=("binance", "bybit", "both"), default="both")
     paper = commands.add_parser("paper-replay", help="Validate/replay an offline paper checkpoint")
     paper.add_argument("path")
+    lanes = commands.add_parser("lanes-replay", help="Replay canonical offline intelligence inputs")
+    lanes.add_argument("path")
     args = parser.parse_args()
     try:
         settings = load_settings(os.environ)
     except Phase0ExecutionDisabled as error:
         parser.exit(2, f"{error}\n")
+    if args.command == "lanes-replay":
+        from pathlib import Path
+
+        from vision.analysis.replay import replay
+
+        try:
+            with Path(args.path).open("rb") as handle:
+                raw = handle.read(5000001)
+            if len(raw) > 5000000:
+                raise ValueError("Lane replay input exceeds size limit")
+            print(json.dumps([item.to_dict() for item in replay(json.loads(raw))], sort_keys=True))
+            return 0
+        except (ValueError, OSError) as error:
+            parser.exit(2, f"Lane replay rejected: {type(error).__name__}\n")
     if args.command == "paper-replay":
         from vision.execution.paper.broker import PaperBroker
 
@@ -75,7 +91,7 @@ def main() -> int:
         json.dumps(
             {
                 "version": __version__,
-                "phase": "phase-4",
+                "phase": "phase-5",
                 "component": args.component,
                 "mode": "offline-diagnostic",
                 "live_trading_enabled": settings.live_trading_enabled,

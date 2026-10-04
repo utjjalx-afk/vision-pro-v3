@@ -1,1 +1,1 @@
-"""Reserved macro analysis lane."""
+"""Explicit synthetic macro replay interface."""

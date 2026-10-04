@@ -194,3 +194,13 @@ ledger/equity, SL-based hard risk vetoes and deterministic checkpoint replay.
 [PHASE4_PAPER_RISK.md](../PHASE4_PAPER_RISK.md) defines supported economics and
 fail-closed limitations. Main and the frozen historical baseline remain untouched.
 Live execution, MT5, strategies and agents remain absent.
+
+## 12. User-authorized Phase-5 intelligence extension
+
+The independent intelligence foundation is stacked on the accepted Phase-4 commit
+`b47c71f62cdfe3461578eec95d661f39cc918161` in `phase/intelligence-lanes-foundation`.
+Canonical context -> independent Technical / Flow / Macro / Narrative assessments.
+The first two produce deterministic descriptive features; the latter two expose
+labelled replay interfaces only. There is no synthesizer, TradeIntent, reliability
+weighting, LLM control or order submission. See [Phase-5 semantics](../PHASE5_INTELLIGENCE_LANES.md).
+This amendment does not replace the frozen baseline or infer its missing text.

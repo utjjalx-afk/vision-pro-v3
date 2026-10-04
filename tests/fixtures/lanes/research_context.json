@@ -1,0 +1,254 @@
+{
+  "instrument_id": "BINANCE:SPOT:BTCUSDT",
+  "as_of": "2026-01-01T00:05:00Z",
+  "events": [
+    {
+      "schema_version": "1",
+      "timestamp_basis": "exchange",
+      "event_id": "synthetic-bar-0",
+      "source": "synthetic.market",
+      "instrument_id": "BINANCE:SPOT:BTCUSDT",
+      "event_type": "bar",
+      "source_ts": "2026-01-01T00:01:00Z",
+      "received_ts": "2026-01-01T00:05:00Z",
+      "sequence": 0,
+      "source_epoch": 1,
+      "provider_sequence": "0",
+      "continuity": "contiguous",
+      "delivery_kind": "backfill",
+      "payload": {
+        "open": "100",
+        "high": "101",
+        "low": "99",
+        "close": "100",
+        "volume": "10",
+        "interval_seconds": 60,
+        "open_ts": "2026-01-01T00:00:00Z"
+      }
+    },
+    {
+      "schema_version": "1",
+      "timestamp_basis": "exchange",
+      "event_id": "synthetic-bar-1",
+      "source": "synthetic.market",
+      "instrument_id": "BINANCE:SPOT:BTCUSDT",
+      "event_type": "bar",
+      "source_ts": "2026-01-01T00:02:00Z",
+      "received_ts": "2026-01-01T00:05:00Z",
+      "sequence": 1,
+      "source_epoch": 1,
+      "provider_sequence": "1",
+      "continuity": "contiguous",
+      "delivery_kind": "backfill",
+      "payload": {
+        "open": "101",
+        "high": "102",
+        "low": "100",
+        "close": "101",
+        "volume": "10",
+        "interval_seconds": 60,
+        "open_ts": "2026-01-01T00:01:00Z"
+      }
+    },
+    {
+      "schema_version": "1",
+      "timestamp_basis": "exchange",
+      "event_id": "synthetic-bar-2",
+      "source": "synthetic.market",
+      "instrument_id": "BINANCE:SPOT:BTCUSDT",
+      "event_type": "bar",
+      "source_ts": "2026-01-01T00:03:00Z",
+      "received_ts": "2026-01-01T00:05:00Z",
+      "sequence": 2,
+      "source_epoch": 1,
+      "provider_sequence": "2",
+      "continuity": "contiguous",
+      "delivery_kind": "backfill",
+      "payload": {
+        "open": "102",
+        "high": "103",
+        "low": "101",
+        "close": "102",
+        "volume": "10",
+        "interval_seconds": 60,
+        "open_ts": "2026-01-01T00:02:00Z"
+      }
+    },
+    {
+      "schema_version": "1",
+      "timestamp_basis": "exchange",
+      "event_id": "synthetic-bar-3",
+      "source": "synthetic.market",
+      "instrument_id": "BINANCE:SPOT:BTCUSDT",
+      "event_type": "bar",
+      "source_ts": "2026-01-01T00:04:00Z",
+      "received_ts": "2026-01-01T00:05:00Z",
+      "sequence": 3,
+      "source_epoch": 1,
+      "provider_sequence": "3",
+      "continuity": "contiguous",
+      "delivery_kind": "backfill",
+      "payload": {
+        "open": "103",
+        "high": "104",
+        "low": "102",
+        "close": "103",
+        "volume": "10",
+        "interval_seconds": 60,
+        "open_ts": "2026-01-01T00:03:00Z"
+      }
+    },
+    {
+      "schema_version": "1",
+      "timestamp_basis": "exchange",
+      "event_id": "synthetic-bar-4",
+      "source": "synthetic.market",
+      "instrument_id": "BINANCE:SPOT:BTCUSDT",
+      "event_type": "bar",
+      "source_ts": "2026-01-01T00:05:00Z",
+      "received_ts": "2026-01-01T00:05:00Z",
+      "sequence": 4,
+      "source_epoch": 1,
+      "provider_sequence": "4",
+      "continuity": "contiguous",
+      "delivery_kind": "backfill",
+      "payload": {
+        "open": "104",
+        "high": "105",
+        "low": "103",
+        "close": "104",
+        "volume": "10",
+        "interval_seconds": 60,
+        "open_ts": "2026-01-01T00:04:00Z"
+      }
+    },
+    {
+      "schema_version": "1",
+      "timestamp_basis": "exchange",
+      "event_id": "synthetic-trade-0",
+      "source": "synthetic.market",
+      "instrument_id": "BINANCE:SPOT:BTCUSDT",
+      "event_type": "trade",
+      "source_ts": "2026-01-01T00:04:59Z",
+      "received_ts": "2026-01-01T00:04:59Z",
+      "sequence": 0,
+      "source_epoch": 1,
+      "provider_sequence": "0",
+      "continuity": "contiguous",
+      "delivery_kind": "live",
+      "payload": {
+        "price": "104",
+        "quantity": "3",
+        "buyer_is_maker": false
+      }
+    },
+    {
+      "schema_version": "1",
+      "timestamp_basis": "exchange",
+      "event_id": "synthetic-quote-0",
+      "source": "synthetic.market",
+      "instrument_id": "BINANCE:SPOT:BTCUSDT",
+      "event_type": "quote",
+      "source_ts": "2026-01-01T00:04:59Z",
+      "received_ts": "2026-01-01T00:04:59Z",
+      "sequence": 0,
+      "source_epoch": 1,
+      "provider_sequence": "0",
+      "continuity": "snapshot",
+      "delivery_kind": "live",
+      "payload": {
+        "bid": "103",
+        "ask": "104",
+        "bid_quantity": "4",
+        "ask_quantity": "2"
+      }
+    },
+    {
+      "schema_version": "1",
+      "timestamp_basis": "exchange",
+      "event_id": "synthetic-trade-1",
+      "source": "synthetic.market",
+      "instrument_id": "BINANCE:SPOT:BTCUSDT",
+      "event_type": "trade",
+      "source_ts": "2026-01-01T00:05:00Z",
+      "received_ts": "2026-01-01T00:05:00Z",
+      "sequence": 1,
+      "source_epoch": 1,
+      "provider_sequence": "1",
+      "continuity": "contiguous",
+      "delivery_kind": "live",
+      "payload": {
+        "price": "104",
+        "quantity": "1",
+        "buyer_is_maker": true
+      }
+    },
+    {
+      "schema_version": "1",
+      "timestamp_basis": "exchange",
+      "event_id": "synthetic-quote-1",
+      "source": "synthetic.market",
+      "instrument_id": "BINANCE:SPOT:BTCUSDT",
+      "event_type": "quote",
+      "source_ts": "2026-01-01T00:05:00Z",
+      "received_ts": "2026-01-01T00:05:00Z",
+      "sequence": 1,
+      "source_epoch": 1,
+      "provider_sequence": "1",
+      "continuity": "snapshot",
+      "delivery_kind": "live",
+      "payload": {
+        "bid": "103",
+        "ask": "104",
+        "bid_quantity": "5",
+        "ask_quantity": "2"
+      }
+    }
+  ],
+  "observations": [
+    {
+      "event_id": "synthetic-macro",
+      "provider": "synthetic.macro",
+      "source_epoch": 1,
+      "instrument_id": "BINANCE:SPOT:BTCUSDT",
+      "kind": "macro",
+      "metric": "declared_fixture_signal",
+      "value": "-0.25",
+      "unit": "signed_signal",
+      "source_ts": "2026-01-01T00:05:00Z",
+      "received_ts": "2026-01-01T00:05:00Z",
+      "fixture_only": true
+    },
+    {
+      "event_id": "synthetic-narrative",
+      "provider": "synthetic.narrative",
+      "source_epoch": 1,
+      "instrument_id": "BINANCE:SPOT:BTCUSDT",
+      "kind": "narrative",
+      "metric": "declared_fixture_signal",
+      "value": "0.1",
+      "unit": "signed_signal",
+      "source_ts": "2026-01-01T00:05:00Z",
+      "received_ts": "2026-01-01T00:05:00Z",
+      "fixture_only": true
+    }
+  ],
+  "quality": {
+    "as_of": "2026-01-01T00:05:00Z",
+    "states": [
+      [
+        "BINANCE:SPOT:BTCUSDT",
+        "healthy"
+      ]
+    ],
+    "divergent": false,
+    "lineage": "synthetic-fixture"
+  },
+  "policy": {
+    "min_bars": 5,
+    "max_events": 512,
+    "max_age": 5000000,
+    "max_quality_age": 5000000,
+    "observation_age": 3600000000
+  }
+}

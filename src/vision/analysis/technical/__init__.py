@@ -1,1 +1,1 @@
-"""Reserved technical analysis lane."""
+"""Closed-bar deterministic technical descriptors."""

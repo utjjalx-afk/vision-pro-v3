@@ -36,5 +36,9 @@ Phase-8 rules consume closed prefixes only. Reuse PaperBroker economics/risk;
 preserve next-open availability and INCONCLUSIVE ambiguity. Freeze matrices/folds
 before evaluation. Never select winners, retune on holdout, invent liquidity or
 promote research to VERIFIED/LIVE.
+Phase-9 DSL fields must stay explicit and versioned. Preserve exact preview hashes,
+confirmation binding, mandatory preflight and Phase-8 parity. Unknown/ambiguous
+semantics are BLOCKED; never infer stops, targets, sizing or execution capabilities.
+Artifact changes require new versions. No lifecycle label grants deployment authority.
 Architecture amendments require explicit versioned documentation; do not silently
 replace a frozen baseline. The full frozen-spec text remains an input dependency.

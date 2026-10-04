@@ -1,7 +1,7 @@
 # Vision Pro V3
 
 An Apache-2.0 foundation for multi-asset market intelligence and governed research.
-**Phase 8 adds deterministic backtests and failure-oriented research audits.**
+**Phase 9 adds versioned Strategy DSL artifacts and deterministic research compilation.**
 No authenticated account/order API, MT5 bridge, autonomous strategy execution, agent, dashboard or API
 server is included. Paper fills use the explicit research simulator only. Enabling live trading, MT5, paper trading or agents fails before network I/O.
 
@@ -43,6 +43,11 @@ walk-forward/OOS, regime attribution and CSCV PBO diagnostics. Runs and audit su
 append to the journal and Failure Memory. PASS never promotes to VERIFIED/LIVE.
 The ambiguous synthetic fixture intentionally stays INCONCLUSIVE.
 
+[Phase 9 details](docs/PHASE9_STRATEGY_DSL.md) cover strict JSON/schema validation,
+exact rule previews, immutable strategy identity, mandatory preflight, explicit
+preview confirmation, Phase-8 parity and append-only lifecycle/result lineage.
+Unsupported rules are BLOCKED. Lifecycle names grant no deployment permission.
+
 ```bash
 python examples/paper_research.py
 python -m vision paper-replay path/to/explicit-paper-checkpoint.json
@@ -52,6 +57,8 @@ python examples/synthesis_research.py
 python -m vision synthesis-replay tests/fixtures/synthesis/unproven_input.json
 python -m vision research-replay tests/fixtures/journal/paper_research.json
 python -m vision backtest-replay tests/fixtures/backtest/ambiguous_run.json
+python -m vision strategy-preview tests/fixtures/strategies/close_trend_v1.json
+python -m vision strategy-replay tests/fixtures/strategies/confirmed_run.json
 ```
 
 ## Install and check

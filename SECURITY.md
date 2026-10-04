@@ -12,7 +12,7 @@ Do not submit broker accounts, API tokens, database credentials, `.env` files,
 terminal snapshots containing secrets, or production datasets. Use synthetic fixtures.
 If a credential is exposed, revoke it at its provider before discussing the incident.
 
-Live trading, MT5 and autonomous agents are deliberately unimplemented. Phase 8
+Live trading, MT5 and autonomous agents are deliberately unimplemented. Phase 9
 startup rejects attempts to enable them. Portfolio inputs are caller-supplied
 research records; READY never authorizes live execution. The explicit paper API
 uses local synthetic/supplied data only. Checkpoint digests are integrity checks,
@@ -38,3 +38,9 @@ Bars, regime labels and trial-universe declarations remain supplied inputs.
 Audits are bounded consistency checks, not authentication or an arbitrary-code
 sandbox. PASS authorizes no execution/promotion. Result replay never imports
 historical profit into prospective reliability.
+
+Strategy DSL accepts structured JSON only; it never evaluates code or calls a model.
+Schema validity is separate from supported compilation, preview confirmation and
+research eligibility. GENERATED_DRAFT cannot self-approve. Preview confirmations
+are local attestations bound to artifact/dataset/compiler, not authenticated human
+identity or deployment authority. Higher lifecycle labels cannot enable execution.

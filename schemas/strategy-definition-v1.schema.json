@@ -1,0 +1,689 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Structural artifact schema. Exact Decimal bounds, references and supported runtime semantics are additionally enforced by the deterministic parser/compiler. No defaults or deployment permission.",
+  "properties": {
+    "acceptance": {
+      "additionalProperties": false,
+      "properties": {
+        "maximum_drawdown_fraction": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+          "type": "string"
+        },
+        "maximum_pbo": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+          "type": "string"
+        },
+        "minimum_net_pnl": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+          "type": "string"
+        },
+        "minimum_trades": {
+          "maximum": 500,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "maximum_drawdown_fraction",
+        "maximum_pbo",
+        "minimum_net_pnl",
+        "minimum_trades"
+      ],
+      "type": "object"
+    },
+    "entry": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+          "type": "string"
+        },
+        "condition": {
+          "additionalProperties": false,
+          "properties": {
+            "left": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            },
+            "multiplier": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+              "type": "string"
+            },
+            "operator": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            },
+            "right_feature": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "left",
+            "multiplier",
+            "operator",
+            "right_feature"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "action",
+        "condition"
+      ],
+      "type": "object"
+    },
+    "execution": {
+      "additionalProperties": false,
+      "properties": {
+        "ambiguity": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+          "type": "string"
+        },
+        "capabilities": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "costs": {
+          "additionalProperties": false,
+          "properties": {
+            "commission_bps": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+              "type": "string"
+            },
+            "mode": {
+              "enum": [
+                "PAPER_REALISTIC",
+                "PAPER_IDEAL"
+              ],
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            },
+            "slippage_bps": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+              "type": "string"
+            },
+            "spread_bps": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "commission_bps",
+            "mode",
+            "slippage_bps",
+            "spread_bps"
+          ],
+          "type": "object"
+        },
+        "liquidity": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+          "type": "string"
+        },
+        "mode": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+          "type": "string"
+        },
+        "timing": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ambiguity",
+        "capabilities",
+        "costs",
+        "liquidity",
+        "mode",
+        "timing"
+      ],
+      "type": "object"
+    },
+    "exit": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+          "type": "string"
+        },
+        "condition": {
+          "additionalProperties": false,
+          "properties": {
+            "left": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            },
+            "multiplier": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+              "type": "string"
+            },
+            "operator": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            },
+            "right_feature": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "left",
+            "multiplier",
+            "operator",
+            "right_feature"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "action",
+        "condition"
+      ],
+      "type": "object"
+    },
+    "features": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+            "type": "string"
+          },
+          "input": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+            "type": "string"
+          },
+          "kind": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+            "type": "string"
+          },
+          "lookback": {
+            "maximum": 256,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "recursive_tolerance": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+            "type": "string"
+          },
+          "warmup": {
+            "maximum": 256,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "input",
+          "kind",
+          "lookback",
+          "recursive_tolerance",
+          "warmup"
+        ],
+        "type": "object"
+      },
+      "maxItems": 8,
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "lifecycle": {
+      "enum": [
+        "CANDIDATE",
+        "TESTING",
+        "VERIFIED",
+        "PAPER",
+        "LIVE_ELIGIBLE",
+        "PARKED",
+        "REJECTED",
+        "BLOCKED"
+      ],
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+      "type": "string"
+    },
+    "market": {
+      "additionalProperties": false,
+      "properties": {
+        "asset_class": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+          "type": "string"
+        },
+        "canonical_symbol": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^(crypto|forex|metals):[A-Z0-9]+/[A-Z0-9]+$",
+          "type": "string"
+        },
+        "instrument": {
+          "additionalProperties": false,
+          "properties": {
+            "quantity_unit": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            },
+            "valuation_model": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            },
+            "venues": {
+              "items": {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+                "type": "string"
+              },
+              "maxItems": 8,
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "quantity_unit",
+            "valuation_model",
+            "venues"
+          ],
+          "type": "object"
+        },
+        "required_data": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "timeframe_seconds": {
+          "maximum": 86400,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "warmup": {
+          "maximum": 256,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "asset_class",
+        "canonical_symbol",
+        "instrument",
+        "required_data",
+        "timeframe_seconds",
+        "warmup"
+      ],
+      "type": "object"
+    },
+    "origin": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "properties": {
+              "generator_id": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              }
+            }
+          },
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "STRUCTURED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "generator_id": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "generator_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "kind": {
+          "enum": [
+            "STRUCTURED",
+            "GENERATED_DRAFT"
+          ],
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "generator_id",
+        "kind"
+      ],
+      "type": "object"
+    },
+    "research": {
+      "additionalProperties": false,
+      "properties": {
+        "commit_sha": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "starting_cash": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "commit_sha",
+        "starting_cash"
+      ],
+      "type": "object"
+    },
+    "risk": {
+      "additionalProperties": false,
+      "properties": {
+        "hard_limits": {
+          "additionalProperties": false,
+          "properties": {
+            "daily_equity_loss_fraction": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+              "type": "string"
+            },
+            "drawdown_fraction": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+              "type": "string"
+            },
+            "gross_exposure_fraction": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+              "type": "string"
+            },
+            "per_trade_fraction": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+              "type": "string"
+            },
+            "portfolio_fraction": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+              "type": "string"
+            },
+            "symbol_exposure_fraction": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "daily_equity_loss_fraction",
+            "drawdown_fraction",
+            "gross_exposure_fraction",
+            "per_trade_fraction",
+            "portfolio_fraction",
+            "symbol_exposure_fraction"
+          ],
+          "type": "object"
+        },
+        "invalidation": {
+          "additionalProperties": false,
+          "properties": {
+            "anchor": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            },
+            "fill": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            },
+            "fraction": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+              "type": "string"
+            },
+            "gap_policy": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            },
+            "kind": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            },
+            "no_stop": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            },
+            "trigger": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "anchor",
+            "fill",
+            "fraction",
+            "gap_policy",
+            "kind",
+            "no_stop",
+            "trigger"
+          ],
+          "type": "object"
+        },
+        "profit_exit": {
+          "additionalProperties": false,
+          "properties": {
+            "anchor": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            },
+            "fill": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            },
+            "fraction": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+              "type": "string"
+            },
+            "kind": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            },
+            "trigger": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "anchor",
+            "fill",
+            "fraction",
+            "kind",
+            "trigger"
+          ],
+          "type": "object"
+        },
+        "quantity": {
+          "additionalProperties": false,
+          "properties": {
+            "sizing": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            },
+            "unit": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^\\S(?:[^\\u0000-\\u001f]*\\S)?$",
+              "type": "string"
+            },
+            "value": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "sizing",
+            "unit",
+            "value"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "hard_limits",
+        "invalidation",
+        "profit_exit",
+        "quantity"
+      ],
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "vision.strategy.v1"
+    },
+    "strategy_key": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+      "type": "string"
+    },
+    "strategy_version": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "acceptance",
+    "entry",
+    "execution",
+    "exit",
+    "features",
+    "lifecycle",
+    "market",
+    "origin",
+    "research",
+    "risk",
+    "schema_version",
+    "strategy_key",
+    "strategy_version"
+  ],
+  "title": "Vision Strategy DSL v1",
+  "type": "object"
+}

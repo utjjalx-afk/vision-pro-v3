@@ -572,6 +572,174 @@ class ResearchJournal:
 
         return self._transact(at, build)
 
+    def register_strategy(self, experiment_id, artifact, dataset):
+        from vision.strategies.dsl import StrategyDefinition, cost_model, preview
+        from vision.strategies.runtime import StrategyDataset, protocol
+
+        if not isinstance(artifact, StrategyDefinition) or not isinstance(dataset, StrategyDataset):
+            raise ValueError("Validated artifact and typed dataset required")
+        at = self.clock()
+
+        def build(entries):
+            metadata = experiment(entries, experiment_id)
+            value = artifact.value
+            if (
+                metadata.config_json != canonical(protocol(artifact, dataset))
+                or metadata.commit_sha != value["research"]["commit_sha"]
+                or metadata.costs != cost_model(value["execution"]["costs"])
+                or dataset.record.revision not in metadata.spec_revisions
+                or any(
+                    (e.source, e.source_epoch) not in metadata.source_provenance
+                    or e.received_ts > at
+                    for e in dataset.events + dataset.lower_events
+                )
+            ):
+                raise ValueError("Strategy experiment protocol/provenance mismatch")
+            for entry in entries:
+                if entry.kind == "strategy_artifact":
+                    old = entry.payload["artifact"]
+                    if (
+                        old["strategy_key"] == value["strategy_key"]
+                        and old["strategy_version"] == value["strategy_version"]
+                        and entry.payload["strategy_id"] != artifact.strategy_id
+                    ):
+                        raise ValueError("Published strategy key/version cannot be redefined")
+            p = preview(artifact)
+            return pending(
+                "strategy_artifact",
+                experiment_id,
+                artifact.strategy_id,
+                {
+                    "artifact": value,
+                    "strategy_id": artifact.strategy_id,
+                    "config_hash": artifact.config_hash,
+                    "dataset_hash": dataset.dataset_hash,
+                    "dataset": wire(dataset),
+                    "preview_text": p.text,
+                    "preview_hash": p.preview_hash,
+                },
+            )
+
+        return self._transact(at, build)
+
+    def strategy_lifecycle(
+        self, experiment_id, strategy_id, request_id, target, reason, evidence_ids
+    ):
+        from vision.strategies.dsl import Lifecycle, text
+        from vision.strategies.governance import allowed_transition, effective_lifecycle, evidence
+
+        text(request_id)
+        target = Lifecycle(target)
+        evidence(reason, evidence_ids)
+        at = self.clock()
+
+        def build(entries):
+            if not any(
+                e.kind == "strategy_artifact"
+                and e.key == strategy_id
+                and e.experiment_id == experiment_id
+                for e in entries
+            ):
+                raise ValueError("Same-experiment strategy registration required")
+            duplicate = next(
+                (
+                    e
+                    for e in entries
+                    if e.kind == "strategy_lifecycle"
+                    and e.experiment_id == experiment_id
+                    and e.key == request_id
+                ),
+                None,
+            )
+            if duplicate is not None:
+                v = duplicate.payload
+                if (
+                    v["strategy_id"] != strategy_id
+                    or v["to"] != target.value
+                    or v["reason"] != reason
+                    or v["evidence_ids"] != list(evidence_ids)
+                ):
+                    raise ValueError("Lifecycle request identity collision")
+                return pending("strategy_lifecycle", experiment_id, request_id, v)
+            before, previous = effective_lifecycle(entries, strategy_id)
+            allowed_transition(before, target)
+            return pending(
+                "strategy_lifecycle",
+                experiment_id,
+                request_id,
+                {
+                    "strategy_id": strategy_id,
+                    "from": before.value,
+                    "to": target.value,
+                    "previous_entry_id": previous,
+                    "reason": reason,
+                    "evidence_ids": list(evidence_ids),
+                    "deployment_permission": False,
+                },
+            )
+
+        return self._transact(at, build)
+
+    def strategy_result(self, experiment_id, artifact, dataset, confirmation=None):
+        from vision.strategies.governance import effective_lifecycle
+        from vision.strategies.runtime import (
+            PreviewConfirmation,
+            compile_strategy,
+            execute,
+            protocol,
+        )
+
+        at = self.clock()
+
+        def build(entries):
+            metadata = experiment(entries, experiment_id)
+            registration = next(
+                (
+                    e
+                    for e in entries
+                    if e.kind == "strategy_artifact"
+                    and e.experiment_id == experiment_id
+                    and e.key == artifact.strategy_id
+                ),
+                None,
+            )
+            if registration is None or metadata.config_json != canonical(
+                protocol(artifact, dataset)
+            ):
+                raise ValueError("Durable strategy registration/protocol required before runtime")
+            if confirmation is not None:
+                if (
+                    not isinstance(confirmation, PreviewConfirmation)
+                    or not registration.recorded_at <= confirmation.confirmed_at <= at
+                ):
+                    raise ValueError("Confirmation must follow durable preview and precede runtime")
+            state, state_entry = effective_lifecycle(entries, artifact.strategy_id)
+            compilation = compile_strategy(artifact, dataset)
+            result = execute(compilation, confirmation, lifecycle=state.value)
+            receipt_key = digest(
+                {
+                    "result": result.result_id,
+                    "registration": registration.entry_id,
+                    "lifecycle_entry": state_entry,
+                    "version": "phase9-journal-v1",
+                }
+            )
+            return pending(
+                "strategy_result",
+                experiment_id,
+                receipt_key,
+                {
+                    "journal_result_id": receipt_key,
+                    "artifact_entry_id": registration.entry_id,
+                    "lifecycle_entry_id": state_entry,
+                    "compilation": compilation.to_dict(),
+                    "confirmation": wire(confirmation),
+                    "result": result.to_dict(),
+                },
+            )
+
+        return self._transact(at, build)
+
 
 class FailureMemory:
     def __init__(self, journal):

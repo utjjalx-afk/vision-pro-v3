@@ -240,3 +240,15 @@ lineage. Ambiguity and missing evidence remain INCONCLUSIVE; PASS never promotes
 VERIFIED/LIVE. Directional reliability stays separate.
 [Phase-8 semantics](../PHASE8_BACKTEST_AUDIT.md) specify assumptions and bounds.
 The historical baseline, main and earlier phase branches remain unchanged.
+
+## 16. User-authorized Phase-9 structured strategy extension
+
+Phase 9 is stacked on `phase/backtest-audit-foundation` at
+`460ea6978df80066f2ca02c556da1a55bb190cca` in `phase/strategy-dsl-foundation`.
+Structured JSON -> strict schema/parser -> exact preview -> Failure Rulebook
+preflight -> explicit confirmation -> deterministic Phase-8 compilation/runtime ->
+research journal and Failure Memory. Strategy identities, lifecycle requests,
+compiled inputs and review receipts remain immutable/replayable.
+Unsupported rules are BLOCKED; lifecycle metadata never grants deployment permission.
+[Phase-9 semantics](../PHASE9_STRATEGY_DSL.md) define the bounded compiler and trust model.
+The historical baseline and main remain unchanged; live/MT5/autonomous paths stay absent.

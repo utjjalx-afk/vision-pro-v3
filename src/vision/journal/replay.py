@@ -115,6 +115,38 @@ def replay_entries(entries):
             from vision.research.audit import suite_from_dict
 
             journal.backtest_suite(entry.experiment_id, suite_from_dict(value["definition"]))
+        elif entry.kind == "strategy_artifact":
+            from vision.journal.repository import canonical
+            from vision.strategies.dsl import parse
+            from vision.strategies.runtime import dataset_from_dict
+
+            journal.register_strategy(
+                entry.experiment_id,
+                parse(canonical(value["artifact"])),
+                dataset_from_dict(value["dataset"]),
+            )
+        elif entry.kind == "strategy_lifecycle":
+            journal.strategy_lifecycle(
+                entry.experiment_id,
+                value["strategy_id"],
+                entry.key,
+                value["to"],
+                value["reason"],
+                tuple(value["evidence_ids"]),
+            )
+        elif entry.kind == "strategy_result":
+            import json
+
+            from vision.strategies.dsl import parse
+            from vision.strategies.runtime import confirmation_from_dict, dataset_from_dict
+
+            c = value["compilation"]
+            journal.strategy_result(
+                entry.experiment_id,
+                parse(c["artifact_json"]),
+                dataset_from_dict(json.loads(c["dataset_json"])),
+                confirmation_from_dict(value["confirmation"]),
+            )
     return repository.entries()
 
 
@@ -143,6 +175,11 @@ def replay(value, *, expected_head=None):
             "failures": [e.payload["failure"] for e in entries if e.kind == "failure"],
             "backtest_runs": [e.payload["run"] for e in entries if e.kind == "backtest"],
             "backtest_suites": [e.payload["report"] for e in entries if e.kind == "backtest_suite"],
+            "strategy_artifacts": [e.payload for e in entries if e.kind == "strategy_artifact"],
+            "strategy_lifecycle": [e.payload for e in entries if e.kind == "strategy_lifecycle"],
+            "strategy_results": [
+                e.payload["result"] for e in entries if e.kind == "strategy_result"
+            ],
         }
     except (TypeError, KeyError, IndexError, OverflowError) as error:
         raise ValueError("Invalid research export structure") from error

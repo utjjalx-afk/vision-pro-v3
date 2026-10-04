@@ -48,11 +48,88 @@ def main() -> int:
     backtest.add_argument("output")
     backtest_replay = commands.add_parser("backtest-replay", help="Verify a stored backtest run")
     backtest_replay.add_argument("path")
+    strategy_preview = commands.add_parser(
+        "strategy-preview", help="Validate and preview exact DSL"
+    )
+    strategy_preview.add_argument("artifact")
+    strategy_audit = commands.add_parser(
+        "strategy-audit", help="Compile/audit DSL without backtesting"
+    )
+    strategy_audit.add_argument("artifact")
+    strategy_audit.add_argument("dataset")
+    strategy_run = commands.add_parser("strategy-run", help="Run confirmed DSL research offline")
+    strategy_run.add_argument("artifact")
+    strategy_run.add_argument("dataset")
+    strategy_run.add_argument("output")
+    strategy_run.add_argument("--confirm-preview", help="Exact hash shown by strategy-audit")
+    strategy_run.add_argument("--reviewer", help="Explicit local review attribution")
+    strategy_replay = commands.add_parser("strategy-replay", help="Verify an offline strategy run")
+    strategy_replay.add_argument("path")
     args = parser.parse_args()
     try:
         settings = load_settings(os.environ)
     except Phase0ExecutionDisabled as error:
         parser.exit(2, f"{error}\n")
+    if args.command in {"strategy-preview", "strategy-audit", "strategy-run", "strategy-replay"}:
+        from datetime import UTC, datetime
+        from pathlib import Path
+
+        from vision.analysis.contracts import wire
+        from vision.strategies.dsl import parse, preview, strict_json
+        from vision.strategies.runtime import (
+            compile_strategy,
+            confirm_preview,
+            dataset_from_dict,
+            execute,
+            replay,
+        )
+
+        def read(path, limit):
+            with Path(path).open("rb") as handle:
+                raw = handle.read(limit + 1)
+            if len(raw) > limit:
+                raise ValueError("Strategy input size exceeded")
+            return raw.decode("utf-8")
+
+        try:
+            if args.command == "strategy-replay":
+                result = replay(strict_json(read(args.path, 50000000), limit=50000000))
+                print(json.dumps(result.to_dict(), sort_keys=True))
+                return 0
+            artifact = parse(read(args.artifact, 100000))
+            if args.command == "strategy-preview":
+                print(preview(artifact).text)
+                print("preview_hash=" + preview(artifact).preview_hash)
+                return 0
+            dataset = dataset_from_dict(strict_json(read(args.dataset, 5000000), limit=5000000))
+            compilation = compile_strategy(artifact, dataset)
+            if args.command == "strategy-audit":
+                print(json.dumps(compilation.to_dict(), sort_keys=True))
+                return 0
+            confirmation = None
+            if args.confirm_preview is not None:
+                confirmation = confirm_preview(
+                    compilation,
+                    preview_hash=args.confirm_preview,
+                    reviewer=args.reviewer,
+                    at=datetime.now(UTC),
+                )
+            result = execute(compilation, confirmation)
+            envelope = {
+                "artifact": artifact.value,
+                "dataset": wire(dataset),
+                "compilation": compilation.to_dict(),
+                "confirmation": wire(confirmation),
+                "lifecycle": result.lifecycle,
+                "result": result.to_dict(),
+            }
+            with Path(args.output).open("x", encoding="utf-8") as handle:
+                json.dump(envelope, handle, sort_keys=True, indent=2, allow_nan=False)
+                handle.write("\n")
+            print(json.dumps(result.to_dict(), sort_keys=True))
+            return 0
+        except (ValueError, OSError, TypeError, KeyError, IndexError, OverflowError) as error:
+            parser.exit(2, f"Strategy BLOCKED: {type(error).__name__}\n")
     if args.command in {"backtest-run", "backtest-replay"}:
         from pathlib import Path
 
@@ -204,7 +281,7 @@ def main() -> int:
         json.dumps(
             {
                 "version": __version__,
-                "phase": "phase-8",
+                "phase": "phase-9",
                 "component": args.component,
                 "mode": "offline-diagnostic",
                 "live_trading_enabled": settings.live_trading_enabled,

@@ -1,0 +1,114 @@
+{
+  "acceptance": {
+    "maximum_drawdown_fraction": "0.10",
+    "maximum_pbo": "0.20",
+    "minimum_net_pnl": "0",
+    "minimum_trades": 1
+  },
+  "entry": {
+    "action": "ENTER_LONG",
+    "condition": {
+      "left": "close",
+      "multiplier": "1.001",
+      "operator": "GT",
+      "right_feature": "trend"
+    }
+  },
+  "execution": {
+    "ambiguity": "INCONCLUSIVE_STOP_FIRST",
+    "capabilities": [
+      "cash_spot_long",
+      "market_orders",
+      "stop_market",
+      "target_trigger_market"
+    ],
+    "costs": {
+      "commission_bps": "10",
+      "mode": "PAPER_REALISTIC",
+      "slippage_bps": "2",
+      "spread_bps": "0"
+    },
+    "liquidity": "FIXED_SYNTHETIC_L1",
+    "mode": "BACKTEST_ONLY",
+    "timing": "SIGNAL_AT_CLOSE_NEXT_BAR_OPEN"
+  },
+  "exit": {
+    "action": "CLOSE_POSITION",
+    "condition": {
+      "left": "close",
+      "multiplier": "0.999",
+      "operator": "LT",
+      "right_feature": "trend"
+    }
+  },
+  "features": [
+    {
+      "id": "trend",
+      "input": "close",
+      "kind": "SMA",
+      "lookback": 2,
+      "recursive_tolerance": "0.0001",
+      "warmup": 2
+    }
+  ],
+  "lifecycle": "CANDIDATE",
+  "market": {
+    "asset_class": "crypto",
+    "canonical_symbol": "crypto:BTC/USDT",
+    "instrument": {
+      "quantity_unit": "base",
+      "valuation_model": "linear_quote",
+      "venues": [
+        "BINANCE_SPOT",
+        "BYBIT_SPOT"
+      ]
+    },
+    "required_data": [
+      "closed_bars"
+    ],
+    "timeframe_seconds": 60,
+    "warmup": 2
+  },
+  "origin": {
+    "generator_id": null,
+    "kind": "STRUCTURED"
+  },
+  "research": {
+    "commit_sha": "49b23a23f91bada0a1ece799af996dc45c2532a4",
+    "starting_cash": "10000"
+  },
+  "risk": {
+    "hard_limits": {
+      "daily_equity_loss_fraction": "0.03",
+      "drawdown_fraction": "0.10",
+      "gross_exposure_fraction": "0.80",
+      "per_trade_fraction": "0.01",
+      "portfolio_fraction": "0.05",
+      "symbol_exposure_fraction": "0.25"
+    },
+    "invalidation": {
+      "anchor": "SIGNAL_CLOSE",
+      "fill": "MARKET",
+      "fraction": "0.05",
+      "gap_policy": "OPEN_QUOTE",
+      "kind": "STOP_LOSS",
+      "no_stop": "BLOCK",
+      "trigger": "BID_LTE"
+    },
+    "profit_exit": {
+      "anchor": "SIGNAL_CLOSE",
+      "fill": "MARKET",
+      "fraction": "0.10",
+      "kind": "TAKE_PROFIT",
+      "trigger": "BID_GTE"
+    },
+    "quantity": {
+      "sizing": "FIXED",
+      "unit": "base",
+      "value": "1"
+    }
+  },
+  "schema_version": "vision.strategy.v1",
+  "strategy_key": "synthetic-close-trend",
+  "strategy_version": "1.0.0"
+}

@@ -1,0 +1,264 @@
+{
+  "artifact": {
+    "acceptance": {
+      "maximum_drawdown_fraction": "0.10",
+      "maximum_pbo": "0.20",
+      "minimum_net_pnl": "0",
+      "minimum_trades": 1
+    },
+    "entry": {
+      "action": "ENTER_LONG",
+      "condition": {
+        "left": "close",
+        "multiplier": "1.001",
+        "operator": "GT",
+        "right_feature": "trend"
+      }
+    },
+    "execution": {
+      "ambiguity": "INCONCLUSIVE_STOP_FIRST",
+      "capabilities": [
+        "cash_spot_long",
+        "market_orders",
+        "stop_market",
+        "target_trigger_market"
+      ],
+      "costs": {
+        "commission_bps": "10",
+        "mode": "PAPER_REALISTIC",
+        "slippage_bps": "2",
+        "spread_bps": "0"
+      },
+      "liquidity": "FIXED_SYNTHETIC_L1",
+      "mode": "BACKTEST_ONLY",
+      "timing": "SIGNAL_AT_CLOSE_NEXT_BAR_OPEN"
+    },
+    "exit": {
+      "action": "CLOSE_POSITION",
+      "condition": {
+        "left": "close",
+        "multiplier": "0.999",
+        "operator": "LT",
+        "right_feature": "trend"
+      }
+    },
+    "features": [
+      {
+        "id": "trend",
+        "input": "close",
+        "kind": "SMA",
+        "lookback": 2,
+        "recursive_tolerance": "0.0001",
+        "warmup": 2
+      }
+    ],
+    "lifecycle": "CANDIDATE",
+    "market": {
+      "asset_class": "crypto",
+      "canonical_symbol": "crypto:BTC/USDT",
+      "instrument": {
+        "quantity_unit": "base",
+        "valuation_model": "linear_quote",
+        "venues": [
+          "BINANCE_SPOT",
+          "BYBIT_SPOT"
+        ]
+      },
+      "required_data": [
+        "closed_bars"
+      ],
+      "timeframe_seconds": 60,
+      "warmup": 2
+    },
+    "origin": {
+      "generator_id": null,
+      "kind": "STRUCTURED"
+    },
+    "research": {
+      "commit_sha": "49b23a23f91bada0a1ece799af996dc45c2532a4",
+      "starting_cash": "10000"
+    },
+    "risk": {
+      "hard_limits": {
+        "daily_equity_loss_fraction": "0.03",
+        "drawdown_fraction": "0.10",
+        "gross_exposure_fraction": "0.80",
+        "per_trade_fraction": "0.01",
+        "portfolio_fraction": "0.05",
+        "symbol_exposure_fraction": "0.25"
+      },
+      "invalidation": {
+        "anchor": "SIGNAL_CLOSE",
+        "fill": "MARKET",
+        "fraction": "0.05",
+        "gap_policy": "OPEN_QUOTE",
+        "kind": "STOP_LOSS",
+        "no_stop": "BLOCK",
+        "trigger": "BID_LTE"
+      },
+      "profit_exit": {
+        "anchor": "SIGNAL_CLOSE",
+        "fill": "MARKET",
+        "fraction": "0.10",
+        "kind": "TAKE_PROFIT",
+        "trigger": "BID_GTE"
+      },
+      "quantity": {
+        "sizing": "FIXED",
+        "unit": "base",
+        "value": "1"
+      }
+    },
+    "schema_version": "vision.strategy.v1",
+    "strategy_key": "synthetic-close-trend",
+    "strategy_version": "1.0.0"
+  },
+  "compilation": {
+    "artifact_json": "{\"acceptance\":{\"maximum_drawdown_fraction\":\"0.10\",\"maximum_pbo\":\"0.20\",\"minimum_net_pnl\":\"0\",\"minimum_trades\":1},\"entry\":{\"action\":\"ENTER_LONG\",\"condition\":{\"left\":\"close\",\"multiplier\":\"1.001\",\"operator\":\"GT\",\"right_feature\":\"trend\"}},\"execution\":{\"ambiguity\":\"INCONCLUSIVE_STOP_FIRST\",\"capabilities\":[\"cash_spot_long\",\"market_orders\",\"stop_market\",\"target_trigger_market\"],\"costs\":{\"commission_bps\":\"10\",\"mode\":\"PAPER_REALISTIC\",\"slippage_bps\":\"2\",\"spread_bps\":\"0\"},\"liquidity\":\"FIXED_SYNTHETIC_L1\",\"mode\":\"BACKTEST_ONLY\",\"timing\":\"SIGNAL_AT_CLOSE_NEXT_BAR_OPEN\"},\"exit\":{\"action\":\"CLOSE_POSITION\",\"condition\":{\"left\":\"close\",\"multiplier\":\"0.999\",\"operator\":\"LT\",\"right_feature\":\"trend\"}},\"features\":[{\"id\":\"trend\",\"input\":\"close\",\"kind\":\"SMA\",\"lookback\":2,\"recursive_tolerance\":\"0.0001\",\"warmup\":2}],\"lifecycle\":\"CANDIDATE\",\"market\":{\"asset_class\":\"crypto\",\"canonical_symbol\":\"crypto:BTC/USDT\",\"instrument\":{\"quantity_unit\":\"base\",\"valuation_model\":\"linear_quote\",\"venues\":[\"BINANCE_SPOT\",\"BYBIT_SPOT\"]},\"required_data\":[\"closed_bars\"],\"timeframe_seconds\":60,\"warmup\":2},\"origin\":{\"generator_id\":null,\"kind\":\"STRUCTURED\"},\"research\":{\"commit_sha\":\"49b23a23f91bada0a1ece799af996dc45c2532a4\",\"starting_cash\":\"10000\"},\"risk\":{\"hard_limits\":{\"daily_equity_loss_fraction\":\"0.03\",\"drawdown_fraction\":\"0.10\",\"gross_exposure_fraction\":\"0.80\",\"per_trade_fraction\":\"0.01\",\"portfolio_fraction\":\"0.05\",\"symbol_exposure_fraction\":\"0.25\"},\"invalidation\":{\"anchor\":\"SIGNAL_CLOSE\",\"fill\":\"MARKET\",\"fraction\":\"0.05\",\"gap_policy\":\"OPEN_QUOTE\",\"kind\":\"STOP_LOSS\",\"no_stop\":\"BLOCK\",\"trigger\":\"BID_LTE\"},\"profit_exit\":{\"anchor\":\"SIGNAL_CLOSE\",\"fill\":\"MARKET\",\"fraction\":\"0.10\",\"kind\":\"TAKE_PROFIT\",\"trigger\":\"BID_GTE\"},\"quantity\":{\"sizing\":\"FIXED\",\"unit\":\"base\",\"value\":\"1\"}},\"schema_version\":\"vision.strategy.v1\",\"strategy_key\":\"synthetic-close-trend\",\"strategy_version\":\"1.0.0\"}",
+    "compilation_id": "a94232aaec6d960e06419fd0ab10a5acce2e8e31c80b1ccae1eb01bd03f3accc",
+    "compiled_json": "{\"acceptance\":{\"maximum_drawdown_fraction\":\"0.10\",\"maximum_pbo\":\"0.20\",\"minimum_net_pnl\":\"0\",\"minimum_trades\":1},\"commit_sha\":\"49b23a23f91bada0a1ece799af996dc45c2532a4\",\"costs\":{\"commission_bps\":\"10\",\"mode\":\"PAPER_REALISTIC\",\"slippage_bps\":\"2\",\"spread_bps\":\"0\"},\"evaluation_start\":0,\"events\":[{\"continuity\":\"contiguous\",\"delivery_kind\":\"backfill\",\"event_id\":\"synthetic-bar-0\",\"event_type\":\"bar\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"payload\":{\"close\":\"100\",\"high\":\"101\",\"interval_seconds\":60,\"low\":\"99\",\"open\":\"100\",\"open_ts\":\"2026-01-01T00:00:00Z\",\"volume\":\"10\"},\"provider_sequence\":\"unknown\",\"received_ts\":\"2026-01-01T00:01:00Z\",\"schema_version\":\"1\",\"sequence\":0,\"source\":\"binance.spot\",\"source_epoch\":0,\"source_ts\":\"2026-01-01T00:01:00Z\",\"timestamp_basis\":\"exchange\"},{\"continuity\":\"contiguous\",\"delivery_kind\":\"backfill\",\"event_id\":\"synthetic-bar-1\",\"event_type\":\"bar\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"payload\":{\"close\":\"110\",\"high\":\"111\",\"interval_seconds\":60,\"low\":\"99\",\"open\":\"100\",\"open_ts\":\"2026-01-01T00:01:00Z\",\"volume\":\"10\"},\"provider_sequence\":\"unknown\",\"received_ts\":\"2026-01-01T00:02:00Z\",\"schema_version\":\"1\",\"sequence\":1,\"source\":\"binance.spot\",\"source_epoch\":0,\"source_ts\":\"2026-01-01T00:02:00Z\",\"timestamp_basis\":\"exchange\"},{\"continuity\":\"contiguous\",\"delivery_kind\":\"backfill\",\"event_id\":\"synthetic-bar-2\",\"event_type\":\"bar\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"payload\":{\"close\":\"120\",\"high\":\"122\",\"interval_seconds\":60,\"low\":\"100\",\"open\":\"110\",\"open_ts\":\"2026-01-01T00:02:00Z\",\"volume\":\"10\"},\"provider_sequence\":\"unknown\",\"received_ts\":\"2026-01-01T00:03:00Z\",\"schema_version\":\"1\",\"sequence\":2,\"source\":\"binance.spot\",\"source_epoch\":0,\"source_ts\":\"2026-01-01T00:03:00Z\",\"timestamp_basis\":\"exchange\"}],\"limits\":{\"daily_equity_loss_fraction\":\"0.03\",\"drawdown_fraction\":\"0.10\",\"gross_exposure_fraction\":\"0.80\",\"per_trade_fraction\":\"0.01\",\"portfolio_fraction\":\"0.05\",\"symbol_exposure_fraction\":\"0.25\"},\"lower_events\":[],\"record\":{\"canonical\":\"crypto:BTC/USDT\",\"provenance\":{\"metadata_digest\":\"0e88b8866c4eb8310b265c683ff0bd5f62906e0150804f39b6434e8a6ae654a5\",\"normalization\":\"synthetic-v1\",\"observed_at\":\"2026-01-01T00:00:00Z\",\"reference\":\"synthetic-public-fixture\",\"source\":\"binance.spot\"},\"quantity_unit\":\"base\",\"revision\":\"fc90357bfdb8930d78a84ac9d9454a8f57652c85c74933446be5183197cd1522\",\"spec\":{\"asset_class\":\"crypto\",\"base_currency\":\"BTC\",\"contract_size\":\"1\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"lot_size\":\"0.001\",\"minimum_quantity\":\"0.001\",\"quote_currency\":\"USDT\",\"schema_version\":\"1\",\"symbol\":\"BTCUSDT\",\"tick_size\":\"0.01\",\"venue\":\"BINANCE_SPOT\"},\"valuation_model\":\"linear_quote\"},\"regimes\":[],\"rules\":{\"evidence_digest\":\"0e88b8866c4eb8310b265c683ff0bd5f62906e0150804f39b6434e8a6ae654a5\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"maximum_notional\":null,\"maximum_quantity\":\"10\",\"minimum_notional\":\"5\",\"minimum_quantity\":\"0.001\",\"model\":\"cash_spot\",\"quantity_step\":\"0.001\",\"spec_revision\":\"fc90357bfdb8930d78a84ac9d9454a8f57652c85c74933446be5183197cd1522\"},\"starting_cash\":\"10000\",\"strategy\":{\"indicator\":\"SMA\",\"lookback\":2,\"quantity\":\"1\",\"recursive_tolerance\":\"0.0001\",\"stop_fraction\":\"0.05\",\"target_fraction\":\"0.10\",\"threshold\":\"0.001\",\"version\":\"close-trend-v1\",\"warmup\":2}}",
+    "compiler_version": "phase9-v1",
+    "config_hash": "93184d2e9fd78bc2e53a81d92bb82b38c289b319be239189aeb110eb8596b89c",
+    "dataset_hash": "3b4fee232eeff446546c5fe22969bfd30c5505dc63cd99274b0ab97dd1c9346e",
+    "dataset_json": "{\"evaluation_start\":0,\"events\":[{\"continuity\":\"contiguous\",\"delivery_kind\":\"backfill\",\"event_id\":\"synthetic-bar-0\",\"event_type\":\"bar\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"payload\":{\"close\":\"100\",\"high\":\"101\",\"interval_seconds\":60,\"low\":\"99\",\"open\":\"100\",\"open_ts\":\"2026-01-01T00:00:00Z\",\"volume\":\"10\"},\"provider_sequence\":\"unknown\",\"received_ts\":\"2026-01-01T00:01:00Z\",\"schema_version\":\"1\",\"sequence\":0,\"source\":\"binance.spot\",\"source_epoch\":0,\"source_ts\":\"2026-01-01T00:01:00Z\",\"timestamp_basis\":\"exchange\"},{\"continuity\":\"contiguous\",\"delivery_kind\":\"backfill\",\"event_id\":\"synthetic-bar-1\",\"event_type\":\"bar\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"payload\":{\"close\":\"110\",\"high\":\"111\",\"interval_seconds\":60,\"low\":\"99\",\"open\":\"100\",\"open_ts\":\"2026-01-01T00:01:00Z\",\"volume\":\"10\"},\"provider_sequence\":\"unknown\",\"received_ts\":\"2026-01-01T00:02:00Z\",\"schema_version\":\"1\",\"sequence\":1,\"source\":\"binance.spot\",\"source_epoch\":0,\"source_ts\":\"2026-01-01T00:02:00Z\",\"timestamp_basis\":\"exchange\"},{\"continuity\":\"contiguous\",\"delivery_kind\":\"backfill\",\"event_id\":\"synthetic-bar-2\",\"event_type\":\"bar\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"payload\":{\"close\":\"120\",\"high\":\"122\",\"interval_seconds\":60,\"low\":\"100\",\"open\":\"110\",\"open_ts\":\"2026-01-01T00:02:00Z\",\"volume\":\"10\"},\"provider_sequence\":\"unknown\",\"received_ts\":\"2026-01-01T00:03:00Z\",\"schema_version\":\"1\",\"sequence\":2,\"source\":\"binance.spot\",\"source_epoch\":0,\"source_ts\":\"2026-01-01T00:03:00Z\",\"timestamp_basis\":\"exchange\"}],\"lower_events\":[],\"record\":{\"canonical\":\"crypto:BTC/USDT\",\"provenance\":{\"metadata_digest\":\"0e88b8866c4eb8310b265c683ff0bd5f62906e0150804f39b6434e8a6ae654a5\",\"normalization\":\"synthetic-v1\",\"observed_at\":\"2026-01-01T00:00:00Z\",\"reference\":\"synthetic-public-fixture\",\"source\":\"binance.spot\"},\"quantity_unit\":\"base\",\"revision\":\"fc90357bfdb8930d78a84ac9d9454a8f57652c85c74933446be5183197cd1522\",\"spec\":{\"asset_class\":\"crypto\",\"base_currency\":\"BTC\",\"contract_size\":\"1\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"lot_size\":\"0.001\",\"minimum_quantity\":\"0.001\",\"quote_currency\":\"USDT\",\"schema_version\":\"1\",\"symbol\":\"BTCUSDT\",\"tick_size\":\"0.01\",\"venue\":\"BINANCE_SPOT\"},\"valuation_model\":\"linear_quote\"},\"regimes\":[],\"rules\":{\"evidence_digest\":\"0e88b8866c4eb8310b265c683ff0bd5f62906e0150804f39b6434e8a6ae654a5\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"maximum_notional\":null,\"maximum_quantity\":\"10\",\"minimum_notional\":\"5\",\"minimum_quantity\":\"0.001\",\"model\":\"cash_spot\",\"quantity_step\":\"0.001\",\"spec_revision\":\"fc90357bfdb8930d78a84ac9d9454a8f57652c85c74933446be5183197cd1522\"}}",
+    "preview_hash": "39a27609bef05291b183f568f194fff579b7ed6d4f031bcf78c543604446681e",
+    "preview_text": "Strategy synthetic-close-trend v1.0.0\nDeclared lifecycle: CANDIDATE (no deployment permission)\nMarket: crypto:BTC/USDT; timeframe=60s; warmup=2\nOrigin: STRUCTURED\nPHASE 9: explicit offline backtest research only\nENTRY: ENTER_LONG when close GT trend * 1.001\nEXIT: CLOSE_POSITION when close LT trend * 0.999\nAll exact parameters and constraints:\n{\n  \"acceptance\": {\n    \"maximum_drawdown_fraction\": \"0.10\",\n    \"maximum_pbo\": \"0.20\",\n    \"minimum_net_pnl\": \"0\",\n    \"minimum_trades\": 1\n  },\n  \"entry\": {\n    \"action\": \"ENTER_LONG\",\n    \"condition\": {\n      \"left\": \"close\",\n      \"multiplier\": \"1.001\",\n      \"operator\": \"GT\",\n      \"right_feature\": \"trend\"\n    }\n  },\n  \"execution\": {\n    \"ambiguity\": \"INCONCLUSIVE_STOP_FIRST\",\n    \"capabilities\": [\n      \"cash_spot_long\",\n      \"market_orders\",\n      \"stop_market\",\n      \"target_trigger_market\"\n    ],\n    \"costs\": {\n      \"commission_bps\": \"10\",\n      \"mode\": \"PAPER_REALISTIC\",\n      \"slippage_bps\": \"2\",\n      \"spread_bps\": \"0\"\n    },\n    \"liquidity\": \"FIXED_SYNTHETIC_L1\",\n    \"mode\": \"BACKTEST_ONLY\",\n    \"timing\": \"SIGNAL_AT_CLOSE_NEXT_BAR_OPEN\"\n  },\n  \"exit\": {\n    \"action\": \"CLOSE_POSITION\",\n    \"condition\": {\n      \"left\": \"close\",\n      \"multiplier\": \"0.999\",\n      \"operator\": \"LT\",\n      \"right_feature\": \"trend\"\n    }\n  },\n  \"features\": [\n    {\n      \"id\": \"trend\",\n      \"input\": \"close\",\n      \"kind\": \"SMA\",\n      \"lookback\": 2,\n      \"recursive_tolerance\": \"0.0001\",\n      \"warmup\": 2\n    }\n  ],\n  \"lifecycle\": \"CANDIDATE\",\n  \"market\": {\n    \"asset_class\": \"crypto\",\n    \"canonical_symbol\": \"crypto:BTC/USDT\",\n    \"instrument\": {\n      \"quantity_unit\": \"base\",\n      \"valuation_model\": \"linear_quote\",\n      \"venues\": [\n        \"BINANCE_SPOT\",\n        \"BYBIT_SPOT\"\n      ]\n    },\n    \"required_data\": [\n      \"closed_bars\"\n    ],\n    \"timeframe_seconds\": 60,\n    \"warmup\": 2\n  },\n  \"origin\": {\n    \"generator_id\": null,\n    \"kind\": \"STRUCTURED\"\n  },\n  \"research\": {\n    \"commit_sha\": \"49b23a23f91bada0a1ece799af996dc45c2532a4\",\n    \"starting_cash\": \"10000\"\n  },\n  \"risk\": {\n    \"hard_limits\": {\n      \"daily_equity_loss_fraction\": \"0.03\",\n      \"drawdown_fraction\": \"0.10\",\n      \"gross_exposure_fraction\": \"0.80\",\n      \"per_trade_fraction\": \"0.01\",\n      \"portfolio_fraction\": \"0.05\",\n      \"symbol_exposure_fraction\": \"0.25\"\n    },\n    \"invalidation\": {\n      \"anchor\": \"SIGNAL_CLOSE\",\n      \"fill\": \"MARKET\",\n      \"fraction\": \"0.05\",\n      \"gap_policy\": \"OPEN_QUOTE\",\n      \"kind\": \"STOP_LOSS\",\n      \"no_stop\": \"BLOCK\",\n      \"trigger\": \"BID_LTE\"\n    },\n    \"profit_exit\": {\n      \"anchor\": \"SIGNAL_CLOSE\",\n      \"fill\": \"MARKET\",\n      \"fraction\": \"0.10\",\n      \"kind\": \"TAKE_PROFIT\",\n      \"trigger\": \"BID_GTE\"\n    },\n    \"quantity\": {\n      \"sizing\": \"FIXED\",\n      \"unit\": \"base\",\n      \"value\": \"1\"\n    }\n  },\n  \"schema_version\": \"vision.strategy.v1\",\n  \"strategy_key\": \"synthetic-close-trend\",\n  \"strategy_version\": \"1.0.0\"\n}",
+    "reasons": [],
+    "status": "READY",
+    "strategy_id": "d25decd1077f8052ff3747c9b6d4d2aab065f0d5a1e485a2cb7a67d228e3210e"
+  },
+  "confirmation": {
+    "compilation_id": "a94232aaec6d960e06419fd0ab10a5acce2e8e31c80b1ccae1eb01bd03f3accc",
+    "confirmed_at": "2026-01-01T00:03:00Z",
+    "preview_hash": "39a27609bef05291b183f568f194fff579b7ed6d4f031bcf78c543604446681e",
+    "reviewer": "synthetic-review-fixture",
+    "strategy_id": "d25decd1077f8052ff3747c9b6d4d2aab065f0d5a1e485a2cb7a67d228e3210e"
+  },
+  "dataset": {
+    "evaluation_start": 0,
+    "events": [
+      {
+        "continuity": "contiguous",
+        "delivery_kind": "backfill",
+        "event_id": "synthetic-bar-0",
+        "event_type": "bar",
+        "instrument_id": "BINANCE:SPOT:BTCUSDT",
+        "payload": {
+          "close": "100",
+          "high": "101",
+          "interval_seconds": 60,
+          "low": "99",
+          "open": "100",
+          "open_ts": "2026-01-01T00:00:00Z",
+          "volume": "10"
+        },
+        "provider_sequence": "unknown",
+        "received_ts": "2026-01-01T00:01:00Z",
+        "schema_version": "1",
+        "sequence": 0,
+        "source": "binance.spot",
+        "source_epoch": 0,
+        "source_ts": "2026-01-01T00:01:00Z",
+        "timestamp_basis": "exchange"
+      },
+      {
+        "continuity": "contiguous",
+        "delivery_kind": "backfill",
+        "event_id": "synthetic-bar-1",
+        "event_type": "bar",
+        "instrument_id": "BINANCE:SPOT:BTCUSDT",
+        "payload": {
+          "close": "110",
+          "high": "111",
+          "interval_seconds": 60,
+          "low": "99",
+          "open": "100",
+          "open_ts": "2026-01-01T00:01:00Z",
+          "volume": "10"
+        },
+        "provider_sequence": "unknown",
+        "received_ts": "2026-01-01T00:02:00Z",
+        "schema_version": "1",
+        "sequence": 1,
+        "source": "binance.spot",
+        "source_epoch": 0,
+        "source_ts": "2026-01-01T00:02:00Z",
+        "timestamp_basis": "exchange"
+      },
+      {
+        "continuity": "contiguous",
+        "delivery_kind": "backfill",
+        "event_id": "synthetic-bar-2",
+        "event_type": "bar",
+        "instrument_id": "BINANCE:SPOT:BTCUSDT",
+        "payload": {
+          "close": "120",
+          "high": "122",
+          "interval_seconds": 60,
+          "low": "100",
+          "open": "110",
+          "open_ts": "2026-01-01T00:02:00Z",
+          "volume": "10"
+        },
+        "provider_sequence": "unknown",
+        "received_ts": "2026-01-01T00:03:00Z",
+        "schema_version": "1",
+        "sequence": 2,
+        "source": "binance.spot",
+        "source_epoch": 0,
+        "source_ts": "2026-01-01T00:03:00Z",
+        "timestamp_basis": "exchange"
+      }
+    ],
+    "lower_events": [],
+    "record": {
+      "canonical": "crypto:BTC/USDT",
+      "provenance": {
+        "metadata_digest": "0e88b8866c4eb8310b265c683ff0bd5f62906e0150804f39b6434e8a6ae654a5",
+        "normalization": "synthetic-v1",
+        "observed_at": "2026-01-01T00:00:00Z",
+        "reference": "synthetic-public-fixture",
+        "source": "binance.spot"
+      },
+      "quantity_unit": "base",
+      "revision": "fc90357bfdb8930d78a84ac9d9454a8f57652c85c74933446be5183197cd1522",
+      "spec": {
+        "asset_class": "crypto",
+        "base_currency": "BTC",
+        "contract_size": "1",
+        "instrument_id": "BINANCE:SPOT:BTCUSDT",
+        "lot_size": "0.001",
+        "minimum_quantity": "0.001",
+        "quote_currency": "USDT",
+        "schema_version": "1",
+        "symbol": "BTCUSDT",
+        "tick_size": "0.01",
+        "venue": "BINANCE_SPOT"
+      },
+      "valuation_model": "linear_quote"
+    },
+    "regimes": [],
+    "rules": {
+      "evidence_digest": "0e88b8866c4eb8310b265c683ff0bd5f62906e0150804f39b6434e8a6ae654a5",
+      "instrument_id": "BINANCE:SPOT:BTCUSDT",
+      "maximum_notional": null,
+      "maximum_quantity": "10",
+      "minimum_notional": "5",
+      "minimum_quantity": "0.001",
+      "model": "cash_spot",
+      "quantity_step": "0.001",
+      "spec_revision": "fc90357bfdb8930d78a84ac9d9454a8f57652c85c74933446be5183197cd1522"
+    }
+  },
+  "lifecycle": "CANDIDATE",
+  "result": {
+    "backtest_json": "{\"commit_sha\":\"49b23a23f91bada0a1ece799af996dc45c2532a4\",\"config_hash\":\"af42529ee1e5502664610ed06a5e116d697dd006b46bc18d694d3975b9dc7172\",\"dataset_hash\":\"91dbd221ffef36a2313c6028f0f29f0e659f94d9df6981621252711e06f580d4\",\"input_json\":\"{\\\"acceptance\\\":{\\\"maximum_drawdown_fraction\\\":\\\"0.10\\\",\\\"maximum_pbo\\\":\\\"0.20\\\",\\\"minimum_net_pnl\\\":\\\"0\\\",\\\"minimum_trades\\\":1},\\\"commit_sha\\\":\\\"49b23a23f91bada0a1ece799af996dc45c2532a4\\\",\\\"costs\\\":{\\\"commission_bps\\\":\\\"10\\\",\\\"mode\\\":\\\"PAPER_REALISTIC\\\",\\\"slippage_bps\\\":\\\"2\\\",\\\"spread_bps\\\":\\\"0\\\"},\\\"evaluation_start\\\":0,\\\"events\\\":[{\\\"continuity\\\":\\\"contiguous\\\",\\\"delivery_kind\\\":\\\"backfill\\\",\\\"event_id\\\":\\\"synthetic-bar-0\\\",\\\"event_type\\\":\\\"bar\\\",\\\"instrument_id\\\":\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"payload\\\":{\\\"close\\\":\\\"100\\\",\\\"high\\\":\\\"101\\\",\\\"interval_seconds\\\":60,\\\"low\\\":\\\"99\\\",\\\"open\\\":\\\"100\\\",\\\"open_ts\\\":\\\"2026-01-01T00:00:00Z\\\",\\\"volume\\\":\\\"10\\\"},\\\"provider_sequence\\\":\\\"unknown\\\",\\\"received_ts\\\":\\\"2026-01-01T00:01:00Z\\\",\\\"schema_version\\\":\\\"1\\\",\\\"sequence\\\":0,\\\"source\\\":\\\"binance.spot\\\",\\\"source_epoch\\\":0,\\\"source_ts\\\":\\\"2026-01-01T00:01:00Z\\\",\\\"timestamp_basis\\\":\\\"exchange\\\"},{\\\"continuity\\\":\\\"contiguous\\\",\\\"delivery_kind\\\":\\\"backfill\\\",\\\"event_id\\\":\\\"synthetic-bar-1\\\",\\\"event_type\\\":\\\"bar\\\",\\\"instrument_id\\\":\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"payload\\\":{\\\"close\\\":\\\"110\\\",\\\"high\\\":\\\"111\\\",\\\"interval_seconds\\\":60,\\\"low\\\":\\\"99\\\",\\\"open\\\":\\\"100\\\",\\\"open_ts\\\":\\\"2026-01-01T00:01:00Z\\\",\\\"volume\\\":\\\"10\\\"},\\\"provider_sequence\\\":\\\"unknown\\\",\\\"received_ts\\\":\\\"2026-01-01T00:02:00Z\\\",\\\"schema_version\\\":\\\"1\\\",\\\"sequence\\\":1,\\\"source\\\":\\\"binance.spot\\\",\\\"source_epoch\\\":0,\\\"source_ts\\\":\\\"2026-01-01T00:02:00Z\\\",\\\"timestamp_basis\\\":\\\"exchange\\\"},{\\\"continuity\\\":\\\"contiguous\\\",\\\"delivery_kind\\\":\\\"backfill\\\",\\\"event_id\\\":\\\"synthetic-bar-2\\\",\\\"event_type\\\":\\\"bar\\\",\\\"instrument_id\\\":\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"payload\\\":{\\\"close\\\":\\\"120\\\",\\\"high\\\":\\\"122\\\",\\\"interval_seconds\\\":60,\\\"low\\\":\\\"100\\\",\\\"open\\\":\\\"110\\\",\\\"open_ts\\\":\\\"2026-01-01T00:02:00Z\\\",\\\"volume\\\":\\\"10\\\"},\\\"provider_sequence\\\":\\\"unknown\\\",\\\"received_ts\\\":\\\"2026-01-01T00:03:00Z\\\",\\\"schema_version\\\":\\\"1\\\",\\\"sequence\\\":2,\\\"source\\\":\\\"binance.spot\\\",\\\"source_epoch\\\":0,\\\"source_ts\\\":\\\"2026-01-01T00:03:00Z\\\",\\\"timestamp_basis\\\":\\\"exchange\\\"}],\\\"limits\\\":{\\\"daily_equity_loss_fraction\\\":\\\"0.03\\\",\\\"drawdown_fraction\\\":\\\"0.10\\\",\\\"gross_exposure_fraction\\\":\\\"0.80\\\",\\\"per_trade_fraction\\\":\\\"0.01\\\",\\\"portfolio_fraction\\\":\\\"0.05\\\",\\\"symbol_exposure_fraction\\\":\\\"0.25\\\"},\\\"lower_events\\\":[],\\\"record\\\":{\\\"canonical\\\":\\\"crypto:BTC/USDT\\\",\\\"provenance\\\":{\\\"metadata_digest\\\":\\\"0e88b8866c4eb8310b265c683ff0bd5f62906e0150804f39b6434e8a6ae654a5\\\",\\\"normalization\\\":\\\"synthetic-v1\\\",\\\"observed_at\\\":\\\"2026-01-01T00:00:00Z\\\",\\\"reference\\\":\\\"synthetic-public-fixture\\\",\\\"source\\\":\\\"binance.spot\\\"},\\\"quantity_unit\\\":\\\"base\\\",\\\"revision\\\":\\\"fc90357bfdb8930d78a84ac9d9454a8f57652c85c74933446be5183197cd1522\\\",\\\"spec\\\":{\\\"asset_class\\\":\\\"crypto\\\",\\\"base_currency\\\":\\\"BTC\\\",\\\"contract_size\\\":\\\"1\\\",\\\"instrument_id\\\":\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"lot_size\\\":\\\"0.001\\\",\\\"minimum_quantity\\\":\\\"0.001\\\",\\\"quote_currency\\\":\\\"USDT\\\",\\\"schema_version\\\":\\\"1\\\",\\\"symbol\\\":\\\"BTCUSDT\\\",\\\"tick_size\\\":\\\"0.01\\\",\\\"venue\\\":\\\"BINANCE_SPOT\\\"},\\\"valuation_model\\\":\\\"linear_quote\\\"},\\\"regimes\\\":[],\\\"rules\\\":{\\\"evidence_digest\\\":\\\"0e88b8866c4eb8310b265c683ff0bd5f62906e0150804f39b6434e8a6ae654a5\\\",\\\"instrument_id\\\":\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"maximum_notional\\\":null,\\\"maximum_quantity\\\":\\\"10\\\",\\\"minimum_notional\\\":\\\"5\\\",\\\"minimum_quantity\\\":\\\"0.001\\\",\\\"model\\\":\\\"cash_spot\\\",\\\"quantity_step\\\":\\\"0.001\\\",\\\"spec_revision\\\":\\\"fc90357bfdb8930d78a84ac9d9454a8f57652c85c74933446be5183197cd1522\\\"},\\\"starting_cash\\\":\\\"10000\\\",\\\"strategy\\\":{\\\"indicator\\\":\\\"SMA\\\",\\\"lookback\\\":2,\\\"quantity\\\":\\\"1\\\",\\\"recursive_tolerance\\\":\\\"0.0001\\\",\\\"stop_fraction\\\":\\\"0.05\\\",\\\"target_fraction\\\":\\\"0.10\\\",\\\"threshold\\\":\\\"0.001\\\",\\\"version\\\":\\\"close-trend-v1\\\",\\\"warmup\\\":2}}\",\"result\":{\"ambiguities\":[\"synthetic-bar-2\"],\"audits\":[],\"checkpoint\":{\"config\":{\"allow_receipt_quotes\":false,\"costs\":{\"commission_bps\":\"10\",\"mode\":\"PAPER_REALISTIC\",\"slippage_bps\":\"2\",\"spread_bps\":\"0\"},\"currency\":\"USDT\",\"limits\":{\"daily_equity_loss_fraction\":\"0.03\",\"drawdown_fraction\":\"0.10\",\"gross_exposure_fraction\":\"0.80\",\"per_trade_fraction\":\"0.01\",\"portfolio_fraction\":\"0.05\",\"symbol_exposure_fraction\":\"0.25\"},\"started_at\":\"2026-01-01T00:00:00Z\",\"starting_cash\":\"10000\"},\"head\":\"8abbc15f4438b2f501e0b857d54acbd1d2597453495a66b652c9533e8b7e2aae\",\"journal\":[{\"command\":{\"op\":\"register\",\"record\":{\"canonical\":\"crypto:BTC/USDT\",\"provenance\":{\"metadata_digest\":\"0e88b8866c4eb8310b265c683ff0bd5f62906e0150804f39b6434e8a6ae654a5\",\"normalization\":\"synthetic-v1\",\"observed_at\":\"2026-01-01T00:00:00Z\",\"reference\":\"synthetic-public-fixture\",\"source\":\"binance.spot\"},\"quantity_unit\":\"base\",\"revision\":\"fc90357bfdb8930d78a84ac9d9454a8f57652c85c74933446be5183197cd1522\",\"spec\":{\"asset_class\":\"crypto\",\"base_currency\":\"BTC\",\"contract_size\":\"1\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"lot_size\":\"0.001\",\"minimum_quantity\":\"0.001\",\"quote_currency\":\"USDT\",\"schema_version\":\"1\",\"symbol\":\"BTCUSDT\",\"tick_size\":\"0.01\",\"venue\":\"BINANCE_SPOT\"},\"valuation_model\":\"linear_quote\"},\"rules\":{\"evidence_digest\":\"0e88b8866c4eb8310b265c683ff0bd5f62906e0150804f39b6434e8a6ae654a5\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"maximum_notional\":null,\"maximum_quantity\":\"10\",\"minimum_notional\":\"5\",\"minimum_quantity\":\"0.001\",\"model\":\"cash_spot\",\"quantity_step\":\"0.001\",\"spec_revision\":\"fc90357bfdb8930d78a84ac9d9454a8f57652c85c74933446be5183197cd1522\"}},\"digest\":\"8a8f766ef1e609aba87372ff4375b1c8fa8b4f0ee587eb5045b3bcd51a51c368\",\"previous\":\"7777d18b179f4083d5a14a81578ca4bdc8b03a709b729699f8954545482a47cc\"},{\"command\":{\"event\":{\"continuity\":\"snapshot\",\"delivery_kind\":\"live\",\"event_id\":\"b95f0c2d7088355377c52c33573780b1345a873f5b61933e83bda2fe0caeca03\",\"event_type\":\"quote\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"payload\":{\"ask\":\"100\",\"ask_quantity\":\"1\",\"bid\":\"100\",\"bid_quantity\":\"1\"},\"provider_sequence\":\"unknown\",\"received_ts\":\"2026-01-01T00:00:00Z\",\"schema_version\":\"1\",\"sequence\":1,\"source\":\"binance.spot\",\"source_epoch\":0,\"source_ts\":\"2026-01-01T00:00:00Z\",\"timestamp_basis\":\"exchange\"},\"op\":\"quote\",\"quality\":{\"as_of\":\"2026-01-01T00:00:00Z\",\"divergent\":false,\"lineage\":\"standalone-admitted-marks\",\"states\":[[\"BINANCE:SPOT:BTCUSDT\",\"healthy\"]]}},\"digest\":\"fa2f4310e5b6948e77d7d963c59d249e65a39caa1ce36ed0602b5aa3727af1f2\",\"previous\":\"8a8f766ef1e609aba87372ff4375b1c8fa8b4f0ee587eb5045b3bcd51a51c368\"},{\"command\":{\"event\":{\"continuity\":\"snapshot\",\"delivery_kind\":\"live\",\"event_id\":\"df4547bec7d8f0b8a0641939635dbe777a4ab48795f348c4f6d30b31581fb8f1\",\"event_type\":\"quote\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"payload\":{\"ask\":\"100\",\"ask_quantity\":\"1\",\"bid\":\"100\",\"bid_quantity\":\"1\"},\"provider_sequence\":\"unknown\",\"received_ts\":\"2026-01-01T00:00:59.999999Z\",\"schema_version\":\"1\",\"sequence\":2,\"source\":\"binance.spot\",\"source_epoch\":0,\"source_ts\":\"2026-01-01T00:00:59.999999Z\",\"timestamp_basis\":\"exchange\"},\"op\":\"quote\",\"quality\":{\"as_of\":\"2026-01-01T00:00:59.999999Z\",\"divergent\":false,\"lineage\":\"standalone-admitted-marks\",\"states\":[[\"BINANCE:SPOT:BTCUSDT\",\"healthy\"]]}},\"digest\":\"c1e59d89de51ede9c6062c6d4d1319b43a9d811c0d56c315f22012d387a311b4\",\"previous\":\"fa2f4310e5b6948e77d7d963c59d249e65a39caa1ce36ed0602b5aa3727af1f2\"},{\"command\":{\"event\":{\"continuity\":\"snapshot\",\"delivery_kind\":\"live\",\"event_id\":\"16887efc4935a53336776cd143cc71b6bcb0ff19ffc95e3c5f8478b2b357a050\",\"event_type\":\"quote\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"payload\":{\"ask\":\"100\",\"ask_quantity\":\"1\",\"bid\":\"100\",\"bid_quantity\":\"1\"},\"provider_sequence\":\"unknown\",\"received_ts\":\"2026-01-01T00:01:00Z\",\"schema_version\":\"1\",\"sequence\":3,\"source\":\"binance.spot\",\"source_epoch\":0,\"source_ts\":\"2026-01-01T00:01:00Z\",\"timestamp_basis\":\"exchange\"},\"op\":\"quote\",\"quality\":{\"as_of\":\"2026-01-01T00:01:00Z\",\"divergent\":false,\"lineage\":\"standalone-admitted-marks\",\"states\":[[\"BINANCE:SPOT:BTCUSDT\",\"healthy\"]]}},\"digest\":\"ddd8728069b66fb33bac0eea3d73c80201940bb45e2ad712847808fa5187fd3c\",\"previous\":\"c1e59d89de51ede9c6062c6d4d1319b43a9d811c0d56c315f22012d387a311b4\"},{\"command\":{\"event\":{\"continuity\":\"snapshot\",\"delivery_kind\":\"live\",\"event_id\":\"58930d10b081cd90c69e77c53da8ec83909113419ff82837038347ec075d833c\",\"event_type\":\"quote\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"payload\":{\"ask\":\"110\",\"ask_quantity\":\"1\",\"bid\":\"110\",\"bid_quantity\":\"1\"},\"provider_sequence\":\"unknown\",\"received_ts\":\"2026-01-01T00:01:59.999999Z\",\"schema_version\":\"1\",\"sequence\":4,\"source\":\"binance.spot\",\"source_epoch\":0,\"source_ts\":\"2026-01-01T00:01:59.999999Z\",\"timestamp_basis\":\"exchange\"},\"op\":\"quote\",\"quality\":{\"as_of\":\"2026-01-01T00:01:59.999999Z\",\"divergent\":false,\"lineage\":\"standalone-admitted-marks\",\"states\":[[\"BINANCE:SPOT:BTCUSDT\",\"healthy\"]]}},\"digest\":\"6573cb959222546a4e593f33bad6327464f0b83e46c5d1b83d950c74a9ccff31\",\"previous\":\"ddd8728069b66fb33bac0eea3d73c80201940bb45e2ad712847808fa5187fd3c\"},{\"command\":{\"event\":{\"continuity\":\"snapshot\",\"delivery_kind\":\"live\",\"event_id\":\"40ca3decc75522b7516b09c4c5fc95d32eafbbe74c13ec74e4ad0171b34909c2\",\"event_type\":\"quote\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"payload\":{\"ask\":\"110\",\"ask_quantity\":\"1\",\"bid\":\"110\",\"bid_quantity\":\"1\"},\"provider_sequence\":\"unknown\",\"received_ts\":\"2026-01-01T00:02:00Z\",\"schema_version\":\"1\",\"sequence\":5,\"source\":\"binance.spot\",\"source_epoch\":0,\"source_ts\":\"2026-01-01T00:02:00Z\",\"timestamp_basis\":\"exchange\"},\"op\":\"quote\",\"quality\":{\"as_of\":\"2026-01-01T00:02:00Z\",\"divergent\":false,\"lineage\":\"standalone-admitted-marks\",\"states\":[[\"BINANCE:SPOT:BTCUSDT\",\"healthy\"]]}},\"digest\":\"1b561ebd725478c7f4ca8e1469d3737039b3ab4fa83e6b9fb8477d2afef405e6\",\"previous\":\"6573cb959222546a4e593f33bad6327464f0b83e46c5d1b83d950c74a9ccff31\"},{\"command\":{\"op\":\"order\",\"order\":{\"close_position_id\":null,\"created_at\":\"2026-01-01T00:02:00Z\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"order_type\":\"MARKET\",\"quantity\":\"1\",\"request_id\":\"entry:synthetic-bar-2\",\"side\":\"long\",\"spec_revision\":\"fc90357bfdb8930d78a84ac9d9454a8f57652c85c74933446be5183197cd1522\",\"stop_loss\":\"104.50\"}},\"digest\":\"22421fb9afcf7835f752b8fd06c9660b3d867d419cce0b79b7014e0aa35ef8e9\",\"previous\":\"1b561ebd725478c7f4ca8e1469d3737039b3ab4fa83e6b9fb8477d2afef405e6\"},{\"command\":{\"event\":{\"continuity\":\"snapshot\",\"delivery_kind\":\"live\",\"event_id\":\"3a865bf014db7e124d87c7005c0e452e32b769248a297834d7fd93ecd04c7d2f\",\"event_type\":\"quote\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"payload\":{\"ask\":\"104.50\",\"ask_quantity\":\"1\",\"bid\":\"104.50\",\"bid_quantity\":\"1\"},\"provider_sequence\":\"unknown\",\"received_ts\":\"2026-01-01T00:02:20Z\",\"schema_version\":\"1\",\"sequence\":6,\"source\":\"binance.spot\",\"source_epoch\":0,\"source_ts\":\"2026-01-01T00:02:20Z\",\"timestamp_basis\":\"exchange\"},\"op\":\"quote\",\"quality\":{\"as_of\":\"2026-01-01T00:02:20Z\",\"divergent\":false,\"lineage\":\"standalone-admitted-marks\",\"states\":[[\"BINANCE:SPOT:BTCUSDT\",\"healthy\"]]}},\"digest\":\"fe0764f9add20101440e359baafdbf4c48f9373c851f41c91e01fa87f11a4e54\",\"previous\":\"22421fb9afcf7835f752b8fd06c9660b3d867d419cce0b79b7014e0aa35ef8e9\"},{\"command\":{\"event\":{\"continuity\":\"snapshot\",\"delivery_kind\":\"live\",\"event_id\":\"045da2cac96734d7537e24da1c757d78b407e9ba035677ddb1ed5618a99384a9\",\"event_type\":\"quote\",\"instrument_id\":\"BINANCE:SPOT:BTCUSDT\",\"payload\":{\"ask\":\"120\",\"ask_quantity\":\"1\",\"bid\":\"120\",\"bid_quantity\":\"1\"},\"provider_sequence\":\"unknown\",\"received_ts\":\"2026-01-01T00:02:59.999999Z\",\"schema_version\":\"1\",\"sequence\":7,\"source\":\"binance.spot\",\"source_epoch\":0,\"source_ts\":\"2026-01-01T00:02:59.999999Z\",\"timestamp_basis\":\"exchange\"},\"op\":\"quote\",\"quality\":{\"as_of\":\"2026-01-01T00:02:59.999999Z\",\"divergent\":false,\"lineage\":\"standalone-admitted-marks\",\"states\":[[\"BINANCE:SPOT:BTCUSDT\",\"healthy\"]]}},\"digest\":\"8abbc15f4438b2f501e0b857d54acbd1d2597453495a66b652c9533e8b7e2aae\",\"previous\":\"fe0764f9add20101440e359baafdbf4c48f9373c851f41c91e01fa87f11a4e54\"}],\"version\":1},\"equity\":[{\"equity\":\"10000\",\"event_id\":\"synthetic-bar-0\"},{\"equity\":\"10000\",\"event_id\":\"synthetic-bar-1\"},{\"equity\":\"9994.22550\",\"event_id\":\"synthetic-bar-2\"}],\"maximum_drawdown\":\"0.00057745\",\"net_pnl\":\"-5.77450\",\"regime_pnl\":{\"UNLABELLED\":\"-5.77450\"},\"signals\":[{\"action\":\"HOLD\",\"available_at\":\"2026-01-01T00:01:00Z\",\"event_id\":\"synthetic-bar-0\",\"regime\":\"UNLABELLED\",\"stop\":\"95.00\",\"target\":\"110.00\"},{\"action\":\"ENTER\",\"available_at\":\"2026-01-01T00:02:00Z\",\"event_id\":\"synthetic-bar-1\",\"regime\":\"UNLABELLED\",\"stop\":\"104.50\",\"target\":\"121.00\"},{\"action\":\"ENTER\",\"available_at\":\"2026-01-01T00:03:00Z\",\"event_id\":\"synthetic-bar-2\",\"regime\":\"UNLABELLED\",\"stop\":\"114.00\",\"target\":\"132.00\"}],\"trades\":[{\"correction_evidence_ids\":[],\"correction_reason\":null,\"currency\":\"USDT\",\"exit_trigger\":\"STOP\",\"fees\":\"0.21450\",\"finalized_at\":\"2026-01-01T00:02:59.999999Z\",\"initial_risk\":\"5.77450\",\"lineage\":{\"assessment_ids\":[],\"exit_id\":\"409240c553a8e1d69588f1dce6559cde2299b82d761a9ff7ff3103347cc546fd\",\"exit_order_id\":\"41ef27fd0c0f98a03a7b1cc2ec20f072c5fbaba2d69d23a9bb2743f6003c72cc\",\"fill_id\":\"fcdc720d569e51bbd7352d628e0ed1c8f8462a7c3daddf49de1b0edd7103bee2\",\"intent_id\":null,\"order_id\":\"fc24d0118702d6fde25f048d18a91071da8e654da4dabaa0886a1b21eacb349d\",\"outcome_id\":\"53955d76d6af0df379b23b13e5eb9208dfa9de39f8cd0c221ed62bf1cb9a7899\",\"position_id\":\"208f60b065dcea2816b73123ad7cff049a6f55265ed36b49b9adbd838fb279f7\",\"risk_decision_id\":\"67cd764a402508f4a29e1584704d81eca6c09c2e5e6cc80e4f447e061ed1b075\",\"synthesis_id\":null},\"outcome_id\":\"53955d76d6af0df379b23b13e5eb9208dfa9de39f8cd0c221ed62bf1cb9a7899\",\"paper_receipt_id\":\"15ffed925e316eddd450a9c612e3286c4a572087185053fcb6f16e3381749587\",\"r_multiple\":\"-1\",\"realized_pnl\":\"-5.77450\",\"root_id\":\"a5527f18e3679ce8def08d026e9812761484d50abf5e6e1554fcbb6b0633240a\",\"slippage_cost\":\"0.06\",\"state\":\"STOP_HIT\",\"supersedes\":null}]},\"result_json\":\"{\\\"ambiguities\\\":[\\\"synthetic-bar-2\\\"],\\\"audits\\\":[],\\\"checkpoint\\\":{\\\"config\\\":{\\\"allow_receipt_quotes\\\":false,\\\"costs\\\":{\\\"commission_bps\\\":\\\"10\\\",\\\"mode\\\":\\\"PAPER_REALISTIC\\\",\\\"slippage_bps\\\":\\\"2\\\",\\\"spread_bps\\\":\\\"0\\\"},\\\"currency\\\":\\\"USDT\\\",\\\"limits\\\":{\\\"daily_equity_loss_fraction\\\":\\\"0.03\\\",\\\"drawdown_fraction\\\":\\\"0.10\\\",\\\"gross_exposure_fraction\\\":\\\"0.80\\\",\\\"per_trade_fraction\\\":\\\"0.01\\\",\\\"portfolio_fraction\\\":\\\"0.05\\\",\\\"symbol_exposure_fraction\\\":\\\"0.25\\\"},\\\"started_at\\\":\\\"2026-01-01T00:00:00Z\\\",\\\"starting_cash\\\":\\\"10000\\\"},\\\"head\\\":\\\"8abbc15f4438b2f501e0b857d54acbd1d2597453495a66b652c9533e8b7e2aae\\\",\\\"journal\\\":[{\\\"command\\\":{\\\"op\\\":\\\"register\\\",\\\"record\\\":{\\\"canonical\\\":\\\"crypto:BTC/USDT\\\",\\\"provenance\\\":{\\\"metadata_digest\\\":\\\"0e88b8866c4eb8310b265c683ff0bd5f62906e0150804f39b6434e8a6ae654a5\\\",\\\"normalization\\\":\\\"synthetic-v1\\\",\\\"observed_at\\\":\\\"2026-01-01T00:00:00Z\\\",\\\"reference\\\":\\\"synthetic-public-fixture\\\",\\\"source\\\":\\\"binance.spot\\\"},\\\"quantity_unit\\\":\\\"base\\\",\\\"revision\\\":\\\"fc90357bfdb8930d78a84ac9d9454a8f57652c85c74933446be5183197cd1522\\\",\\\"spec\\\":{\\\"asset_class\\\":\\\"crypto\\\",\\\"base_currency\\\":\\\"BTC\\\",\\\"contract_size\\\":\\\"1\\\",\\\"instrument_id\\\":\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"lot_size\\\":\\\"0.001\\\",\\\"minimum_quantity\\\":\\\"0.001\\\",\\\"quote_currency\\\":\\\"USDT\\\",\\\"schema_version\\\":\\\"1\\\",\\\"symbol\\\":\\\"BTCUSDT\\\",\\\"tick_size\\\":\\\"0.01\\\",\\\"venue\\\":\\\"BINANCE_SPOT\\\"},\\\"valuation_model\\\":\\\"linear_quote\\\"},\\\"rules\\\":{\\\"evidence_digest\\\":\\\"0e88b8866c4eb8310b265c683ff0bd5f62906e0150804f39b6434e8a6ae654a5\\\",\\\"instrument_id\\\":\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"maximum_notional\\\":null,\\\"maximum_quantity\\\":\\\"10\\\",\\\"minimum_notional\\\":\\\"5\\\",\\\"minimum_quantity\\\":\\\"0.001\\\",\\\"model\\\":\\\"cash_spot\\\",\\\"quantity_step\\\":\\\"0.001\\\",\\\"spec_revision\\\":\\\"fc90357bfdb8930d78a84ac9d9454a8f57652c85c74933446be5183197cd1522\\\"}},\\\"digest\\\":\\\"8a8f766ef1e609aba87372ff4375b1c8fa8b4f0ee587eb5045b3bcd51a51c368\\\",\\\"previous\\\":\\\"7777d18b179f4083d5a14a81578ca4bdc8b03a709b729699f8954545482a47cc\\\"},{\\\"command\\\":{\\\"event\\\":{\\\"continuity\\\":\\\"snapshot\\\",\\\"delivery_kind\\\":\\\"live\\\",\\\"event_id\\\":\\\"b95f0c2d7088355377c52c33573780b1345a873f5b61933e83bda2fe0caeca03\\\",\\\"event_type\\\":\\\"quote\\\",\\\"instrument_id\\\":\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"payload\\\":{\\\"ask\\\":\\\"100\\\",\\\"ask_quantity\\\":\\\"1\\\",\\\"bid\\\":\\\"100\\\",\\\"bid_quantity\\\":\\\"1\\\"},\\\"provider_sequence\\\":\\\"unknown\\\",\\\"received_ts\\\":\\\"2026-01-01T00:00:00Z\\\",\\\"schema_version\\\":\\\"1\\\",\\\"sequence\\\":1,\\\"source\\\":\\\"binance.spot\\\",\\\"source_epoch\\\":0,\\\"source_ts\\\":\\\"2026-01-01T00:00:00Z\\\",\\\"timestamp_basis\\\":\\\"exchange\\\"},\\\"op\\\":\\\"quote\\\",\\\"quality\\\":{\\\"as_of\\\":\\\"2026-01-01T00:00:00Z\\\",\\\"divergent\\\":false,\\\"lineage\\\":\\\"standalone-admitted-marks\\\",\\\"states\\\":[[\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"healthy\\\"]]}},\\\"digest\\\":\\\"fa2f4310e5b6948e77d7d963c59d249e65a39caa1ce36ed0602b5aa3727af1f2\\\",\\\"previous\\\":\\\"8a8f766ef1e609aba87372ff4375b1c8fa8b4f0ee587eb5045b3bcd51a51c368\\\"},{\\\"command\\\":{\\\"event\\\":{\\\"continuity\\\":\\\"snapshot\\\",\\\"delivery_kind\\\":\\\"live\\\",\\\"event_id\\\":\\\"df4547bec7d8f0b8a0641939635dbe777a4ab48795f348c4f6d30b31581fb8f1\\\",\\\"event_type\\\":\\\"quote\\\",\\\"instrument_id\\\":\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"payload\\\":{\\\"ask\\\":\\\"100\\\",\\\"ask_quantity\\\":\\\"1\\\",\\\"bid\\\":\\\"100\\\",\\\"bid_quantity\\\":\\\"1\\\"},\\\"provider_sequence\\\":\\\"unknown\\\",\\\"received_ts\\\":\\\"2026-01-01T00:00:59.999999Z\\\",\\\"schema_version\\\":\\\"1\\\",\\\"sequence\\\":2,\\\"source\\\":\\\"binance.spot\\\",\\\"source_epoch\\\":0,\\\"source_ts\\\":\\\"2026-01-01T00:00:59.999999Z\\\",\\\"timestamp_basis\\\":\\\"exchange\\\"},\\\"op\\\":\\\"quote\\\",\\\"quality\\\":{\\\"as_of\\\":\\\"2026-01-01T00:00:59.999999Z\\\",\\\"divergent\\\":false,\\\"lineage\\\":\\\"standalone-admitted-marks\\\",\\\"states\\\":[[\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"healthy\\\"]]}},\\\"digest\\\":\\\"c1e59d89de51ede9c6062c6d4d1319b43a9d811c0d56c315f22012d387a311b4\\\",\\\"previous\\\":\\\"fa2f4310e5b6948e77d7d963c59d249e65a39caa1ce36ed0602b5aa3727af1f2\\\"},{\\\"command\\\":{\\\"event\\\":{\\\"continuity\\\":\\\"snapshot\\\",\\\"delivery_kind\\\":\\\"live\\\",\\\"event_id\\\":\\\"16887efc4935a53336776cd143cc71b6bcb0ff19ffc95e3c5f8478b2b357a050\\\",\\\"event_type\\\":\\\"quote\\\",\\\"instrument_id\\\":\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"payload\\\":{\\\"ask\\\":\\\"100\\\",\\\"ask_quantity\\\":\\\"1\\\",\\\"bid\\\":\\\"100\\\",\\\"bid_quantity\\\":\\\"1\\\"},\\\"provider_sequence\\\":\\\"unknown\\\",\\\"received_ts\\\":\\\"2026-01-01T00:01:00Z\\\",\\\"schema_version\\\":\\\"1\\\",\\\"sequence\\\":3,\\\"source\\\":\\\"binance.spot\\\",\\\"source_epoch\\\":0,\\\"source_ts\\\":\\\"2026-01-01T00:01:00Z\\\",\\\"timestamp_basis\\\":\\\"exchange\\\"},\\\"op\\\":\\\"quote\\\",\\\"quality\\\":{\\\"as_of\\\":\\\"2026-01-01T00:01:00Z\\\",\\\"divergent\\\":false,\\\"lineage\\\":\\\"standalone-admitted-marks\\\",\\\"states\\\":[[\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"healthy\\\"]]}},\\\"digest\\\":\\\"ddd8728069b66fb33bac0eea3d73c80201940bb45e2ad712847808fa5187fd3c\\\",\\\"previous\\\":\\\"c1e59d89de51ede9c6062c6d4d1319b43a9d811c0d56c315f22012d387a311b4\\\"},{\\\"command\\\":{\\\"event\\\":{\\\"continuity\\\":\\\"snapshot\\\",\\\"delivery_kind\\\":\\\"live\\\",\\\"event_id\\\":\\\"58930d10b081cd90c69e77c53da8ec83909113419ff82837038347ec075d833c\\\",\\\"event_type\\\":\\\"quote\\\",\\\"instrument_id\\\":\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"payload\\\":{\\\"ask\\\":\\\"110\\\",\\\"ask_quantity\\\":\\\"1\\\",\\\"bid\\\":\\\"110\\\",\\\"bid_quantity\\\":\\\"1\\\"},\\\"provider_sequence\\\":\\\"unknown\\\",\\\"received_ts\\\":\\\"2026-01-01T00:01:59.999999Z\\\",\\\"schema_version\\\":\\\"1\\\",\\\"sequence\\\":4,\\\"source\\\":\\\"binance.spot\\\",\\\"source_epoch\\\":0,\\\"source_ts\\\":\\\"2026-01-01T00:01:59.999999Z\\\",\\\"timestamp_basis\\\":\\\"exchange\\\"},\\\"op\\\":\\\"quote\\\",\\\"quality\\\":{\\\"as_of\\\":\\\"2026-01-01T00:01:59.999999Z\\\",\\\"divergent\\\":false,\\\"lineage\\\":\\\"standalone-admitted-marks\\\",\\\"states\\\":[[\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"healthy\\\"]]}},\\\"digest\\\":\\\"6573cb959222546a4e593f33bad6327464f0b83e46c5d1b83d950c74a9ccff31\\\",\\\"previous\\\":\\\"ddd8728069b66fb33bac0eea3d73c80201940bb45e2ad712847808fa5187fd3c\\\"},{\\\"command\\\":{\\\"event\\\":{\\\"continuity\\\":\\\"snapshot\\\",\\\"delivery_kind\\\":\\\"live\\\",\\\"event_id\\\":\\\"40ca3decc75522b7516b09c4c5fc95d32eafbbe74c13ec74e4ad0171b34909c2\\\",\\\"event_type\\\":\\\"quote\\\",\\\"instrument_id\\\":\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"payload\\\":{\\\"ask\\\":\\\"110\\\",\\\"ask_quantity\\\":\\\"1\\\",\\\"bid\\\":\\\"110\\\",\\\"bid_quantity\\\":\\\"1\\\"},\\\"provider_sequence\\\":\\\"unknown\\\",\\\"received_ts\\\":\\\"2026-01-01T00:02:00Z\\\",\\\"schema_version\\\":\\\"1\\\",\\\"sequence\\\":5,\\\"source\\\":\\\"binance.spot\\\",\\\"source_epoch\\\":0,\\\"source_ts\\\":\\\"2026-01-01T00:02:00Z\\\",\\\"timestamp_basis\\\":\\\"exchange\\\"},\\\"op\\\":\\\"quote\\\",\\\"quality\\\":{\\\"as_of\\\":\\\"2026-01-01T00:02:00Z\\\",\\\"divergent\\\":false,\\\"lineage\\\":\\\"standalone-admitted-marks\\\",\\\"states\\\":[[\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"healthy\\\"]]}},\\\"digest\\\":\\\"1b561ebd725478c7f4ca8e1469d3737039b3ab4fa83e6b9fb8477d2afef405e6\\\",\\\"previous\\\":\\\"6573cb959222546a4e593f33bad6327464f0b83e46c5d1b83d950c74a9ccff31\\\"},{\\\"command\\\":{\\\"op\\\":\\\"order\\\",\\\"order\\\":{\\\"close_position_id\\\":null,\\\"created_at\\\":\\\"2026-01-01T00:02:00Z\\\",\\\"instrument_id\\\":\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"order_type\\\":\\\"MARKET\\\",\\\"quantity\\\":\\\"1\\\",\\\"request_id\\\":\\\"entry:synthetic-bar-2\\\",\\\"side\\\":\\\"long\\\",\\\"spec_revision\\\":\\\"fc90357bfdb8930d78a84ac9d9454a8f57652c85c74933446be5183197cd1522\\\",\\\"stop_loss\\\":\\\"104.50\\\"}},\\\"digest\\\":\\\"22421fb9afcf7835f752b8fd06c9660b3d867d419cce0b79b7014e0aa35ef8e9\\\",\\\"previous\\\":\\\"1b561ebd725478c7f4ca8e1469d3737039b3ab4fa83e6b9fb8477d2afef405e6\\\"},{\\\"command\\\":{\\\"event\\\":{\\\"continuity\\\":\\\"snapshot\\\",\\\"delivery_kind\\\":\\\"live\\\",\\\"event_id\\\":\\\"3a865bf014db7e124d87c7005c0e452e32b769248a297834d7fd93ecd04c7d2f\\\",\\\"event_type\\\":\\\"quote\\\",\\\"instrument_id\\\":\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"payload\\\":{\\\"ask\\\":\\\"104.50\\\",\\\"ask_quantity\\\":\\\"1\\\",\\\"bid\\\":\\\"104.50\\\",\\\"bid_quantity\\\":\\\"1\\\"},\\\"provider_sequence\\\":\\\"unknown\\\",\\\"received_ts\\\":\\\"2026-01-01T00:02:20Z\\\",\\\"schema_version\\\":\\\"1\\\",\\\"sequence\\\":6,\\\"source\\\":\\\"binance.spot\\\",\\\"source_epoch\\\":0,\\\"source_ts\\\":\\\"2026-01-01T00:02:20Z\\\",\\\"timestamp_basis\\\":\\\"exchange\\\"},\\\"op\\\":\\\"quote\\\",\\\"quality\\\":{\\\"as_of\\\":\\\"2026-01-01T00:02:20Z\\\",\\\"divergent\\\":false,\\\"lineage\\\":\\\"standalone-admitted-marks\\\",\\\"states\\\":[[\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"healthy\\\"]]}},\\\"digest\\\":\\\"fe0764f9add20101440e359baafdbf4c48f9373c851f41c91e01fa87f11a4e54\\\",\\\"previous\\\":\\\"22421fb9afcf7835f752b8fd06c9660b3d867d419cce0b79b7014e0aa35ef8e9\\\"},{\\\"command\\\":{\\\"event\\\":{\\\"continuity\\\":\\\"snapshot\\\",\\\"delivery_kind\\\":\\\"live\\\",\\\"event_id\\\":\\\"045da2cac96734d7537e24da1c757d78b407e9ba035677ddb1ed5618a99384a9\\\",\\\"event_type\\\":\\\"quote\\\",\\\"instrument_id\\\":\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"payload\\\":{\\\"ask\\\":\\\"120\\\",\\\"ask_quantity\\\":\\\"1\\\",\\\"bid\\\":\\\"120\\\",\\\"bid_quantity\\\":\\\"1\\\"},\\\"provider_sequence\\\":\\\"unknown\\\",\\\"received_ts\\\":\\\"2026-01-01T00:02:59.999999Z\\\",\\\"schema_version\\\":\\\"1\\\",\\\"sequence\\\":7,\\\"source\\\":\\\"binance.spot\\\",\\\"source_epoch\\\":0,\\\"source_ts\\\":\\\"2026-01-01T00:02:59.999999Z\\\",\\\"timestamp_basis\\\":\\\"exchange\\\"},\\\"op\\\":\\\"quote\\\",\\\"quality\\\":{\\\"as_of\\\":\\\"2026-01-01T00:02:59.999999Z\\\",\\\"divergent\\\":false,\\\"lineage\\\":\\\"standalone-admitted-marks\\\",\\\"states\\\":[[\\\"BINANCE:SPOT:BTCUSDT\\\",\\\"healthy\\\"]]}},\\\"digest\\\":\\\"8abbc15f4438b2f501e0b857d54acbd1d2597453495a66b652c9533e8b7e2aae\\\",\\\"previous\\\":\\\"fe0764f9add20101440e359baafdbf4c48f9373c851f41c91e01fa87f11a4e54\\\"}],\\\"version\\\":1},\\\"equity\\\":[{\\\"equity\\\":\\\"10000\\\",\\\"event_id\\\":\\\"synthetic-bar-0\\\"},{\\\"equity\\\":\\\"10000\\\",\\\"event_id\\\":\\\"synthetic-bar-1\\\"},{\\\"equity\\\":\\\"9994.22550\\\",\\\"event_id\\\":\\\"synthetic-bar-2\\\"}],\\\"maximum_drawdown\\\":\\\"0.00057745\\\",\\\"net_pnl\\\":\\\"-5.77450\\\",\\\"regime_pnl\\\":{\\\"UNLABELLED\\\":\\\"-5.77450\\\"},\\\"signals\\\":[{\\\"action\\\":\\\"HOLD\\\",\\\"available_at\\\":\\\"2026-01-01T00:01:00Z\\\",\\\"event_id\\\":\\\"synthetic-bar-0\\\",\\\"regime\\\":\\\"UNLABELLED\\\",\\\"stop\\\":\\\"95.00\\\",\\\"target\\\":\\\"110.00\\\"},{\\\"action\\\":\\\"ENTER\\\",\\\"available_at\\\":\\\"2026-01-01T00:02:00Z\\\",\\\"event_id\\\":\\\"synthetic-bar-1\\\",\\\"regime\\\":\\\"UNLABELLED\\\",\\\"stop\\\":\\\"104.50\\\",\\\"target\\\":\\\"121.00\\\"},{\\\"action\\\":\\\"ENTER\\\",\\\"available_at\\\":\\\"2026-01-01T00:03:00Z\\\",\\\"event_id\\\":\\\"synthetic-bar-2\\\",\\\"regime\\\":\\\"UNLABELLED\\\",\\\"stop\\\":\\\"114.00\\\",\\\"target\\\":\\\"132.00\\\"}],\\\"trades\\\":[{\\\"correction_evidence_ids\\\":[],\\\"correction_reason\\\":null,\\\"currency\\\":\\\"USDT\\\",\\\"exit_trigger\\\":\\\"STOP\\\",\\\"fees\\\":\\\"0.21450\\\",\\\"finalized_at\\\":\\\"2026-01-01T00:02:59.999999Z\\\",\\\"initial_risk\\\":\\\"5.77450\\\",\\\"lineage\\\":{\\\"assessment_ids\\\":[],\\\"exit_id\\\":\\\"409240c553a8e1d69588f1dce6559cde2299b82d761a9ff7ff3103347cc546fd\\\",\\\"exit_order_id\\\":\\\"41ef27fd0c0f98a03a7b1cc2ec20f072c5fbaba2d69d23a9bb2743f6003c72cc\\\",\\\"fill_id\\\":\\\"fcdc720d569e51bbd7352d628e0ed1c8f8462a7c3daddf49de1b0edd7103bee2\\\",\\\"intent_id\\\":null,\\\"order_id\\\":\\\"fc24d0118702d6fde25f048d18a91071da8e654da4dabaa0886a1b21eacb349d\\\",\\\"outcome_id\\\":\\\"53955d76d6af0df379b23b13e5eb9208dfa9de39f8cd0c221ed62bf1cb9a7899\\\",\\\"position_id\\\":\\\"208f60b065dcea2816b73123ad7cff049a6f55265ed36b49b9adbd838fb279f7\\\",\\\"risk_decision_id\\\":\\\"67cd764a402508f4a29e1584704d81eca6c09c2e5e6cc80e4f447e061ed1b075\\\",\\\"synthesis_id\\\":null},\\\"outcome_id\\\":\\\"53955d76d6af0df379b23b13e5eb9208dfa9de39f8cd0c221ed62bf1cb9a7899\\\",\\\"paper_receipt_id\\\":\\\"15ffed925e316eddd450a9c612e3286c4a572087185053fcb6f16e3381749587\\\",\\\"r_multiple\\\":\\\"-1\\\",\\\"realized_pnl\\\":\\\"-5.77450\\\",\\\"root_id\\\":\\\"a5527f18e3679ce8def08d026e9812761484d50abf5e6e1554fcbb6b0633240a\\\",\\\"slippage_cost\\\":\\\"0.06\\\",\\\"state\\\":\\\"STOP_HIT\\\",\\\"supersedes\\\":null}]}\",\"run_id\":\"aed8ec5328174440fceeeb3c3ee3e8944bb2221ca4316932e67dabdb1767b123\",\"status\":\"INCONCLUSIVE\",\"strategy_version\":\"close-trend-v1\"}",
+    "compilation_id": "a94232aaec6d960e06419fd0ab10a5acce2e8e31c80b1ccae1eb01bd03f3accc",
+    "confirmation_json": "{\"compilation_id\":\"a94232aaec6d960e06419fd0ab10a5acce2e8e31c80b1ccae1eb01bd03f3accc\",\"confirmed_at\":\"2026-01-01T00:03:00Z\",\"preview_hash\":\"39a27609bef05291b183f568f194fff579b7ed6d4f031bcf78c543604446681e\",\"reviewer\":\"synthetic-review-fixture\",\"strategy_id\":\"d25decd1077f8052ff3747c9b6d4d2aab065f0d5a1e485a2cb7a67d228e3210e\"}",
+    "lifecycle": "CANDIDATE",
+    "reasons": [],
+    "result_id": "e1f2c994f2384389ec859984e0d4118bbfebf836695f33b472fe82c37220e2f0",
+    "status": "INCONCLUSIVE",
+    "strategy_id": "d25decd1077f8052ff3747c9b6d4d2aab065f0d5a1e485a2cb7a67d228e3210e"
+  }
+}

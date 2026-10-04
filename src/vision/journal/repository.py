@@ -26,6 +26,9 @@ KINDS = frozenset(
         "directional_grade",
         "backtest",
         "backtest_suite",
+        "strategy_artifact",
+        "strategy_lifecycle",
+        "strategy_result",
     }
 )
 GENESIS = digest({"journal": "vision-research-v1"})

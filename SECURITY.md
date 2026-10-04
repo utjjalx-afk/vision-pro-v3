@@ -12,12 +12,20 @@ Do not submit broker accounts, API tokens, database credentials, `.env` files,
 terminal snapshots containing secrets, or production datasets. Use synthetic fixtures.
 If a credential is exposed, revoke it at its provider before discussing the incident.
 
-Live trading, MT5 and autonomous agents are deliberately unimplemented. Phase 9
+Live trading, MT5 and autonomous agents are deliberately unimplemented. Phase 10
 startup rejects attempts to enable them. Portfolio inputs are caller-supplied
 research records; READY never authorizes live execution. The explicit paper API
 uses local synthetic/supplied data only. Checkpoint digests are integrity checks,
 not signatures; untrusted journals must not be treated as authenticated evidence. An environment flag cannot make this foundation
 eligible for live trading. Future execution requires a separate design and review.
+
+Phase-10 OANDA credentials remain runtime-only; GET endpoints are restricted to
+market data on fixed provider hosts, with redirects rejected and errors redacted.
+Do not publish account identifiers, authorized raw responses or tokens. Calendars
+and verified InstrumentRecords are caller attestations, not authenticated broker
+truth. Market closure does not make old quotes fresh, and unknown coverage blocks
+admission. Synthetic FX/metals fixtures and failover stubs are not real providers
+or execution permission. The adapter performs no account-state or order requests.
 
 Phase-5 lanes have no order submission or LLM control path. Macro/Narrative signals
 are labelled replay fixtures with zero predictive confidence, not verified news.

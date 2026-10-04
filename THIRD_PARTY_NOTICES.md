@@ -20,8 +20,13 @@ development/build tools are installed separately rather than vendored:
 | pytest | https://github.com/pytest-dev/pytest | MIT |
 | Ruff | https://github.com/astral-sh/ruff | MIT |
 | jsonschema | https://github.com/python-jsonschema/jsonschema | MIT |
+| tzdata | https://github.com/python/tzdata | Apache-2.0; underlying IANA data public domain |
 
 CI uses GitHub-maintained checkout/setup-python actions. Container scaffolding
 references the official Python image. Those tools and images retain their own
 licenses and transitive notices; they are not relicensed by this repository.
 Review and extend this inventory before adding or distributing dependencies.
+
+Phase 10 uses packaged IANA timezone rules and independently authored OANDA wire
+normalization against official API documentation. No provider market history or
+third-party adapter source was copied; FX/metals test fixtures are synthetic.

@@ -1,9 +1,9 @@
 name: Foundation CI
 on:
   push:
-    branches: [main, phase/market-data-foundation, phase/paper-risk-foundation, phase/intelligence-lanes-foundation, phase/reliability-intent-foundation, phase/outcome-journal-foundation, phase/backtest-audit-foundation, phase/strategy-dsl-foundation]
+    branches: [main, phase/market-data-foundation, phase/paper-risk-foundation, phase/intelligence-lanes-foundation, phase/reliability-intent-foundation, phase/outcome-journal-foundation, phase/backtest-audit-foundation, phase/strategy-dsl-foundation, phase/forex-metals-data-foundation]
   pull_request:
-    branches: [main, phase/market-data-foundation, phase/paper-risk-foundation, phase/intelligence-lanes-foundation, phase/reliability-intent-foundation, phase/outcome-journal-foundation, phase/backtest-audit-foundation]
+    branches: [main, phase/market-data-foundation, phase/paper-risk-foundation, phase/intelligence-lanes-foundation, phase/reliability-intent-foundation, phase/outcome-journal-foundation, phase/backtest-audit-foundation, phase/strategy-dsl-foundation]
   workflow_dispatch:
 
 permissions:

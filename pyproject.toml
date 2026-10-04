@@ -9,7 +9,7 @@ description = "Public market-data foundation for multi-asset intelligence and go
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
-dependencies = ["websockets>=15,<18"]
+dependencies = ["websockets>=15,<18", "tzdata==2026.5"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.3,<9", "ruff>=0.11,<1", "jsonschema>=4.23,<5"]

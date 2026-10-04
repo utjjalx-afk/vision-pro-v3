@@ -99,7 +99,7 @@ def capture_from_hub(hub, instrument_id, events, *, observations=(), policy=None
     This function captures health, not provider payloads. Historical replay should
     construct an explicit LaneContext with the quality recorded at that time.
     """
-    if instrument_id not in hub.instruments:
+    if instrument_id not in hub.instruments and instrument_id not in hub.market_instruments:
         raise ValueError("Registered hub instrument required")
     at = hub.clock()
     statuses = hub.gate.snapshot(at)

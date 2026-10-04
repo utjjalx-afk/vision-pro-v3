@@ -21,6 +21,11 @@ development/build tools are installed separately rather than vendored:
 | Ruff | https://github.com/astral-sh/ruff | MIT |
 | jsonschema | https://github.com/python-jsonschema/jsonschema | MIT |
 | tzdata | https://github.com/python/tzdata | Apache-2.0; underlying IANA data public domain |
+| MetaTrader5 (optional Windows Python package) | https://www.mql5.com/en/docs/python_metatrader5 | MIT per package metadata; not vendored |
+| NumPy (SDK dependency) | https://numpy.org/ | BSD-3-Clause |
+
+The separately installed MetaTrader terminal and broker services retain their own
+terms; the optional Python package license does not relicense those products.
 
 CI uses GitHub-maintained checkout/setup-python actions. Container scaffolding
 references the official Python image. Those tools and images retain their own

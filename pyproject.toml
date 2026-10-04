@@ -12,10 +12,12 @@ license = "Apache-2.0"
 dependencies = ["websockets>=15,<18", "tzdata==2026.5"]
 
 [project.optional-dependencies]
+mt5 = ["MetaTrader5>=5.0.0; sys_platform == 'win32'"]
 dev = ["pytest>=8.3,<9", "ruff>=0.11,<1", "jsonschema>=4.23,<5"]
 
 [project.scripts]
 vision = "vision.__main__:main"
+vision-mt5-bridge = "vision.broker.server:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/vision"]

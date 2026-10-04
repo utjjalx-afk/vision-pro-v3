@@ -1,8 +1,9 @@
 # Vision Pro V3
 
 An Apache-2.0 foundation for multi-asset market intelligence and governed research.
-**Phase 10 adds authorized read-only Forex/Metals pricing with session-aware health.**
-No order/account-state API, MT5 bridge, autonomous strategy execution, agent, dashboard or API
+**Phase 11 adds a demo-only MT5 truth bridge and broker-native calculation sizer.**
+Mandatory four-asset demo reconciliation is pending; see [Phase 11](docs/PHASE11_MT5_SIZING.md).
+No order-dispatch API, autonomous strategy execution, agent, dashboard or general API
 server is included. Paper fills use the explicit research simulator only. Enabling live trading, MT5, paper trading or agents fails before network I/O.
 
 ```text

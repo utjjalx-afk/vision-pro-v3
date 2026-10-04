@@ -1,0 +1,156 @@
+{
+  "snapshot": {
+    "account": {
+      "identity": "synthetic-account-digest",
+      "currency": "EUR",
+      "equity": "10000",
+      "balance": "10000",
+      "free_margin": "8000",
+      "demo": true,
+      "connected": true,
+      "observed_at": "2026-10-04T12:00:00Z"
+    },
+    "specs": [
+      {
+        "symbol": "XAUUSD.a",
+        "canonical": "metals:XAU/USD",
+        "volume_min": "0.01",
+        "volume_max": "100",
+        "volume_step": "0.01",
+        "volume_limit": "0",
+        "point": "0.01",
+        "tick_size": "0.01",
+        "tick_value_profit": "1",
+        "tick_value_loss": "1",
+        "contract_size": "100",
+        "stops_level": 10,
+        "freeze_level": 0,
+        "trade_mode": 4,
+        "profit_currency": "USD",
+        "margin_currency": "USD",
+        "observed_at": "2026-10-04T12:00:00Z",
+        "account_identity": "synthetic-account-digest"
+      }
+    ],
+    "quotes": [
+      {
+        "symbol": "XAUUSD.a",
+        "bid": "2000",
+        "ask": "2000.2",
+        "source_at": "2026-10-04T12:00:00Z",
+        "observed_at": "2026-10-04T12:00:00Z"
+      }
+    ],
+    "positions": [],
+    "pending_orders": 0,
+    "as_of": "2026-10-04T12:00:00Z",
+    "bridge_version": "phase11-v1"
+  },
+  "request": {
+    "intent_id": "synthetic-intent",
+    "canonical": "metals:XAU/USD",
+    "broker_symbol": "XAUUSD.a",
+    "side": "LONG",
+    "stop": "1990",
+    "risk_budget": "100",
+    "requested_at": "2026-10-04T12:00:00Z",
+    "expires_at": "2026-10-04T12:00:30Z",
+    "expected_account_identity": "synthetic-account-digest",
+    "expected_spec_revision": "15a5354b81fd831959fe2fc6488b7592bef3f305ed0754078652e01e48a35997",
+    "strategy_eligible": true,
+    "eligibility_evidence_id": "synthetic-eligibility"
+  },
+  "policy": {
+    "per_trade_fraction": "0.01",
+    "aggregate_fraction": "0.05",
+    "max_age": 5000000,
+    "max_skew": 2000000,
+    "margin_reserve": "100",
+    "loss_buffer": "1",
+    "unknown_risk_policy": "BLOCK",
+    "demo_only": true
+  },
+  "now": "2026-10-04T12:00:00Z",
+  "calculations": [
+    {
+      "kind": "profit",
+      "side": "LONG",
+      "symbol": "XAUUSD.a",
+      "volume": "1",
+      "entry": "2000.2",
+      "stop": "1990",
+      "result": "-989.4",
+      "account_currency": "EUR"
+    },
+    {
+      "kind": "profit",
+      "side": "LONG",
+      "symbol": "XAUUSD.a",
+      "volume": "0.10",
+      "entry": "2000.2",
+      "stop": "1990",
+      "result": "-98.940",
+      "account_currency": "EUR"
+    },
+    {
+      "kind": "margin",
+      "side": "LONG",
+      "symbol": "XAUUSD.a",
+      "volume": "0.10",
+      "entry": "2000.2",
+      "stop": null,
+      "result": "20.00",
+      "account_currency": "EUR"
+    }
+  ],
+  "result": {
+    "request_id": "7a4b8a805ce629e582167f2c04b6fb9af5319ea597439e1f643f7a0d80a4667d",
+    "policy_id": "c8dc8a38f979e90c1d93d092a062ae7b1fb31d0173c2dee9a9a4d080e43e225e",
+    "snapshot_id": "d5aafc1eeaf2a5ef42cb0051e8ff00d7a1ff047d73776af792c1c872bc364ecb",
+    "spec_revision": "15a5354b81fd831959fe2fc6488b7592bef3f305ed0754078652e01e48a35997",
+    "account_identity": "synthetic-account-digest",
+    "account_currency": "EUR",
+    "status": "BROKER_SIZE_APPROVED",
+    "reasons": [],
+    "volume": "0.10",
+    "one_lot_loss": "989.4",
+    "actual_risk": "99.940",
+    "margin": "20.00",
+    "open_risk": "0",
+    "calculations": [
+      {
+        "kind": "profit",
+        "side": "LONG",
+        "symbol": "XAUUSD.a",
+        "volume": "1",
+        "entry": "2000.2",
+        "stop": "1990",
+        "result": "-989.4",
+        "account_currency": "EUR"
+      },
+      {
+        "kind": "profit",
+        "side": "LONG",
+        "symbol": "XAUUSD.a",
+        "volume": "0.10",
+        "entry": "2000.2",
+        "stop": "1990",
+        "result": "-98.940",
+        "account_currency": "EUR"
+      },
+      {
+        "kind": "margin",
+        "side": "LONG",
+        "symbol": "XAUUSD.a",
+        "volume": "0.10",
+        "entry": "2000.2",
+        "stop": null,
+        "result": "20.00",
+        "account_currency": "EUR"
+      }
+    ],
+    "execution_authorized": false,
+    "sizer_version": "phase11-sizer-v1",
+    "receipt_id": "9a0d439739c0b42983e8bb342ce86e377e4cc27f2d8e6c3b215ef78f4fffaff6"
+  }
+}

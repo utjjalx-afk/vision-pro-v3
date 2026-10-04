@@ -46,5 +46,10 @@ from transport failures. Calendar/timezone revisions and all exceptions must be
 explicit. Only scheduled closed opens may be skipped during continuity recovery;
 missing open-session bars remain fail-closed. Use synthetic provider fixtures and
 never commit credentials, accounts, private request URLs or authorized raw responses.
+Phase-11 sizing uses native profit/margin only, never inferred tick/contract math.
+Preserve minimum-volume blocking, floored steps, exact stop validation, current
+equity open risk and post-calculation state rechecks. No order dispatch may be
+introduced. Keep MT5 import Windows-only and optional. Demo reconciliation and
+operator review remain mandatory; CI must not fabricate or self-approve them.
 Architecture amendments require explicit versioned documentation; do not silently
 replace a frozen baseline. The full frozen-spec text remains an input dependency.

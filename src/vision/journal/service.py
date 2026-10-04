@@ -338,6 +338,7 @@ class ResearchJournal:
                 intent = receipt.payload["intent"]
                 if (
                     receipt.experiment_id != experiment_id
+                    or receipt.recorded_at > result.order.created_at
                     or result.order.side is not Side.LONG
                     or intent["direction"] != "LONG"
                     or intent["instrument_id"] != result.order.instrument_id

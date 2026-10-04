@@ -504,8 +504,9 @@ def test_replay_after_external_raw_invalid_append_is_blocked(journal_setup):
         )
 
 
+@pytest.mark.parametrize("late_intent", [False, True])
 def test_complete_lineage_with_durable_reliability_and_actual_paper(
-    journal_setup, synthesis_factory
+    journal_setup, synthesis_factory, late_intent
 ):
     from vision.analysis.synthesizer.reliability import ReliabilityPolicy
     from vision.outcomes.prospective import GradingPolicy
@@ -541,9 +542,17 @@ def test_complete_lineage_with_durable_reliability_and_actual_paper(
         reliability_policy=ReliabilityPolicy(minimum_samples=10, grading_policy=protocol),
     )
     signal = journal.signal("exp", data)
+    entry_at = clock[0]
+    if late_intent:
+        clock[0] += timedelta(seconds=1)
     intent = journal.intent("exp", signal.entry_id)
-    quote("100", 2, at=clock[0])
-    entry = broker.submit(order(at=clock[0]))
+    quote("100", 2, at=entry_at)
+    entry = broker.submit(order(at=entry_at))
+    if late_intent:
+        with pytest.raises(ValueError, match="does not match"):
+            journal.paper("exp", broker.checkpoint(), "o1", intent_entry_id=intent.entry_id)
+        assert not any(e.kind == "paper" for e in repository.entries())
+        return
     journal.paper("exp", broker.checkpoint(), "o1", intent_entry_id=intent.entry_id)
     clock[0] += timedelta(seconds=1)
     quote("110", 3, at=clock[0])

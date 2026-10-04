@@ -32,5 +32,9 @@ Phase-7 paper outcomes must come from replayed broker records and never update
 directional reliability. Use transactional append, prospective registration
 receipts and superseding corrections; never UPDATE or DELETE finalized history.
 Export/replay must work offline and reject semantically invalid re-signed records.
+Phase-8 rules consume closed prefixes only. Reuse PaperBroker economics/risk;
+preserve next-open availability and INCONCLUSIVE ambiguity. Freeze matrices/folds
+before evaluation. Never select winners, retune on holdout, invent liquidity or
+promote research to VERIFIED/LIVE.
 Architecture amendments require explicit versioned documentation; do not silently
 replace a frozen baseline. The full frozen-spec text remains an input dependency.

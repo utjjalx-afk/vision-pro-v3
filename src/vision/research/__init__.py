@@ -1,1 +1,1 @@
-"""Reserved failure-audit, backtest, walk-forward, OOS, and promotion boundaries."""
+"""Deterministic offline backtests and failure-oriented audit protocols."""

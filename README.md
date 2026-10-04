@@ -1,8 +1,8 @@
 # Vision Pro V3
 
 An Apache-2.0 foundation for multi-asset market intelligence and governed research.
-**Phase 7 adds a durable Outcome Journal, paper outcome grading and Failure Memory.**
-No authenticated account/order API, MT5 bridge, strategy, autonomous agent, dashboard or API
+**Phase 8 adds deterministic backtests and failure-oriented research audits.**
+No authenticated account/order API, MT5 bridge, autonomous strategy execution, agent, dashboard or API
 server is included. Paper fills use the explicit research simulator only. Enabling live trading, MT5, paper trading or agents fails before network I/O.
 
 ```text
@@ -36,6 +36,13 @@ full lineage, duplicate/family warnings and strict offline export/replay.
 Paper profitability and directional reliability remain separate evidence paths.
 Phase 7 is stacked on Phase 6; no signal or journal submits orders.
 
+[Phase 8 details](docs/PHASE8_BACKTEST_AUDIT.md) cover frozen canonical-bar rules,
+shared PaperBroker execution, next-open timing, SL/TP ambiguity, finer-bar
+reconstruction, lookahead/recursive audits, cost/parameter/source sensitivity,
+walk-forward/OOS, regime attribution and CSCV PBO diagnostics. Runs and audit suites
+append to the journal and Failure Memory. PASS never promotes to VERIFIED/LIVE.
+The ambiguous synthetic fixture intentionally stays INCONCLUSIVE.
+
 ```bash
 python examples/paper_research.py
 python -m vision paper-replay path/to/explicit-paper-checkpoint.json
@@ -44,6 +51,7 @@ python -m vision lanes-replay tests/fixtures/lanes/research_context.json
 python examples/synthesis_research.py
 python -m vision synthesis-replay tests/fixtures/synthesis/unproven_input.json
 python -m vision research-replay tests/fixtures/journal/paper_research.json
+python -m vision backtest-replay tests/fixtures/backtest/ambiguous_run.json
 ```
 
 ## Install and check

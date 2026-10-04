@@ -12,7 +12,7 @@ Do not submit broker accounts, API tokens, database credentials, `.env` files,
 terminal snapshots containing secrets, or production datasets. Use synthetic fixtures.
 If a credential is exposed, revoke it at its provider before discussing the incident.
 
-Live trading, MT5 and autonomous agents are deliberately unimplemented. Phase 7
+Live trading, MT5 and autonomous agents are deliberately unimplemented. Phase 8
 startup rejects attempts to enable them. Portfolio inputs are caller-supplied
 research records; READY never authorizes live execution. The explicit paper API
 uses local synthetic/supplied data only. Checkpoint digests are integrity checks,
@@ -32,3 +32,9 @@ Fixture outcomes cannot enable reliability.
 TradeIntent is unsized and candidate-only; strategy eligibility and risk validation
 are still required before any future execution path. Directional synthesis is
 research plumbing and does not demonstrate trading edge.
+
+Backtests use an explicit offline frozen rule and synthetic execution quotes.
+Bars, regime labels and trial-universe declarations remain supplied inputs.
+Audits are bounded consistency checks, not authentication or an arbitrary-code
+sandbox. PASS authorizes no execution/promotion. Result replay never imports
+historical profit into prospective reliability.

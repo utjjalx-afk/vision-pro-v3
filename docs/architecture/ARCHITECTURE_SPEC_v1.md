@@ -215,3 +215,16 @@ and risk/broker sizing remain separate boundaries; no candidate is submitted.
 [Phase-6 semantics](../PHASE6_RELIABILITY_INTENT.md) specify grading, shrinkage,
 provenance and limitations. No trading edge, live/MT5 or LLM control is claimed.
 The frozen historical baseline and previous phase branches remain untouched.
+
+## 14. User-authorized Phase-7 durable research extension
+
+Phase 7 is stacked on `phase/reliability-intent-foundation` at
+`d4cc404ecfcc87ce17dee89849fcdf34cd7bba6b` in `phase/outcome-journal-foundation`.
+Append-only Signal / Intent / TradeOutcome records and Failure Memory use a
+repository interface with transactional local SQLite persistence. Durable
+prospective directional evidence remains separate from actual paper outcomes.
+Full checkpoint/evidence replay, immutable finalization and superseding corrections
+preserve lineage without providers or automatic execution.
+[Phase-7 semantics](../PHASE7_OUTCOME_JOURNAL.md) define durability and trust limits.
+Live/MT5, strategies and autonomous agents remain absent. This amendment preserves
+the frozen historical baseline and its documented provenance limitation.

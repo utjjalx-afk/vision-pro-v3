@@ -33,11 +33,49 @@ def main() -> int:
         "synthesis-replay", help="Replay prospective reliability and unsized intent candidates"
     )
     synthesis.add_argument("path")
+    research_export = commands.add_parser(
+        "research-export", help="Export a durable journal offline"
+    )
+    research_export.add_argument("database")
+    research_export.add_argument("output")
+    research_replay = commands.add_parser(
+        "research-replay", help="Verify a complete research export"
+    )
+    research_replay.add_argument("path")
+    research_replay.add_argument("--expected-head")
     args = parser.parse_args()
     try:
         settings = load_settings(os.environ)
     except Phase0ExecutionDisabled as error:
         parser.exit(2, f"{error}\n")
+    if args.command in {"research-export", "research-replay"}:
+        import sqlite3
+        from pathlib import Path
+
+        from vision.journal.replay import replay
+        from vision.journal.repository import SQLiteRepository, export
+
+        try:
+            if args.command == "research-export":
+                repository = SQLiteRepository(args.database, readonly=True)
+                try:
+                    value = export(repository)
+                    report = replay(value)
+                finally:
+                    repository.close()
+                with Path(args.output).open("x", encoding="utf-8") as handle:
+                    json.dump(value, handle, sort_keys=True, indent=2, allow_nan=False)
+                    handle.write("\n")
+            else:
+                with Path(args.path).open("rb") as handle:
+                    raw = handle.read(50000001)
+                if len(raw) > 50000000:
+                    raise ValueError("Research export exceeds size limit")
+                report = replay(json.loads(raw), expected_head=args.expected_head)
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+            return 0
+        except (ValueError, OSError, sqlite3.Error) as error:
+            parser.exit(2, f"Research journal rejected: {type(error).__name__}\n")
     if args.command == "synthesis-replay":
         from pathlib import Path
 
@@ -120,7 +158,7 @@ def main() -> int:
         json.dumps(
             {
                 "version": __version__,
-                "phase": "phase-6",
+                "phase": "phase-7",
                 "component": args.component,
                 "mode": "offline-diagnostic",
                 "live_trading_enabled": settings.live_trading_enabled,

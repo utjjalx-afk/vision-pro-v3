@@ -714,8 +714,41 @@ class PaperBroker:
             raw = handle.read(5000001)
         if len(raw) > 5000000:
             raise ValueError("Paper checkpoint size exceeded")
-        value = json.loads(raw)
-        if set(value) != {"version", "config", "journal", "head"} or value["version"] != 1:
+        broker = cls.from_checkpoint(json.loads(raw))
+        broker.journal_path = Path(path)
+        return broker
+
+    def checkpoint(self):
+        """Defensive offline checkpoint for durable research capture, under the broker lock."""
+        with self.lock:
+            value = {
+                "version": 1,
+                "config": self.config(),
+                "journal": self.journal,
+                "head": self.journal_head,
+            }
+            encoded = json.dumps(value)
+            if len(encoded.encode()) > 5000000:
+                raise ValueError("Paper checkpoint size exceeded")
+            return json.loads(encoded)
+
+    @classmethod
+    def from_checkpoint(cls, value):
+        """Replay without file I/O; this never changes the supplied broker or checkpoint."""
+        try:
+            return cls._from_checkpoint(value)
+        except (TypeError, KeyError, IndexError, OverflowError) as error:
+            raise ValueError("Invalid paper checkpoint structure") from error
+
+    @classmethod
+    def _from_checkpoint(cls, value):
+        if len(json.dumps(value).encode()) > 5000000:
+            raise ValueError("Paper checkpoint size exceeded")
+        if (
+            set(value) != {"version", "config", "journal", "head"}
+            or type(value["version"]) is not int
+            or value["version"] != 1
+        ):
             raise ValueError("Unknown checkpoint version/shape")
         config = value["config"]
         if set(config) != {
@@ -754,5 +787,4 @@ class PaperBroker:
             broker._execute(entry["command"])
         if broker.journal_head != value["head"]:
             raise ValueError("Paper checkpoint head mismatch")
-        broker.journal_path = Path(path)
         return broker

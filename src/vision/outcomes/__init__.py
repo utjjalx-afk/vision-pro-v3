@@ -1,1 +1,1 @@
-"""Prospective directional benchmark grading; no trading-edge claim."""
+"""Separate directional reliability and executed-paper graders; no trading-edge claim."""

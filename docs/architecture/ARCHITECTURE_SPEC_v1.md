@@ -204,3 +204,14 @@ The first two produce deterministic descriptive features; the latter two expose
 labelled replay interfaces only. There is no synthesizer, TradeIntent, reliability
 weighting, LLM control or order submission. See [Phase-5 semantics](../PHASE5_INTELLIGENCE_LANES.md).
 This amendment does not replace the frozen baseline or infer its missing text.
+
+## 13. User-authorized Phase-6 synthesis/intent extension
+
+Phase 6 is stacked on `phase/intelligence-lanes-foundation` at
+`9708ac853d29a965f113f299a7d2615e2bf723cf` in `phase/reliability-intent-foundation`.
+Prospective Outcome Grader records -> sample-gated reliability revisions ->
+LONG / SHORT / WAIT synthesis -> unsized TradeIntent candidate. Strategy eligibility
+and risk/broker sizing remain separate boundaries; no candidate is submitted.
+[Phase-6 semantics](../PHASE6_RELIABILITY_INTENT.md) specify grading, shrinkage,
+provenance and limitations. No trading edge, live/MT5 or LLM control is claimed.
+The frozen historical baseline and previous phase branches remain untouched.

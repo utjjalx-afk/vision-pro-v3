@@ -29,11 +29,40 @@ def main() -> int:
     paper.add_argument("path")
     lanes = commands.add_parser("lanes-replay", help="Replay canonical offline intelligence inputs")
     lanes.add_argument("path")
+    synthesis = commands.add_parser(
+        "synthesis-replay", help="Replay prospective reliability and unsized intent candidates"
+    )
+    synthesis.add_argument("path")
     args = parser.parse_args()
     try:
         settings = load_settings(os.environ)
     except Phase0ExecutionDisabled as error:
         parser.exit(2, f"{error}\n")
+    if args.command == "synthesis-replay":
+        from pathlib import Path
+
+        from vision.analysis.synthesizer.replay import replay
+        from vision.intents.models import candidate
+
+        try:
+            with Path(args.path).open("rb") as handle:
+                raw = handle.read(5000001)
+            if len(raw) > 5000000:
+                raise ValueError("Synthesis replay input exceeds size limit")
+            decision = replay(json.loads(raw))
+            intent = candidate(decision)
+            print(
+                json.dumps(
+                    {
+                        "decision": decision.to_dict(),
+                        "intent": intent.to_dict() if intent else None,
+                    },
+                    sort_keys=True,
+                )
+            )
+            return 0
+        except (ValueError, OSError) as error:
+            parser.exit(2, f"Synthesis replay rejected: {type(error).__name__}\n")
     if args.command == "lanes-replay":
         from pathlib import Path
 
@@ -91,7 +120,7 @@ def main() -> int:
         json.dumps(
             {
                 "version": __version__,
-                "phase": "phase-5",
+                "phase": "phase-6",
                 "component": args.component,
                 "mode": "offline-diagnostic",
                 "live_trading_enabled": settings.live_trading_enabled,

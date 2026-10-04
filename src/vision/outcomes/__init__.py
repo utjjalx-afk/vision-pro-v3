@@ -1,1 +1,1 @@
-"""Reserved outcome grading boundary."""
+"""Prospective directional benchmark grading; no trading-edge claim."""

@@ -7,7 +7,7 @@ from decimal import ROUND_HALF_EVEN, Context, Decimal, localcontext
 from enum import StrEnum
 
 from vision.core.contracts import CanonicalMarketEvent, _identifier, _utc
-from vision.core.instruments import digest
+from vision.core.instruments import InstrumentRecord, digest
 from vision.core.state.portfolio import DataQuality
 
 
@@ -47,6 +47,8 @@ def arithmetic():
 
 
 def wire(value):
+    if isinstance(value, InstrumentRecord):
+        return value.to_dict()
     if isinstance(value, CanonicalMarketEvent):
         return value.to_dict()
     if isinstance(value, timedelta):

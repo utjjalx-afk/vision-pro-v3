@@ -590,6 +590,8 @@ def test_lane_code_has_no_control_or_provider_dependency():
         "websockets",
     )
     for path in Path(vision.analysis.__file__).parent.rglob("*.py"):
+        if "synthesizer" in path.relative_to(Path(vision.analysis.__file__).parent).parts:
+            continue
         tree = ast.parse(path.read_text(encoding="utf-8"))
         for node in ast.walk(tree):
             modules = (

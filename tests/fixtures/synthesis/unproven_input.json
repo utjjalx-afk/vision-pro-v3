@@ -1,0 +1,345 @@
+{
+  "record": {
+    "spec": {
+      "schema_version": "1",
+      "instrument_id": "BINANCE:SPOT:BTCUSDT",
+      "venue": "BINANCE_SPOT",
+      "symbol": "BTCUSDT",
+      "asset_class": "crypto",
+      "base_currency": "BTC",
+      "quote_currency": "USDT",
+      "tick_size": "0.01",
+      "lot_size": "0.001",
+      "minimum_quantity": "0.001",
+      "contract_size": "1"
+    },
+    "canonical": "crypto:BTC/USDT",
+    "quantity_unit": "base",
+    "provenance": {
+      "source": "binance.spot",
+      "reference": "offline-fixture",
+      "observed_at": "2026-01-01T00:05:00Z",
+      "metadata_digest": "a8198524f58e72b56283ab71ebddada22840f108b46ef7165bb3fca9919c5558",
+      "normalization": "fixture-v1"
+    },
+    "valuation_model": "linear_quote",
+    "revision": "f4e90794b78a55547ca27de2f75565028e60507daf524c7b204c7c82b768c639"
+  },
+  "as_of": "2026-01-01T00:05:00Z",
+  "assessments": [
+    {
+      "assessment_id": "744d5d4194ebaa08698acb6bdf1fac97f1df53021edef1b002cb30b11a9560c0",
+      "lane": "technical",
+      "instrument_id": "BINANCE:SPOT:BTCUSDT",
+      "timestamp": "2026-01-01T00:05:00Z",
+      "status": "AVAILABLE",
+      "bias": "BULLISH",
+      "score": "0.03846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846153846",
+      "confidence": "1",
+      "evidence": [
+        {
+          "market_event_id": "synthetic-bar-0",
+          "source_epoch": 1,
+          "provider": "synthetic.market",
+          "source_ts": "2026-01-01T00:01:00Z",
+          "received_ts": "2026-01-01T00:05:00Z",
+          "role": "closed_bar",
+          "fixture_only": false
+        },
+        {
+          "market_event_id": "synthetic-bar-1",
+          "source_epoch": 1,
+          "provider": "synthetic.market",
+          "source_ts": "2026-01-01T00:02:00Z",
+          "received_ts": "2026-01-01T00:05:00Z",
+          "role": "closed_bar",
+          "fixture_only": false
+        },
+        {
+          "market_event_id": "synthetic-bar-2",
+          "source_epoch": 1,
+          "provider": "synthetic.market",
+          "source_ts": "2026-01-01T00:03:00Z",
+          "received_ts": "2026-01-01T00:05:00Z",
+          "role": "closed_bar",
+          "fixture_only": false
+        },
+        {
+          "market_event_id": "synthetic-bar-3",
+          "source_epoch": 1,
+          "provider": "synthetic.market",
+          "source_ts": "2026-01-01T00:04:00Z",
+          "received_ts": "2026-01-01T00:05:00Z",
+          "role": "closed_bar",
+          "fixture_only": false
+        },
+        {
+          "market_event_id": "synthetic-bar-4",
+          "source_epoch": 1,
+          "provider": "synthetic.market",
+          "source_ts": "2026-01-01T00:05:00Z",
+          "received_ts": "2026-01-01T00:05:00Z",
+          "role": "closed_bar",
+          "fixture_only": false
+        }
+      ],
+      "features": [
+        {
+          "name": "window_return",
+          "value": "0.04",
+          "unit": "fraction",
+          "reason": null
+        },
+        {
+          "name": "last_return",
+          "value": "0.009708737864077669902912621359223300970873786407766990291262135922330097087378640776699029126213592233009708737864077669902912621359223300970873786407766990291262135922330097087378640776699029126213592233009708737864077669902912621359223300970873786407766990",
+          "unit": "fraction",
+          "reason": null
+        },
+        {
+          "name": "mean_absolute_return",
+          "value": "0.009853412382928755468350947030739624504997615695321673800732443318575147063535593993437036450646777984480344093804012040267419089139068104411811826528169664482153526603374215205643922473343850661479625975161765177088811108409527417618974918622644674518851085",
+          "unit": "fraction",
+          "reason": null
+        }
+      ],
+      "data_quality": {
+        "as_of": "2026-01-01T00:05:00Z",
+        "states": [
+          [
+            "BINANCE:SPOT:BTCUSDT",
+            "healthy"
+          ]
+        ],
+        "divergent": false,
+        "lineage": "synthetic-fixture"
+      },
+      "reasons": [],
+      "context_lineage": "a67618b65973e54277d740dfee357258720c8d9dddeecbed434f597a6f146728",
+      "fixture_only": false,
+      "algorithm_version": "phase5-v1"
+    },
+    {
+      "assessment_id": "7f95ad0e0659f78ac154d1208caf7742b82bc39b24f351a731a9c4daf282b3e5",
+      "lane": "flow",
+      "instrument_id": "BINANCE:SPOT:BTCUSDT",
+      "timestamp": "2026-01-01T00:05:00Z",
+      "status": "AVAILABLE",
+      "bias": "BULLISH",
+      "score": "0.5",
+      "confidence": "1",
+      "evidence": [
+        {
+          "market_event_id": "synthetic-trade-0",
+          "source_epoch": 1,
+          "provider": "synthetic.market",
+          "source_ts": "2026-01-01T00:04:59Z",
+          "received_ts": "2026-01-01T00:04:59Z",
+          "role": "aggressor_trade",
+          "fixture_only": false
+        },
+        {
+          "market_event_id": "synthetic-trade-1",
+          "source_epoch": 1,
+          "provider": "synthetic.market",
+          "source_ts": "2026-01-01T00:05:00Z",
+          "received_ts": "2026-01-01T00:05:00Z",
+          "role": "aggressor_trade",
+          "fixture_only": false
+        },
+        {
+          "market_event_id": "synthetic-quote-0",
+          "source_epoch": 1,
+          "provider": "synthetic.market",
+          "source_ts": "2026-01-01T00:04:59Z",
+          "received_ts": "2026-01-01T00:04:59Z",
+          "role": "best_level_quote",
+          "fixture_only": false
+        },
+        {
+          "market_event_id": "synthetic-quote-1",
+          "source_epoch": 1,
+          "provider": "synthetic.market",
+          "source_ts": "2026-01-01T00:05:00Z",
+          "received_ts": "2026-01-01T00:05:00Z",
+          "role": "best_level_quote",
+          "fixture_only": false
+        }
+      ],
+      "features": [
+        {
+          "name": "window_cvd",
+          "value": "2",
+          "unit": "canonical_quantity",
+          "reason": null
+        },
+        {
+          "name": "trade_imbalance",
+          "value": "0.5",
+          "unit": "fraction",
+          "reason": null
+        },
+        {
+          "name": "book_imbalance",
+          "value": "0.4285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714285714286",
+          "unit": "fraction",
+          "reason": null
+        },
+        {
+          "name": "best_level_ofi",
+          "value": "1",
+          "unit": "canonical_quantity",
+          "reason": null
+        },
+        {
+          "name": "funding",
+          "value": null,
+          "unit": "unavailable",
+          "reason": "MISSING_OBSERVATION"
+        },
+        {
+          "name": "open_interest",
+          "value": null,
+          "unit": "unavailable",
+          "reason": "MISSING_OBSERVATION"
+        }
+      ],
+      "data_quality": {
+        "as_of": "2026-01-01T00:05:00Z",
+        "states": [
+          [
+            "BINANCE:SPOT:BTCUSDT",
+            "healthy"
+          ]
+        ],
+        "divergent": false,
+        "lineage": "synthetic-fixture"
+      },
+      "reasons": [],
+      "context_lineage": "a67618b65973e54277d740dfee357258720c8d9dddeecbed434f597a6f146728",
+      "fixture_only": false,
+      "algorithm_version": "phase5-v1"
+    },
+    {
+      "assessment_id": "0044d2b224e9417f90a9570dc9ac21d05c697d969ab311e652e0f82f4a56172e",
+      "lane": "macro",
+      "instrument_id": "BINANCE:SPOT:BTCUSDT",
+      "timestamp": "2026-01-01T00:05:00Z",
+      "status": "AVAILABLE",
+      "bias": "BEARISH",
+      "score": "-0.25",
+      "confidence": "0",
+      "evidence": [
+        {
+          "market_event_id": "synthetic-macro",
+          "source_epoch": 1,
+          "provider": "synthetic.macro",
+          "source_ts": "2026-01-01T00:05:00Z",
+          "received_ts": "2026-01-01T00:05:00Z",
+          "role": "declared_replay_signal",
+          "fixture_only": true
+        }
+      ],
+      "features": [
+        {
+          "name": "declared_fixture_signal",
+          "value": "-0.25",
+          "unit": "signed_signal",
+          "reason": null
+        }
+      ],
+      "data_quality": {
+        "as_of": "2026-01-01T00:05:00Z",
+        "states": [
+          [
+            "BINANCE:SPOT:BTCUSDT",
+            "healthy"
+          ]
+        ],
+        "divergent": false,
+        "lineage": "synthetic-fixture"
+      },
+      "reasons": [],
+      "context_lineage": "a67618b65973e54277d740dfee357258720c8d9dddeecbed434f597a6f146728",
+      "fixture_only": true,
+      "algorithm_version": "phase5-v1"
+    },
+    {
+      "assessment_id": "3b703aede991ac062e51b239c2e120c2603299fb5fa5b4d613c891a94fd917ca",
+      "lane": "narrative",
+      "instrument_id": "BINANCE:SPOT:BTCUSDT",
+      "timestamp": "2026-01-01T00:05:00Z",
+      "status": "AVAILABLE",
+      "bias": "BULLISH",
+      "score": "0.1",
+      "confidence": "0",
+      "evidence": [
+        {
+          "market_event_id": "synthetic-narrative",
+          "source_epoch": 1,
+          "provider": "synthetic.narrative",
+          "source_ts": "2026-01-01T00:05:00Z",
+          "received_ts": "2026-01-01T00:05:00Z",
+          "role": "declared_replay_signal",
+          "fixture_only": true
+        }
+      ],
+      "features": [
+        {
+          "name": "declared_fixture_signal",
+          "value": "0.1",
+          "unit": "signed_signal",
+          "reason": null
+        }
+      ],
+      "data_quality": {
+        "as_of": "2026-01-01T00:05:00Z",
+        "states": [
+          [
+            "BINANCE:SPOT:BTCUSDT",
+            "healthy"
+          ]
+        ],
+        "divergent": false,
+        "lineage": "synthetic-fixture"
+      },
+      "reasons": [],
+      "context_lineage": "a67618b65973e54277d740dfee357258720c8d9dddeecbed434f597a6f146728",
+      "fixture_only": true,
+      "algorithm_version": "phase5-v1"
+    }
+  ],
+  "outcomes": [],
+  "quality": {
+    "as_of": "2026-01-01T00:05:00Z",
+    "states": [
+      [
+        "BINANCE:SPOT:BTCUSDT",
+        "healthy"
+      ]
+    ],
+    "divergent": false,
+    "lineage": "synthetic-fixture"
+  },
+  "reliability_policy": {
+    "minimum_samples": 30,
+    "regime_minimum_samples": 50,
+    "prior_strength": "20",
+    "grading_policy": {
+      "horizon": 60000000,
+      "max_age": 5000000,
+      "terminal_tolerance": 5000000,
+      "minimum_move": "0.001"
+    }
+  },
+  "policy": {
+    "minimum_lanes": 2,
+    "minimum_support": "0.1",
+    "minimum_direction": "0.25",
+    "maximum_disagreement": "0.2",
+    "maximum_lane_share": "0.6",
+    "max_age": 5000000,
+    "max_spec_age": 86400000000
+  },
+  "regime": null
+}

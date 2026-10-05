@@ -162,7 +162,13 @@ def test_private_reports_export_missing_evidence_and_never_invent_pnl():
 
 def test_native_chart_api_remains_explicitly_noncanonical_and_read_only():
     monitor = DemoMarketReader(Reader())
-    with TestClient(create_app(token="v" * 48, monitor=monitor)) as client:
+    state = DashboardState()
+
+    def unrelated_market(*args):
+        raise AssertionError("Native chart must not recompute Binance analysis")
+
+    state.market = unrelated_market
+    with TestClient(create_app(state, token="v" * 48, monitor=monitor)) as client:
         client.post(
             "/auth/session", headers={"origin": "http://127.0.0.1:8787"}, json={"token": "v" * 48}
         )
@@ -229,3 +235,33 @@ def test_daily_collector_refuses_real_and_changed_demo_account(monkeypatch, tmp_
     report["account"]["identity"] = "demo-B"
     with pytest.raises(ValueError, match="account changed"):
         research.capture(token, tmp_path / "research")
+
+
+def test_public_history_finishes_before_live_socket_opens(monkeypatch):
+    """Slow REST backfills must not queue stale live trades during startup."""
+    import asyncio
+
+    from vision.apps.dashboard import runtime
+
+    loaded = []
+
+    class REST:
+        def bars(self, sub, limit):
+            assert limit == 512
+            loaded.append(sub.interval)
+            return []
+
+    class Socket:
+        async def __aenter__(self):
+            assert loaded == ["1m", "5m", "15m", "1h", "4h", "1d"]
+            raise asyncio.CancelledError
+
+        async def __aexit__(self, *args):
+            pass
+
+    state = NS(hub=NS(registry=None, register=lambda *a, **kw: None), connections={})
+    monkeypatch.setattr(runtime, "BinanceREST", REST)
+    monkeypatch.setattr(runtime, "refresh_public_spec", lambda *a: NS(spec=None))
+    monkeypatch.setattr(runtime, "connect", lambda *a, **kw: Socket())
+    with pytest.raises(asyncio.CancelledError):
+        asyncio.run(runtime.public_feed(state, "BTCUSDT", ("1m", "5m", "15m", "1h", "4h", "1d")))

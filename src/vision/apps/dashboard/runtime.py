@@ -63,10 +63,20 @@ async def public_feed(state, symbol, intervals):
     failures = 0
     while True:
         try:
+            state.connections["binance.spot"] = {
+                "state": "WARMING_UP", "symbol": symbol, "reason": "LOADING_REST_HISTORY"
+            }
             rest = BinanceREST()
             record = await asyncio.to_thread(refresh_public_spec, state.hub.registry, rest, symbol)
             for sub in subscriptions:
                 state.hub.register(record.spec, sub, record=record)
+            # Load REST history before opening the live socket. Otherwise the six
+            # slow HTTP calls queue old trades and repeatedly trip freshness gates.
+            history = []
+            for sub in subscriptions:
+                rows = await asyncio.to_thread(rest.bars, sub, limit=512)
+                normalizer = BinanceNormalizer(sub)
+                history.extend(normalizer.rest_bar(row, state.clock()) for row in rows)
             async with connect(
                 f"{WS_BASE}/stream?streams={'/'.join(routes)}",
                 proxy=None,
@@ -82,17 +92,9 @@ async def public_feed(state, symbol, intervals):
                     "source_epoch": epoch,
                     "reason": "NEW_CONTINUITY_WINDOW",
                 }
-                for sub in subscriptions:
-                    rows = await asyncio.to_thread(rest.bars, sub, limit=512)
-                    normalizer = BinanceNormalizer(sub)
-                    events = [normalizer.rest_bar(row, state.clock()) for row in rows]
-                    state.history(
-                        [
-                            replace(e, delivery_kind="backfill", source_epoch=epoch)
-                            for e in events
-                            if e
-                        ]
-                    )
+                state.history(
+                    [replace(e, delivery_kind="backfill", source_epoch=epoch) for e in history if e]
+                )
                 failures = 0
                 async with asyncio.timeout(23 * 3600):
                     while True:

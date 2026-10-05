@@ -268,8 +268,11 @@ class DashboardState:
             },
         }
 
-    def summary(self, instrument="BINANCE:SPOT:BTCUSDT", seconds=300):
-        market, broker = self.market(instrument, seconds), self.broker_projection()
+    def summary(self, instrument="BINANCE:SPOT:BTCUSDT", seconds=300, *, market_override=None):
+        market = (
+            market_override if market_override is not None else self.market(instrument, seconds)
+        )
+        broker = self.broker_projection()
         reasons = HardRiskGovernor(RiskLimits()).assess(
             equity=None,
             trade_risk=None,
@@ -298,7 +301,13 @@ class DashboardState:
             "live_eligible": False,
             "phase11": "IMPLEMENTED / ACCEPTANCE PENDING",
             "market": market,
-            "agents": self.lanes(instrument, seconds),
+            "agents": self.lanes(instrument, seconds)
+            if market_override is None
+            else {
+                "assessments": [],
+                "decision": None,
+                "reason": "BROKER_HISTORY_IS_NOT_APPROVED_ANALYSIS",
+            },
             "risk": risk,
             "broker": broker,
             "execution": {

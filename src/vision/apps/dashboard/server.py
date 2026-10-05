@@ -165,8 +165,7 @@ def create_app(state=None, *, token, static=None, feed=None, bridge=None, port=8
                 raise HTTPException(
                     503, "Native DEMO history unavailable or identity changed"
                 ) from None
-            data = state.summary()
-            data["market"] = market
+            data = state.summary(market_override=market)
             data["agents"] = {
                 "assessments": [],
                 "decision": None,

@@ -1,7 +1,7 @@
 name: Foundation CI
 on:
   push:
-    branches: [main, phase/market-data-foundation, phase/paper-risk-foundation, phase/intelligence-lanes-foundation, phase/reliability-intent-foundation, phase/outcome-journal-foundation, phase/backtest-audit-foundation, phase/strategy-dsl-foundation, phase/forex-metals-data-foundation, phase/mt5-sizing-foundation]
+    branches: [main, phase/market-data-foundation, phase/paper-risk-foundation, phase/intelligence-lanes-foundation, phase/reliability-intent-foundation, phase/outcome-journal-foundation, phase/backtest-audit-foundation, phase/strategy-dsl-foundation, phase/forex-metals-data-foundation, phase/mt5-sizing-foundation, phase/command-center]
   pull_request:
     branches: [main, phase/market-data-foundation, phase/paper-risk-foundation, phase/intelligence-lanes-foundation, phase/reliability-intent-foundation, phase/outcome-journal-foundation, phase/backtest-audit-foundation, phase/strategy-dsl-foundation, phase/forex-metals-data-foundation]
   workflow_dispatch:
@@ -27,7 +27,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - name: Install development tools
-        run: python -m pip install -e ".[dev]"
+        run: python -m pip install -c requirements-dashboard.lock -e ".[dev,dashboard]"
       - name: Lint
         run: python -m ruff check .
       - name: Formatting

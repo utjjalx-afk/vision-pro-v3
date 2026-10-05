@@ -1,0 +1,35 @@
+name: Command Center
+on:
+  push:
+    branches: [phase/command-center]
+  pull_request:
+    branches: [phase/mt5-sizing-foundation]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  frontend:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/dashboard/package-lock.json
+      - run: npm ci --ignore-scripts
+        working-directory: apps/dashboard
+      - run: npm test
+        working-directory: apps/dashboard
+      - run: npm run build
+        working-directory: apps/dashboard
+  dashboard-container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: docker compose -f docker-compose.dashboard.yml config --quiet
+      - run: docker build -f docker/Dockerfile.dashboard -t vision-command-center .
+      - run: docker run --rm --network none --cap-drop ALL --security-opt no-new-privileges vision-command-center python -m vision.apps.dashboard.server --help

@@ -89,6 +89,9 @@ their comment differs. Unknown ownership, partial volume or state divergence
 halts new entries. Missing accepted SL raises CRITICAL_PROTECTION_FAULT and
 HALTED immediately; no automatic repair or emergency close is implemented.
 Read-only monitoring continues in every state, including after kill switch.
+The optional server polls active journal reservations once per second without
+submitting or repairing orders. Disarming never clears an incident state;
+clock rollback also invalidates ephemeral arming.
 
 Verified closing deals and absent position establish CLOSED. Net outcome uses
 broker profit + commission + swap + fee in account currency. The journal stores

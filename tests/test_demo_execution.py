@@ -565,3 +565,42 @@ def test_default_api_has_no_demo_routes(tmp_path):
         server.shutdown()
         server.server_close()
         thread.join()
+
+
+def test_disarm_does_not_reset_kill_switch(tmp_path):
+    g, t, _, c, _ = setup(tmp_path)
+    arm(g)
+    g.halt()
+    g.disarm()
+    assert g.state == "HALTED"
+    with pytest.raises(ValueError):
+        arm(g)
+    with pytest.raises(ValueError):
+        g.execute(**c)
+    assert not t.calls
+
+
+def test_clock_rollback_invalidates_arm(tmp_path):
+    g, t, _, c, clock = setup(tmp_path)
+    arm(g)
+    clock[0] -= timedelta(seconds=1)
+    with pytest.raises(ValueError):
+        g.execute(**c)
+    assert g.state == "DISARMED" and not t.calls
+
+
+def test_server_readonly_monitoring_continues_after_halt(tmp_path):
+    from vision.broker.server import make_server
+
+    g, t, _, c, _ = setup(tmp_path)
+    arm(g)
+    g.execute(**c)
+    t.positions[0]["stop"] = "0"
+    g.halt()
+    server = make_server(t, "synthetic-bearer-not-a-credential-0000", port=0, demo_gateway=g)
+    try:
+        server.service_actions()
+        assert g.journal.heads()[c["client_order_id"]]["state"] == "CRITICAL_PROTECTION_FAULT"
+        assert len(t.calls) == 1
+    finally:
+        server.server_close()

@@ -41,7 +41,7 @@ class DemoGateway:
             governor,
         )
         self.enabled, self.clock = enabled, clock
-        self.state, self.armed_until = GatewayState.DISARMED, None
+        self.state, self.armed_until, self.armed_at = GatewayState.DISARMED, None, None
         self.lock = RLock()
         # Persistent orders survive restarts; arming never does.
         self.journal.heads()
@@ -52,7 +52,9 @@ class DemoGateway:
 
     def disarm(self):
         with self.lock:
-            self.state, self.armed_until = GatewayState.DISARMED, None
+            self.armed_until, self.armed_at = None, None
+            if self.state in {GatewayState.DISARMED, GatewayState.ARMED_DEMO}:
+                self.state = GatewayState.DISARMED
 
     def arm(self, *, account_identity, operator_confirmation):
         with self.lock, self.transport.lock:
@@ -71,13 +73,14 @@ class DemoGateway:
             a = self.transport.snapshot().account
             if not a.demo or not a.connected or a.identity != account_identity:
                 raise ValueError("Pinned connected demo account required")
-            self.armed_until = self.clock() + self.policy.arm_ttl
+            self.armed_at = self.clock()
+            self.armed_until = self.armed_at + self.policy.arm_ttl
             self.state = GatewayState.ARMED_DEMO
 
     def _armed(self):
         now = self.clock()
         _utc(now)
-        if self.armed_until is not None and now >= self.armed_until:
+        if self.armed_until is not None and not self.armed_at <= now < self.armed_until:
             self.disarm()
         if (
             not self.enabled

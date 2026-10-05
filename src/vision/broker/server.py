@@ -4,6 +4,7 @@ import argparse
 import hmac
 import json
 import os
+import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from vision.analysis.contracts import wire
@@ -117,6 +118,22 @@ def make_server(reader, token, *, port=8765, demo_gateway=None):
                 self.response(400, {"error": "INVALID_SIZING_REQUEST"})
 
     class SilentServer(HTTPServer):
+        last_monitor = 0.0
+
+        def service_actions(self):
+            # Read-only reconciliation continues after halt/disarm and unknown sends.
+            if demo_gateway is None or time.monotonic() - self.last_monitor < 1:
+                return
+            self.last_monitor = time.monotonic()
+            try:
+                for cid, head in demo_gateway.journal.heads().items():
+                    if head["state"] not in {"CLOSED", "REJECTED"}:
+                        demo_gateway.monitor(cid)
+            except Exception:
+                from vision.execution.demo.models import GatewayState
+
+                demo_gateway.state = GatewayState.BROKER_UNAVAILABLE
+
         def handle_error(self, *_):
             pass  # Never print socket/native exception text or request data.
 

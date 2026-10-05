@@ -2,7 +2,7 @@ services:
   command-center:
     build:
       context: .
-      dockerfile: docker/Dockerfile.dashboard
+      dockerfile: docker/Dockerfile.command-center
     ports:
       - "127.0.0.1:8787:8787"
     volumes:

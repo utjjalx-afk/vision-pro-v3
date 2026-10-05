@@ -31,5 +31,5 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - run: docker compose -f docker-compose.dashboard.yml config --quiet
-      - run: docker build -f docker/Dockerfile.dashboard -t vision-command-center .
+      - run: docker build -f docker/Dockerfile.command-center -t vision-command-center .
       - run: docker run --rm --network none --cap-drop ALL --security-opt no-new-privileges vision-command-center python -m vision.apps.dashboard.server --help

@@ -9,7 +9,7 @@ from urllib.request import HTTPCookieProcessor, Request, build_opener
 
 opener = build_opener(HTTPCookieProcessor(CookieJar()))
 base = "http://127.0.0.1:8787"
-for attempt in range(30):
+for _attempt in range(30):
     try:
         with opener.open(base, timeout=2) as reply:
             assert b"assets/" in reply.read()

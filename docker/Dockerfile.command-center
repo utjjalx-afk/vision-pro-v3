@@ -1,0 +1,17 @@
+FROM node:24-alpine AS ui
+WORKDIR /ui
+COPY apps/dashboard/package*.json ./
+RUN npm ci --ignore-scripts
+COPY apps/dashboard/ ./
+RUN npm test && npm run build
+FROM python:3.11-slim
+WORKDIR /app
+COPY pyproject.toml README.md LICENSE THIRD_PARTY_NOTICES.md ./
+COPY src ./src
+COPY requirements-dashboard.lock ./
+COPY scripts/check_dashboard_container.py ./scripts/
+RUN pip install --no-cache-dir -c requirements-dashboard.lock ".[dashboard]"
+COPY --from=ui /ui/dist ./apps/dashboard/dist
+USER 10001:10001
+EXPOSE 8787
+CMD ["python", "-m", "vision.apps.dashboard.server", "--token-file", "/data/viewer.token"]

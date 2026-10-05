@@ -1,0 +1,17 @@
+services:
+  command-center:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.command-center
+    ports:
+      - "127.0.0.1:8787:8787"
+    volumes:
+      - ./data/dashboard-container:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    environment:
+      VISION_LIVE_TRADING_ENABLED: "false"
+      VISION_MT5_EXECUTION_ENABLED: "false"

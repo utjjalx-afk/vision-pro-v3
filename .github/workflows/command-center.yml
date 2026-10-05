@@ -1,0 +1,43 @@
+name: Command Center
+on:
+  push:
+    branches: [phase/command-center]
+  pull_request:
+    branches: [phase/mt5-sizing-foundation]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  frontend:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/dashboard/package-lock.json
+      - run: npm ci --ignore-scripts
+        working-directory: apps/dashboard
+      - run: npm test
+        working-directory: apps/dashboard
+      - run: npm run build
+        working-directory: apps/dashboard
+  dashboard-container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: docker compose -f docker-compose.dashboard.yml config --quiet
+      - run: docker build -f docker/Dockerfile.command-center -t vision-command-center .
+      - run: docker run --rm --network none --cap-drop ALL --security-opt no-new-privileges vision-command-center python -m vision.apps.dashboard.server --help
+
+      - name: Offline authenticated HTTP smoke
+        run: |
+          docker run -d --name vision-ui-smoke --network none --read-only --tmpfs /tmp:uid=10001,gid=10001,mode=700 --cap-drop ALL --security-opt no-new-privileges vision-command-center python -m vision.apps.dashboard.server --token-file /tmp/viewer.token
+          docker exec vision-ui-smoke python scripts/check_dashboard_container.py
+      - name: Stop smoke instance
+        if: always()
+        run: docker rm -f vision-ui-smoke || true

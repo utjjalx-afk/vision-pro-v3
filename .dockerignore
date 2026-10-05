@@ -11,3 +11,5 @@ logs
 dist
 build
 .github
+**/node_modules
+apps/dashboard/dist

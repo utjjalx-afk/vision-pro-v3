@@ -184,3 +184,13 @@ python -m vision forex-replay tests/fixtures/forex/oanda_replay.json
 
 See [Phase 10 contracts, limits and authorized usage](docs/PHASE10_FOREX_METALS.md).
 Real second-provider FX failover and MT5 remain outside this phase.
+
+
+## Phase 11.5 Command Center
+
+An authenticated React/TypeScript/FastAPI viewer now provides canonical charts,
+provider-local footprint/CVD/depth, agent and synthesis evidence, risk vetoes,
+MT5 DEMO read snapshots and verified journal views. Start instructions and current
+acceptance limits are in [the Command Center guide](docs/PHASE11_5_COMMAND_CENTER.md).
+Live execution remains OFF, the viewer has no trading controls, and Phase 11
+broker acceptance remains pending. Unconfigured feeds and economics stay unavailable.

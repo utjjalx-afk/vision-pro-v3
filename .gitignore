@@ -24,3 +24,10 @@ logs/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Command Center generated/private files
+node_modules/
+apps/dashboard/dist/
+*.token
+playwright-report/
+test-results/

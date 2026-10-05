@@ -5,6 +5,7 @@ COPY pyproject.toml README.md LICENSE ./
 COPY src ./src
 COPY tests ./tests
 COPY schemas ./schemas
-RUN python -m pip install --no-cache-dir ".[dev]"
+COPY requirements-dashboard.lock ./
+RUN python -m pip install --no-cache-dir -c requirements-dashboard.lock ".[dev,dashboard]"
 USER 65532:65532
 CMD ["python", "-m", "pytest", "-p", "no:cacheprovider", "-q"]

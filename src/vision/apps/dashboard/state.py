@@ -118,9 +118,23 @@ class DashboardState:
                 reasons.append("FUTURE_BROKER_QUOTE")
             elif seconds > 5:
                 reasons.append("STALE_BROKER_QUOTE")
+        quote_status = [
+            {
+                "symbol": q.symbol,
+                "source_age_seconds": (now - q.source_at).total_seconds(),
+                "receipt_age_seconds": (now - q.observed_at).total_seconds(),
+                "state": "BLOCKED"
+                if not 0 <= (now - q.source_at).total_seconds() <= 5
+                else "HEALTHY",
+            }
+            for q in b.quotes
+        ]
         return {
             "state": "BLOCKED" if reasons else "CONNECTED_DEMO",
-            "reasons": reasons,
+            "reasons": sorted(set(reasons)),
+            "quote_status": quote_status,
+            "connected": b.account.connected,
+            "account_mode": "DEMO" if b.account.demo else "REAL",
             "age_seconds": age,
             "snapshot_id": b.snapshot_id,
             "snapshot": wire(b),

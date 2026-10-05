@@ -12,13 +12,14 @@ Do not submit broker accounts, API tokens, database credentials, `.env` files,
 terminal snapshots containing secrets, or production datasets. Use synthetic fixtures.
 If a credential is exposed, revoke it at its provider before discussing the incident.
 
-Live trading, MT5 execution and autonomous agents are deliberately unimplemented. Phase 11
-startup rejects attempts to enable them. Portfolio inputs are caller-supplied
+Live trading and autonomous agents remain unavailable. Global startup flags
+reject attempts to enable them or global MT5 execution. Portfolio inputs are caller-supplied
 research records; READY never authorizes live execution. The explicit paper API
 uses local synthetic/supplied data only. Checkpoint digests are integrity checks,
 not signatures; untrusted journals must not be treated as authenticated evidence.
 An environment flag cannot make this foundation eligible for live trading.
-Future execution requires a separate design and review.
+Phase 12 provides only an explicit operator-controlled DEMO gateway. Its feature
+flag is separate from ephemeral arming, and real accounts are always blocked.
 
 Phase 11's separate MT5 bridge attaches only to a connected demo account and
 exposes authenticated calculation/read endpoints on loopback. Broker account
@@ -27,6 +28,17 @@ Bearer tokens and raw native account/ticket identifiers are never logged. Identi
 digests use a runtime key, not plain hashes of low-entropy account numbers.
 Calculation approval is not order permission. Remote exposure/TLS deployment is
 outside this phase; untrusted clients cannot select arbitrary native SDK methods.
+
+The optional Phase 12 server reuses the same bounded authenticated loopback transport.
+It validates typed intent/sizing lineage rather than accepting arbitrary raw orders.
+Keep demo journals private: they contain account economics and HMAC ticket identities.
+Operator acceptance, risk baselines and strategy-eligibility assertions are trusted
+local attestations, not cryptographic proof of external acceptance. A bearer-token
+holder/local admin remains inside the trusted operator boundary. Only one journal
+and gateway should own the isolated demo account; broker state races outside that
+process cannot be eliminated by local locks. Do not run competing EAs or clients.
+Arming expires and is lost on restart. Uncertain send/close results never resend;
+missing SL halts new entries without automatic repair or emergency close.
 
 Phase-10 OANDA credentials remain runtime-only; GET endpoints are restricted to
 market data on fixed provider hosts, with redirects rejected and errors redacted.

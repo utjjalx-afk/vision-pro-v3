@@ -40,7 +40,7 @@ def native_decimal(value):
 
 
 def symbol(value):
-    if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9_.#-]{1,64}", value):
+    if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9_.#+-]{1,64}", value):
         raise ValueError("Explicit bounded broker symbol required")
     return value
 

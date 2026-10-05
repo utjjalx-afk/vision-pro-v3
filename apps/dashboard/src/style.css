@@ -1043,3 +1043,22 @@ footer b {
   opacity: 0.4;
   cursor: default;
 }
+
+.report-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 20px 0;
+}
+.report-actions a {
+  color: #96b8ff;
+  text-decoration: none;
+  padding: 10px 14px;
+  border: 1px solid #314b71;
+  border-radius: 6px;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

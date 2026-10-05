@@ -193,7 +193,14 @@ export function Chart({
   }, [market.candles, market.indicators, market.spec, enabled, oscillator]);
   return (
     <div className="chart-frame">
-      <div ref={root} aria-label="Canonical OHLC candlestick chart" />
+      <div
+        ref={root}
+        aria-label={
+          market.source === "mt5.demo"
+            ? "Native MT5 DEMO history chart"
+            : "Canonical OHLC candlestick chart"
+        }
+      />
       <div className="osc-label">
         {oscillator.toUpperCase()} · validated batch math · warm-up excluded
       </div>

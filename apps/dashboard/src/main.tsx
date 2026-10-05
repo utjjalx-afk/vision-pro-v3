@@ -20,6 +20,7 @@ const pages = [
   "Outcome",
   "Connections",
   "MT5",
+  "Research",
   "LLM",
   "Settings",
 ];
@@ -67,7 +68,11 @@ function fmt(value: unknown) {
   return String(value);
 }
 function age(value: number | null) {
-  return value === null ? "N/A" : `${value.toFixed(2)}s`;
+  return value === null
+    ? "N/A"
+    : value < 0
+      ? `${(-value / 3600).toFixed(2)}h ahead`
+      : `${value.toFixed(2)}s`;
 }
 function Badge({ value }: { value: string }) {
   return (
@@ -396,17 +401,140 @@ function Timeline({ entries }: { entries: Record<string, unknown>[] }) {
     </div>
   );
 }
-function EvidencePage({ data, page }: { data: Snapshot; page: string }) {
+function DemoResearch({
+  data,
+  onChart,
+}: {
+  data: Snapshot;
+  onChart: (instrument: string) => void;
+}) {
+  const native = data.broker.snapshot;
+  const quotes = (native?.quotes || []) as {
+    symbol: string;
+    bid: string;
+    ask: string;
+    source_at: string;
+  }[];
+  return (
+    <Panel
+      title="MT5 demo validation"
+      kicker="STEP 1 · NATIVE BROKER · NO ORDER DISPATCH"
+    >
+      <Badge value={data.broker.state} />
+      <p className="caption">
+        Four-asset demo checks first → daily report at 8:00 PM IST → seven-day
+        research review. Orders remain gated by Phase 11 acceptance.
+      </p>
+      <Metrics
+        items={[
+          [
+            "Account",
+            data.portfolio.account?.demo === true ? "DEMO" : "UNAVAILABLE",
+          ],
+          ["Currency", data.portfolio.account?.currency],
+          ["Equity", data.portfolio.account?.equity],
+          ["Free margin", data.portfolio.account?.free_margin],
+        ]}
+      />
+      <div className="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Exact symbol</th>
+              <th>Bid</th>
+              <th>Ask</th>
+              <th>Source clock</th>
+              <th>Check</th>
+              <th>Chart</th>
+            </tr>
+          </thead>
+          <tbody>
+            {["EURUSD", "XAUUSD", "XAGUSD", "BTCUSD"].map((symbol) => {
+              const q = quotes.find((q) => q.symbol === symbol),
+                check = data.broker.quote_status?.find(
+                  (q) => q.symbol === symbol,
+                ),
+                id = `MT5:DEMO:${symbol}`;
+              const available = data.instruments.some(
+                (i) => i.instrument_id === id,
+              );
+              return (
+                <tr key={symbol}>
+                  <td>{symbol}</td>
+                  <td>{fmt(q?.bid)}</td>
+                  <td>{fmt(q?.ask)}</td>
+                  <td>
+                    {check
+                      ? check.source_age_seconds < 0
+                        ? `${(-check.source_age_seconds / 60).toFixed(1)} min ahead`
+                        : `${check.source_age_seconds.toFixed(1)}s age`
+                      : "UNKNOWN"}
+                  </td>
+                  <td>
+                    <Badge value={check?.state || "UNAVAILABLE"} />
+                  </td>
+                  <td>
+                    <button disabled={!available} onClick={() => onChart(id)}>
+                      {available ? "Open native chart" : "Reader unavailable"}
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p role="status" className="caption">
+        {data.broker.reasons?.join(" · ") || data.broker.reason}. Native history
+        is for inspection; an unverified broker clock cannot approve sizing.
+      </p>
+      <div className="report-actions">
+        <a className="primary" href="/api/research/report?format=md" download>
+          Download daily report
+        </a>
+        <a href="/api/research/report" download>
+          Download JSON evidence
+        </a>
+      </div>
+      <p className="caption">
+        Daily PnL stays unavailable until deal journal and clock attribution
+        reconcile. No fabricated trade results. Reports contain private account
+        evidence; keep them local.
+      </p>
+      <Inspect value={data.broker} title="Native snapshot and exact specs" />
+    </Panel>
+  );
+}
+
+function EvidencePage({
+  data,
+  page,
+  onChart,
+}: {
+  data: Snapshot;
+  page: string;
+  onChart: (instrument: string) => void;
+}) {
   let v: unknown = null;
   let title = page;
   if (page === "Risk") v = data.risk;
-  else if (page === "MT5") v = data.broker;
+  else if (page === "MT5" || page === "Research")
+    return <DemoResearch data={data} onChart={onChart} />;
   else if (page === "Connections")
     return (
       <div className="connection-grid">
         {Object.entries(data.connections).map(([name, c]) => (
           <Panel title={name.toUpperCase()} key={name}>
             <Badge value={fmt(c.state)} />
+            <p className="caption">
+              {fmt(
+                c.reason ||
+                  c.reasons ||
+                  (c.state === "RECEIVING"
+                    ? "Public analysis data receiving"
+                    : "No verified connection"),
+              )}
+            </p>
             <Inspect value={c} title="Connection evidence" />
           </Panel>
         ))}
@@ -491,6 +619,7 @@ function App() {
     [token, setToken] = useState(""),
     [error, setError] = useState(""),
     [now, setNow] = useState(Date.now()),
+    [reconnect, setReconnect] = useState(0),
     [secondary, setSecondary] = useState<Market[]>([]),
     [historical, setHistorical] = useState<Market | null>(null);
   const received = useRef(0),
@@ -527,6 +656,7 @@ function App() {
         const d: Snapshot = await res.json();
         if (disposed) return;
         setAuth(true);
+        setError("");
         setData(d);
         current.current = d;
         received.current = Date.now();
@@ -566,7 +696,7 @@ function App() {
       ws?.close();
       setConnected(false);
     };
-  }, [prefs.instrument, prefs.seconds, auth]);
+  }, [prefs.instrument, prefs.seconds, auth, reconnect]);
   useEffect(() => {
     if (!auth || prefs.layout === 1) {
       setSecondary([]);
@@ -668,7 +798,17 @@ function App() {
   if (!data)
     return (
       <div className="login-wrap">
-        <p>Loading authoritative snapshot… {error}</p>
+        <div>
+          <p role="status">Loading broker and market snapshot… {error}</p>
+          <button
+            onClick={() => {
+              setPrefs(initial);
+              setReconnect((v) => v + 1);
+            }}
+          >
+            Retry with supported market
+          </button>
+        </div>
       </div>
     );
   const fresh = connected && displayFresh(received.current, now);
@@ -681,6 +821,14 @@ function App() {
   const set = (key: string, value: unknown) =>
     setPrefs({ ...prefs, [key]: value });
   const latest = market.flow.candles.at(-1);
+  const nativeDisplay = market.source === "mt5.demo";
+  const visibleIndicators = prefs.enabled.filter(
+    (n: string) => !nativeDisplay || n !== "vwap",
+  );
+  const visibleOscillator =
+    nativeDisplay && ["cvd", "delta"].includes(prefs.oscillator)
+      ? "rsi"
+      : prefs.oscillator;
   const chartPages = ["Dashboard", "Markets", "Chart", "Order Flow"].includes(
     prefs.page,
   );
@@ -704,6 +852,16 @@ function App() {
             : "QUOTE AGE"}{" "}
           {age(market.quote_age_seconds)}
         </span>
+        <button
+          onClick={() => {
+            setPrefs({ ...prefs, page: "MT5" });
+          }}
+        >
+          MT5 demo checks
+        </button>
+        <button onClick={() => setReconnect((v) => v + 1)}>
+          Refresh connection
+        </button>
         <span className="live-off">● LIVE OFF</span>
         <button
           className="logout"
@@ -780,6 +938,11 @@ function App() {
               <div className="workspace-grid">
                 <div className="market-column">
                   <section className="panel market-panel">
+                    {market.clock_warning && (
+                      <p className="caption">
+                        MT5 DEMO history · {market.clock_warning}
+                      </p>
+                    )}
                     <div className="chart-toolbar">
                       <select
                         aria-label="Market instrument"
@@ -834,7 +997,10 @@ function App() {
                     </div>
                     <div className="provenance">
                       <span>
-                        ANALYSIS <b>{market.source || "UNAVAILABLE"}</b>
+                        {market.source === "mt5.demo"
+                          ? "BROKER HISTORY"
+                          : "ANALYSIS"}{" "}
+                        <b>{market.source || "UNAVAILABLE"}</b>
                       </span>
                       <span>
                         BROKER <b>MT5 · {data.broker.state}</b>
@@ -863,7 +1029,8 @@ function App() {
                             <label key={name}>
                               <input
                                 type="checkbox"
-                                checked={prefs.enabled.includes(name)}
+                                disabled={nativeDisplay && name === "vwap"}
+                                checked={visibleIndicators.includes(name)}
                                 onChange={() =>
                                   set(
                                     "enabled",
@@ -880,14 +1047,14 @@ function App() {
                           ))}
                         </div>
                       </details>
-                      {prefs.enabled.map((name: string) => (
+                      {visibleIndicators.map((name: string) => (
                         <span className="indicator-chip" key={name}>
                           {name.toUpperCase()}
                         </span>
                       ))}
                       <select
                         aria-label="Lower chart indicator"
-                        value={prefs.oscillator}
+                        value={visibleOscillator}
                         onChange={(e) => set("oscillator", e.target.value)}
                       >
                         {[
@@ -902,9 +1069,14 @@ function App() {
                           "volume",
                           "cvd",
                           "delta",
-                        ].map((n) => (
-                          <option key={n}>{n}</option>
-                        ))}
+                        ]
+                          .filter(
+                            (n) =>
+                              !nativeDisplay || !["cvd", "delta"].includes(n),
+                          )
+                          .map((n) => (
+                            <option key={n}>{n}</option>
+                          ))}
                       </select>
                     </div>
                     {health !== "HEALTHY" && (
@@ -915,8 +1087,8 @@ function App() {
                     <div className={`charts charts-${prefs.layout}`}>
                       <Chart
                         market={historical || market}
-                        enabled={prefs.enabled}
-                        oscillator={prefs.oscillator}
+                        enabled={visibleIndicators}
+                        oscillator={visibleOscillator}
                       />
                       {secondary.map((m, i) => (
                         <div key={i}>
@@ -926,8 +1098,8 @@ function App() {
                           </small>
                           <Chart
                             market={m}
-                            enabled={prefs.enabled}
-                            oscillator={prefs.oscillator}
+                            enabled={visibleIndicators}
+                            oscillator={visibleOscillator}
                           />
                         </div>
                       ))}
@@ -950,18 +1122,46 @@ function App() {
                     </a>
                   </section>
                   <Metrics
-                    items={[
-                      ["CVD", latest?.cvd],
-                      ["Candle delta", latest?.delta],
-                      ["Book imbalance", market.depth.metrics?.top5_imbalance],
-                      ["Funding", null],
-                      ["Open interest", null],
-                      ["Flow scope", "PROVIDER LOCAL"],
-                    ]}
+                    items={
+                      nativeDisplay
+                        ? [
+                            ["Symbol", market.spec?.symbol],
+                            ["Bid", market.quote?.bid],
+                            ["Ask", market.quote?.ask],
+                            ["Base", market.spec?.base_currency],
+                            ["Profit currency", market.spec?.quote_currency],
+                            ["Volume", "TICK COUNT"],
+                          ]
+                        : [
+                            ["CVD", latest?.cvd],
+                            ["Candle delta", latest?.delta],
+                            [
+                              "Book imbalance",
+                              market.depth.metrics?.top5_imbalance,
+                            ],
+                            ["Funding", null],
+                            ["Open interest", null],
+                            ["Flow scope", "PROVIDER LOCAL"],
+                          ]
+                    }
                   />
                   <div className="flow-grid">
-                    <Footprint market={market} />
-                    <Depth market={market} />
+                    {nativeDisplay ? (
+                      <Panel
+                        title="Native demo history"
+                        kicker="READ ONLY · BROKER CLOCK"
+                      >
+                        <p className="caption">
+                          Native BID candles and tick-count volume. Aggressor
+                          order flow/depth are unavailable for this feed. The
+                          displayed clock offset keeps sizing blocked; these
+                          history charts do not approve orders.
+                        </p>
+                      </Panel>
+                    ) : (
+                      <Footprint market={market} />
+                    )}
+                    {!nativeDisplay && <Depth market={market} />}
                   </div>
                 </div>
                 <aside className="intel">
@@ -1027,7 +1227,13 @@ function App() {
           ) : prefs.page === "Portfolio" ? (
             <Positions data={data} />
           ) : (
-            <EvidencePage data={data} page={prefs.page} />
+            <EvidencePage
+              data={data}
+              page={prefs.page}
+              onChart={(instrument) =>
+                setPrefs({ ...prefs, instrument, page: "Chart" })
+              }
+            />
           )}
         </main>
       </div>

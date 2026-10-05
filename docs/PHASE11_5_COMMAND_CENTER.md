@@ -106,3 +106,35 @@ reason is exposed, lane scores stay unavailable and synthesis does not generate
 a trade intent. No timestamp is shifted or replaced to pass these gates.
 Operational acceptance remains pending genuine lane receipts and verified journal
 lineage. This branch does not alter Phase 11 acceptance or Phase 12 execution.
+
+## Native demo charts and daily research
+
+On Windows, with exactly one connected DEMO terminal and an existing separate
+private bridge key, use `scripts/run-dashboard.ps1 -Mt5Demo -PublicFeed`.
+The native monitor pins account identity and exact symbols/currencies before and
+after reads. `copy_rates_from_pos(..., 1, 512)` excludes the forming bar. BID
+chart mode and tick-count volume are explicit; VWAP/aggressor flow remain
+unavailable. Native timestamps are retained even when unverified or future-dated;
+these broker-history displays cannot authorize lane signals, sizing or orders.
+The native monitor polls its own pinned snapshot; no separate bridge process is
+required. The viewer token is never reused as the broker identity key.
+
+The MT5/Research panel opens each native chart and downloads JSON/Markdown daily
+reports. To save private immutable evidence and rebuild the seven-date summary:
+
+```sh
+python -m vision.apps.dashboard.research --token-file data/private/viewer.token --output-dir data/research/demo-week-2026-10-06 --start-date 2026-10-06
+```
+
+The scheduled research window is 6–12 October 2026, 20:00 Asia/Kolkata.
+Each day records account currency/equity/margin, quotes/specs, freshness failures,
+positions and risk/execution state. Account changes fail closed; missing dates
+are not filled and checksums detect accidental edits. This collector sends no
+orders and makes no trading-performance claim. Verified trade/deal-journal
+attribution remains a separate prerequisite for PnL/strategy conclusions.
+
+Public data uses one shared connection epoch across timeframes. Disconnect/gap
+recovery explicitly starts a new continuity window, clears CVD/trade/quote state,
+and refetches history; lost trades are not claimed recovered. Supervised read-only
+feeds retry with bounded backoff for multi-day observation; stale state stays
+visible while reconnecting. The Refresh connection button only resnapshots UI.

@@ -42,6 +42,7 @@ export type Market = {
   spec: Spec | null;
   source: string | null;
   source_epoch: number | null;
+  clock_warning?: string;
   health: string;
   quote_timestamp_basis?: string;
   candle_health?: string;
@@ -112,6 +113,12 @@ export type Snapshot = {
     reasons?: string[];
     reason?: string;
     snapshot: Record<string, unknown> | null;
+    quote_status?: {
+      symbol: string;
+      state: string;
+      source_age_seconds: number;
+      receipt_age_seconds: number;
+    }[];
   };
   execution: Record<string, unknown>;
   portfolio: {

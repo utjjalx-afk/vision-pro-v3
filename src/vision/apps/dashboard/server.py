@@ -12,12 +12,12 @@ from dataclasses import replace
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from vision.apps.dashboard.indicators import calculate
-from vision.apps.dashboard.runtime import broker_feed, depth_feed, public_feed
+from vision.apps.dashboard.runtime import broker_feed, depth_feed, native_broker_feed, public_feed
 from vision.apps.dashboard.state import DashboardState
 from vision.broker.client import BrokerBridgeClient
 from vision.journal.replay import replay
@@ -49,7 +49,7 @@ def changed(previous, current):
     return current
 
 
-def create_app(state=None, *, token, static=None, feed=None, bridge=None, port=8787):
+def create_app(state=None, *, token, static=None, feed=None, bridge=None, port=8787, monitor=None):
     if not isinstance(token, str) or len(token) < 32:
         raise ValueError("Private viewer token required")
     state = state or DashboardState()
@@ -67,7 +67,9 @@ def create_app(state=None, *, token, static=None, feed=None, bridge=None, port=8
                 asyncio.create_task(public_feed(state, symbol, intervals)),
                 asyncio.create_task(depth_feed(state, symbol)),
             ]
-        if bridge:
+        if monitor:
+            tasks.append(asyncio.create_task(native_broker_feed(state, monitor)))
+        elif bridge:
             tasks.append(asyncio.create_task(broker_feed(state, bridge)))
         yield
         for task in tasks:
@@ -149,7 +151,29 @@ def create_app(state=None, *, token, static=None, feed=None, bridge=None, port=8
         response.delete_cookie("vision_viewer")
         return response
 
-    def selected(instrument, seconds):
+    async def selected(instrument, seconds):
+        if instrument.startswith("MT5:DEMO:"):
+            if (
+                monitor is None
+                or seconds not in INTERVALS
+                or instrument not in {s["instrument_id"] for s in monitor.instruments}
+            ):
+                raise HTTPException(400, "Native demo monitor is unavailable")
+            try:
+                market = await asyncio.to_thread(monitor.market, instrument, seconds)
+            except (ValueError, RuntimeError, OSError):
+                raise HTTPException(
+                    503, "Native DEMO history unavailable or identity changed"
+                ) from None
+            data = state.summary()
+            data["market"] = market
+            data["agents"] = {
+                "assessments": [],
+                "decision": None,
+                "reason": "BROKER_HISTORY_IS_NOT_APPROVED_ANALYSIS",
+            }
+            data["instruments"] += monitor.instruments
+            return data
         if (
             seconds not in INTERVALS
             or len(instrument) > 120
@@ -157,15 +181,45 @@ def create_app(state=None, *, token, static=None, feed=None, bridge=None, port=8
             and instrument != "BINANCE:SPOT:BTCUSDT"
         ):
             raise HTTPException(400, "Supported bounded market selection required")
-        return state.summary(instrument, seconds)
+        data = state.summary(instrument, seconds)
+        if monitor:
+            data["instruments"] += monitor.instruments
+        return data
+
+    @app.get("/api/research/report")
+    async def research_report(format: str = "json"):
+        from vision.apps.dashboard.research import daily_report, markdown
+
+        try:
+            deals = await asyncio.to_thread(monitor.deals_report) if monitor else None
+        except (ValueError, RuntimeError, OSError):
+            raise HTTPException(503, "Pinned native DEMO deal history unavailable") from None
+        report = daily_report(state, deals)
+        name = f"mt5-demo-{report['date_ist']}"
+        if format == "md":
+            return Response(
+                markdown(report),
+                media_type="text/markdown",
+                headers={"Content-Disposition": f'attachment; filename="{name}.md"'},
+            )
+        if format != "json":
+            raise HTTPException(400, "JSON or Markdown report required")
+        return JSONResponse(
+            report, headers={"Content-Disposition": f'attachment; filename="{name}.json"'}
+        )
 
     @app.get("/api/dashboard/summary")
     async def summary(instrument: str = "BINANCE:SPOT:BTCUSDT", seconds: int = 300):
-        return selected(instrument, seconds)
+        return await selected(instrument, seconds)
 
     @app.get("/api/market/history")
     async def history(instrument: str, seconds: int, before: int):
-        selected(instrument, seconds)
+        await selected(instrument, seconds)
+        if instrument.startswith("MT5:DEMO:"):
+            try:
+                return await asyncio.to_thread(monitor.market, instrument, seconds, before=before)
+            except (ValueError, RuntimeError, OSError):
+                raise HTTPException(503, "Native historical data unavailable") from None
         spec = state.hub.instruments.get(instrument)
         if spec is None or spec.venue != "BINANCE_SPOT" or not 0 < before <= int(time.time()):
             raise HTTPException(400, "Registered Binance historical selection required")
@@ -230,7 +284,7 @@ def create_app(state=None, *, token, static=None, feed=None, bridge=None, port=8
     async def section(section: str, instrument: str = "BINANCE:SPOT:BTCUSDT", seconds: int = 300):
         if section not in sections:
             raise HTTPException(404, "Unknown read projection")
-        data = selected(instrument, seconds)
+        data = await selected(instrument, seconds)
         if section == "journal":
             return {"report": data["journal"], "entries": data["journal_entries"]}
         if section == "market/candles":
@@ -259,7 +313,7 @@ def create_app(state=None, *, token, static=None, feed=None, bridge=None, port=8
         instrument = ws.query_params.get("instrument", "BINANCE:SPOT:BTCUSDT")
         try:
             seconds = int(ws.query_params.get("seconds", "300"))
-            data = selected(instrument, seconds)
+            data = await selected(instrument, seconds)
         except (ValueError, HTTPException):
             await ws.close(code=1008)
             return
@@ -269,7 +323,7 @@ def create_app(state=None, *, token, static=None, feed=None, bridge=None, port=8
         count, previous = 0, None
         try:
             while authorized(ws.cookies.get("vision_viewer")):
-                data = selected(instrument, seconds)
+                data = await selected(instrument, seconds)
                 if channel == "market":
                     data = data["market"]
                 elif channel == "orderflow":
@@ -307,6 +361,7 @@ def main():
     parser.add_argument("--token-file", type=Path, required=True)
     parser.add_argument("--feed", choices=["off", "binance"], default="off")
     parser.add_argument("--symbol", default="BTCUSDT")
+    parser.add_argument("--mt5-terminal", type=Path)
     parser.add_argument("--bridge-token-file", type=Path)
     parser.add_argument("--bridge-port", type=int, default=8765)
     parser.add_argument("--journal-export", type=Path)
@@ -333,9 +388,28 @@ def main():
         if args.bridge_token_file
         else None
     )
+    monitor = None
+    if args.mt5_terminal:
+        from vision.apps.dashboard.mt5_market import SYMBOLS, DemoMarketReader
+        from vision.broker.mt5_bridge import MT5Reader
+
+        if not args.bridge_token_file:
+            parser.error("Native demo monitor requires the existing private bridge identity key")
+        reader = MT5Reader.connect(
+            {v: k for k, v in SYMBOLS.items()},
+            args.bridge_token_file.read_bytes().strip(),
+            terminal_path=str(args.mt5_terminal),
+        )
+        monitor = DemoMarketReader(reader)
     feed = (args.symbol, ("1m", "5m", "15m", "1h", "4h", "1d")) if args.feed == "binance" else None
     app = create_app(
-        state, token=token, static=args.static, feed=feed, bridge=bridge, port=args.port
+        state,
+        token=token,
+        static=args.static,
+        feed=feed,
+        bridge=bridge,
+        port=args.port,
+        monitor=monitor,
     )
     uvicorn.run(app, host="127.0.0.1", port=args.port, access_log=False)
 

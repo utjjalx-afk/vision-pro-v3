@@ -43,5 +43,6 @@ TradingView Lightweight Charts 5.0.7 is distributed under Apache-2.0.
 TradingView Lightweight Charts(TM)
 Copyright (c) 2025 TradingView, Inc. https://www.tradingview.com/
 The frontend retains library attribution and a TradingView link. The installed
-package includes its LICENSE and NOTICE; see the pinned npm lockfile.
+package includes its LICENSE; the generated assets/third-party-notices.txt retains
+the license, TradingView copyright notice and React/ReactDOM license texts.
 React / ReactDOM are MIT licensed. No Vardhan application or Pine code is included.

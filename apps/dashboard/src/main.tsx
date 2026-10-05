@@ -165,6 +165,8 @@ function Footprint({ market }: { market: Market }) {
               ["Delta %", c.delta_pct],
               ["POC", c.poc],
               ["CVD", c.cvd],
+              ["Max buy imbalance", c.max_buy_imbalance],
+              ["Max sell imbalance", c.max_sell_imbalance],
             ]}
           />
           <div className="table-scroll footprint-scroll">
@@ -267,6 +269,12 @@ function Agents({ data }: { data: Snapshot }) {
       title="Agent topology"
       kicker="INDEPENDENT LANES → RELIABILITY → SYNTHESIS"
     >
+      {data.agents.validation_error && (
+        <p className="caption">
+          Canonical context blocked: {data.agents.validation_error}. No
+          timestamps were adjusted.
+        </p>
+      )}
       <div className="topology">
         <div className="topology-source">
           CANONICAL MARKET DATA <Badge value={data.market.health} />
@@ -931,6 +939,14 @@ function App() {
                       rel="noreferrer"
                     >
                       Charting by TradingView
+                    </a>
+                    <a
+                      className="attribution"
+                      href="/assets/third-party-notices.txt"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Third-party licenses
                     </a>
                   </section>
                   <Metrics

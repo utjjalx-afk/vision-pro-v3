@@ -6,7 +6,7 @@ COPY apps/dashboard/ ./
 RUN npm test && npm run build
 FROM python:3.11-slim
 WORKDIR /app
-COPY pyproject.toml README.md LICENSE ./
+COPY pyproject.toml README.md LICENSE THIRD_PARTY_NOTICES.md ./
 COPY src ./src
 COPY requirements-dashboard.lock ./
 COPY scripts/check_dashboard_container.py ./scripts/

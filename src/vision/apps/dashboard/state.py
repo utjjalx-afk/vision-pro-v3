@@ -163,8 +163,13 @@ class DashboardState:
                 "reason": None,
                 "reliability_basis": "No attached prospective outcomes; lanes UNPROVEN",
             }
-        except ValueError:
-            return {"assessments": [], "decision": None, "reason": "INVALID_OR_STALE_CONTEXT"}
+        except ValueError as error:
+            return {
+                "assessments": [],
+                "decision": None,
+                "reason": "INVALID_OR_STALE_CONTEXT",
+                "validation_error": str(error),
+            }
 
     def market(self, instrument, seconds):
         now = self.clock()

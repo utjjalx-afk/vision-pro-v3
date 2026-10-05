@@ -96,3 +96,13 @@ Read the generated private token from the mounted local directory. Root filesyst
 is read-only, privileges are dropped and the published port is loopback only.
 Public analysis streaming is opt-in through the server command; it never enables
 broker execution. The existing deterministic Docker suite installs the locked API extras.
+
+## Observed demo run
+
+The read-only native USD demo snapshot reports future source timestamps on all four
+MT5 symbols, so broker health stays BLOCKED. Some admitted public events fail the
+stricter lane-context receipt/source timestamp invariant; the exact validation
+reason is exposed, lane scores stay unavailable and synthesis does not generate
+a trade intent. No timestamp is shifted or replaced to pass these gates.
+Operational acceptance remains pending genuine lane receipts and verified journal
+lineage. This branch does not alter Phase 11 acceptance or Phase 12 execution.

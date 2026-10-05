@@ -99,6 +99,7 @@ export type Snapshot = {
     decision: Record<string, unknown> | null;
     reason: string | null;
     reliability_basis?: string;
+    validation_error?: string;
   };
   risk: {
     state: string;

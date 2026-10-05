@@ -64,7 +64,9 @@ async def public_feed(state, symbol, intervals):
     while True:
         try:
             state.connections["binance.spot"] = {
-                "state": "WARMING_UP", "symbol": symbol, "reason": "LOADING_REST_HISTORY"
+                "state": "WARMING_UP",
+                "symbol": symbol,
+                "reason": "LOADING_REST_HISTORY",
             }
             rest = BinanceREST()
             record = await asyncio.to_thread(refresh_public_spec, state.hub.registry, rest, symbol)

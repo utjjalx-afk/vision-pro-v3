@@ -604,3 +604,24 @@ def test_server_readonly_monitoring_continues_after_halt(tmp_path):
         assert len(t.calls) == 1
     finally:
         server.server_close()
+
+
+@pytest.mark.parametrize("field", ["risk_context", "risk_limits"])
+def test_journal_semantic_replay_detects_changed_governor_evidence(tmp_path, field):
+    from vision.core.instruments import digest
+    from vision.journal.repository import canonical
+
+    g, _, repo, c, _ = setup(tmp_path)
+    arm(g)
+    g.execute(**c)
+    entries = repo.entries()
+    precheck = entries[1]
+    payload = precheck.payload
+    if field == "risk_context":
+        payload["details"][field]["daily_baseline"] = "9999"
+    else:
+        payload["details"][field]["per_trade_fraction"] = "0.02"
+    changed = replace(precheck, payload_json=canonical(payload))
+    changed = replace(changed, entry_hash=digest(changed.body()))
+    with pytest.raises(ValueError, match="native sizing replay mismatch"):
+        replay(entries[:1] + (changed,))

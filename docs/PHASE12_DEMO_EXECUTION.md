@@ -97,7 +97,8 @@ Verified closing deals and absent position establish CLOSED. Net outcome uses
 broker profit + commission + swap + fee in account currency. The journal stores
 signal evidence, synthesis, intent, source, risk decision, original sizing receipt,
 fresh audit, client id, redacted MT5 request/order/deal/position ids and exit/outcome
-facts. Chain, legal transitions and fresh native sizing audits replay offline.
+facts. Chain, legal transitions, original/fresh native sizing audits and the
+persisted governor context/limits replay offline, including risk-decision identity.
 Demo outcomes never enter reliability calibration.
 
 Parity audit compares expected entry with fill, spread and directional slippage,

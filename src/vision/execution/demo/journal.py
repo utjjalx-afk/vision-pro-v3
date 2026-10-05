@@ -24,9 +24,18 @@ TRANSITIONS = {
 
 
 def validate_payload(payload):
-    from vision.broker.codec import decimal, replay
+    from vision.analysis.contracts import arithmetic
+
+    with arithmetic():
+        return _validate_payload(payload)
+
+
+def _validate_payload(payload):
+    from vision.broker.codec import decimal, dto, replay, snapshot_from_dict
     from vision.core.codec import utc_string
+    from vision.execution.demo.models import RiskContext
     from vision.execution.demo.native import comment
+    from vision.risk.governor import HardRiskGovernor, RiskLimits
 
     details, lineage = payload["details"], payload["lineage"]
     utc_string(details["created_at"])
@@ -36,8 +45,24 @@ def validate_payload(payload):
         return
     audit, req = details["fresh_sizing_audit"], details["request"]
     receipt = replay(audit)
+    original = replay(details["original_sizing_audit"])
+    context, limits = details["risk_context"], details["risk_limits"]
+    ctx, lim = dto(RiskContext, context), dto(RiskLimits, limits)
+    account = snapshot_from_dict(audit["after_snapshot"]).account
+    decision_id = digest({"context": context, "limits": limits, "receipt": original.receipt_id})
     if (
         receipt.status != "BROKER_SIZE_APPROVED"
+        or original.status != "BROKER_SIZE_APPROVED"
+        or original.receipt_id != lineage["sizing_receipt_id"]
+        or original.request_id != receipt.request_id
+        or original.policy_id != receipt.policy_id
+        or any(
+            getattr(original, key) != getattr(receipt, key)
+            for key in ("volume", "one_lot_loss", "actual_risk", "margin", "open_risk")
+        )
+        or decision_id != lineage["risk_decision_id"]
+        or ctx.account_identity != account.identity
+        or ctx.currency != account.currency
         or receipt.account_identity != lineage["account_identity"]
         or audit["request"]["intent_id"] != lineage["intent_id"]
         or req["symbol"] != audit["request"]["broker_symbol"]
@@ -50,6 +75,18 @@ def validate_payload(payload):
         or decimal(details["margin"]) != receipt.margin
     ):
         raise ValueError("Demo precheck/native sizing replay mismatch")
+    exposure = receipt.margin + receipt.actual_risk
+    if HardRiskGovernor(lim).assess(
+        equity=account.equity,
+        trade_risk=receipt.actual_risk,
+        open_risk=receipt.open_risk,
+        projected_equity=account.equity - receipt.actual_risk,
+        symbol_exposure=exposure,
+        gross_exposure=exposure,
+        daily_baseline=ctx.daily_baseline,
+        high_water=ctx.high_water,
+    ):
+        raise ValueError("Demo governor replay veto")
 
 
 def replay(entries):
@@ -89,6 +126,9 @@ def replay(entries):
                 "created_at",
                 "request",
                 "fresh_sizing_audit",
+                "original_sizing_audit",
+                "risk_context",
+                "risk_limits",
                 "currency",
                 "expected_entry",
                 "spread",

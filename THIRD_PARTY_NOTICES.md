@@ -35,3 +35,13 @@ Review and extend this inventory before adding or distributing dependencies.
 Phase 10 uses packaged IANA timezone rules and independently authored OANDA wire
 normalization against official API documentation. No provider market history or
 third-party adapter source was copied; FX/metals test fixtures are synthetic.
+
+
+## Command Center chart library
+
+TradingView Lightweight Charts 5.0.7 is distributed under Apache-2.0.
+TradingView Lightweight Charts(TM)
+Copyright (c) 2025 TradingView, Inc. https://www.tradingview.com/
+The frontend retains library attribution and a TradingView link. The installed
+package includes its LICENSE and NOTICE; see the pinned npm lockfile.
+React / ReactDOM are MIT licensed. No Vardhan application or Pine code is included.

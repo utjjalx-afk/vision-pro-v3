@@ -47,7 +47,18 @@ def replay_entries(entries):
     for entry in entries:
         at[0] = entry.recorded_at
         value = entry.payload
-        if entry.kind == "experiment":
+        if entry.kind == "demo_execution":
+            from vision.execution.demo.journal import replay
+            from vision.journal.repository import Pending
+
+            replay(repository.prefix + (entry,))
+            repository.transact(
+                at[0],
+                lambda _, entry=entry: Pending(
+                    entry.kind, entry.experiment_id, entry.key, entry.payload_json
+                ),
+            )
+        elif entry.kind == "experiment":
             journal.open_experiment(experiment_from_dict(value["experiment"]))
         elif entry.kind == "prospective_registration":
             c = value["commitment"]

@@ -1,9 +1,9 @@
 name: Foundation CI
 on:
   push:
-    branches: [main, phase/market-data-foundation, phase/paper-risk-foundation, phase/intelligence-lanes-foundation, phase/reliability-intent-foundation, phase/outcome-journal-foundation, phase/backtest-audit-foundation, phase/strategy-dsl-foundation, phase/forex-metals-data-foundation, phase/mt5-sizing-foundation, phase/command-center]
+    branches: [main, phase/market-data-foundation, phase/paper-risk-foundation, phase/intelligence-lanes-foundation, phase/reliability-intent-foundation, phase/outcome-journal-foundation, phase/backtest-audit-foundation, phase/strategy-dsl-foundation, phase/forex-metals-data-foundation, phase/mt5-sizing-foundation, phase/command-center, phase/mt5-demo-execution, phase/vps-demo-operations]
   pull_request:
-    branches: [main, phase/market-data-foundation, phase/paper-risk-foundation, phase/intelligence-lanes-foundation, phase/reliability-intent-foundation, phase/outcome-journal-foundation, phase/backtest-audit-foundation, phase/strategy-dsl-foundation, phase/forex-metals-data-foundation]
+    branches: [main, phase/market-data-foundation, phase/paper-risk-foundation, phase/intelligence-lanes-foundation, phase/reliability-intent-foundation, phase/outcome-journal-foundation, phase/backtest-audit-foundation, phase/strategy-dsl-foundation, phase/forex-metals-data-foundation, phase/mt5-sizing-foundation, phase/command-center]
   workflow_dispatch:
 
 permissions:

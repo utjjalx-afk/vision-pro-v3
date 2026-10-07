@@ -1,7 +1,7 @@
 name: Command Center
 on:
   push:
-    branches: [phase/command-center]
+    branches: [phase/command-center, phase/vps-demo-operations]
   pull_request:
     branches: [phase/mt5-sizing-foundation]
   workflow_dispatch:

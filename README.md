@@ -3,8 +3,15 @@
 An Apache-2.0 foundation for multi-asset market intelligence and governed research.
 **Phase 11 adds a demo-only MT5 truth bridge and broker-native calculation sizer.**
 Mandatory four-asset demo reconciliation is pending; see [Phase 11](docs/PHASE11_MT5_SIZING.md).
-No order-dispatch API, autonomous strategy execution, agent, dashboard or general API
-server is included. Paper fills use the explicit research simulator only. Enabling live trading, MT5, paper trading or agents fails before network I/O.
+**Phase 12 adds an optional guarded MT5 DEMO gateway**, with startup DISARMED,
+temporary operator arming, durable no-resend protection and broker reconciliation.
+Its software implementation does not establish demo acceptance. Orders remain blocked
+until Phase 11 acceptance and fresh native sizing; see [Phase 12](docs/PHASE12_DEMO_EXECUTION.md).
+[Windows VPS operations](docs/VPS_DEMO_OPERATIONS.md) combine the read-only dashboard,
+optional guarded gateway, continuous private logs and 20:00 IST daily exports.
+Actual VPS deployment, broker acceptance, strategy and protection amendment remain pending.
+No autonomous strategy execution or live deployment is included. Paper fills use
+the explicit research simulator only. Global enabling flags still fail before network I/O.
 
 ```text
 Binance / Bybit public REST/WS + OANDA authorized GET -> Canonical normalization -> Session/Data Health -> Bounded Event Bus

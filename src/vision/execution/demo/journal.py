@@ -35,6 +35,7 @@ def _validate_payload(payload):
     from vision.core.codec import utc_string
     from vision.execution.demo.models import RiskContext
     from vision.execution.demo.native import comment
+    from vision.execution.demo.risk import assess, decision_id
     from vision.risk.governor import HardRiskGovernor, RiskLimits
 
     details, lineage = payload["details"], payload["lineage"]
@@ -49,7 +50,8 @@ def _validate_payload(payload):
     context, limits = details["risk_context"], details["risk_limits"]
     ctx, lim = dto(RiskContext, context), dto(RiskLimits, limits)
     account = snapshot_from_dict(audit["after_snapshot"]).account
-    decision_id = digest({"context": context, "limits": limits, "receipt": original.receipt_id})
+    daily_enabled = details.get("daily_loss_limit_enabled", True)
+    risk_id = decision_id(context, limits, original.receipt_id, daily_enabled)
     if (
         receipt.status != "BROKER_SIZE_APPROVED"
         or original.status != "BROKER_SIZE_APPROVED"
@@ -60,7 +62,7 @@ def _validate_payload(payload):
             getattr(original, key) != getattr(receipt, key)
             for key in ("volume", "one_lot_loss", "actual_risk", "margin", "open_risk")
         )
-        or decision_id != lineage["risk_decision_id"]
+        or risk_id != lineage["risk_decision_id"]
         or ctx.account_identity != account.identity
         or ctx.currency != account.currency
         or receipt.account_identity != lineage["account_identity"]
@@ -76,7 +78,9 @@ def _validate_payload(payload):
     ):
         raise ValueError("Demo precheck/native sizing replay mismatch")
     exposure = receipt.margin + receipt.actual_risk
-    if HardRiskGovernor(lim).assess(
+    if assess(
+        HardRiskGovernor(lim),
+        daily_loss_limit_enabled=daily_enabled,
         equity=account.equity,
         trade_risk=receipt.actual_risk,
         open_risk=receipt.open_risk,
@@ -129,6 +133,7 @@ def replay(entries):
                 "original_sizing_audit",
                 "risk_context",
                 "risk_limits",
+                "daily_loss_limit_enabled",
                 "currency",
                 "expected_entry",
                 "spread",

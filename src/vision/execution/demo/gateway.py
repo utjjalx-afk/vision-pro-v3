@@ -12,6 +12,7 @@ from vision.core.instruments import digest
 from vision.execution.demo.journal import TERMINAL, DemoJournal
 from vision.execution.demo.models import DemoPolicy, GatewayState, OrderState, RiskContext
 from vision.execution.demo.native import DispatchBlocked, comment, stable
+from vision.execution.demo.risk import assess, decision_id
 from vision.intents.models import TradeIntent
 from vision.risk.governor import HardRiskGovernor
 
@@ -121,6 +122,8 @@ class DemoGateway:
                 raise ValueError("Typed candidate, native sizing and risk context required")
             if tp is not None:
                 positive(tp)
+            if self.policy.require_tp and tp is None:
+                raise ValueError("MANDATORY_DEMO_TP")
             command_hash = digest(
                 {
                     "intent": wire(intent),
@@ -164,12 +167,11 @@ class DemoGateway:
                 "synthesis_id": intent.decision_id,
                 "signal_ids": list(intent.evidence_hashes),
                 "source_lineage": intent.source_lineage,
-                "risk_decision_id": digest(
-                    {
-                        "context": wire(risk_context),
-                        "limits": wire(self.governor.limits),
-                        "receipt": supplied.receipt_id,
-                    }
+                "risk_decision_id": decision_id(
+                    wire(risk_context),
+                    wire(self.governor.limits),
+                    supplied.receipt_id,
+                    self.policy.daily_loss_limit_enabled,
                 ),
                 "sizing_receipt_id": supplied.receipt_id,
                 "account_identity": self.policy.account_identity,
@@ -233,7 +235,9 @@ class DemoGateway:
                 # Existing paper governor uses explicitly declared margin-at-risk exposure
                 # for this isolated CFD account, never a guessed notional multiplier.
                 exposure = fresh.margin + fresh.actual_risk
-                reasons = self.governor.assess(
+                reasons = assess(
+                    self.governor,
+                    daily_loss_limit_enabled=self.policy.daily_loss_limit_enabled,
                     equity=a.equity,
                     trade_risk=fresh.actual_risk,
                     open_risk=fresh.open_risk,
@@ -263,6 +267,7 @@ class DemoGateway:
                     fresh_sizing_audit=fresh_audit,
                     risk_context=wire(ctx),
                     risk_limits=wire(self.governor.limits),
+                    daily_loss_limit_enabled=self.policy.daily_loss_limit_enabled,
                     currency=a.currency,
                     expected_entry=str(quote.ask if request.side == "LONG" else quote.bid),
                     spread=str(quote.ask - quote.bid),

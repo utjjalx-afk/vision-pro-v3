@@ -7,6 +7,9 @@ Mandatory four-asset demo reconciliation is pending; see [Phase 11](docs/PHASE11
 temporary operator arming, durable no-resend protection and broker reconciliation.
 Its software implementation does not establish demo acceptance. Orders remain blocked
 until Phase 11 acceptance and fresh native sizing; see [Phase 12](docs/PHASE12_DEMO_EXECUTION.md).
+[Windows VPS operations](docs/VPS_DEMO_OPERATIONS.md) combine the read-only dashboard,
+optional guarded gateway, continuous private logs and 20:00 IST daily exports.
+Actual VPS deployment, broker acceptance, strategy and protection amendment remain pending.
 No autonomous strategy execution or live deployment is included. Paper fills use
 the explicit research simulator only. Global enabling flags still fail before network I/O.
 

@@ -38,6 +38,8 @@ def main():
             "experiment_id",
         }:
             raise ValueError("Exact private demo configuration required")
+        config["demo_policy"].setdefault("daily_loss_limit_enabled", True)
+        config["demo_policy"].setdefault("require_tp", False)
         policy = dto(DemoPolicy, config["demo_policy"])
         limits = dto(RiskLimits, config["risk_limits"])
         reader = MT5Reader.connect(

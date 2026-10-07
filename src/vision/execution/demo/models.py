@@ -43,8 +43,14 @@ class DemoPolicy:
     receipt_ttl: timedelta
     arm_ttl: timedelta
     magic: int
+    daily_loss_limit_enabled: bool = True
+    require_tp: bool = False
 
     def __post_init__(self):
+        if type(self.daily_loss_limit_enabled) is not bool:
+            raise ValueError("Explicit DEMO daily loss setting required")
+        if type(self.require_tp) is not bool:
+            raise ValueError("Explicit DEMO TP requirement required")
         _identifier(self.account_identity)
         _identifier(self.phase11_evidence_id)
         if type(self.phase11_accepted) is not bool:

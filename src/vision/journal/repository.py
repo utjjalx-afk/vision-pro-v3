@@ -29,6 +29,7 @@ KINDS = frozenset(
         "strategy_artifact",
         "strategy_lifecycle",
         "strategy_result",
+        "demo_execution",
     }
 )
 GENESIS = digest({"journal": "vision-research-v1"})

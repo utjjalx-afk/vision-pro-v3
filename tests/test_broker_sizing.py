@@ -28,6 +28,37 @@ from vision.broker.mt5_bridge import BridgeUnavailable, MT5Reader
 from vision.broker.server import make_server
 from vision.broker.sizer import size
 
+
+def test_exact_plus_suffix_survives_native_calls_and_replay():
+    reader, native, info, _, _ = native_fixture()
+    info.name = "XAUUSD+"
+    reader.mapping = {"metals:XAU/USD": "XAUUSD+"}
+    _, request, policy = inputs()
+    snapshot = reader.snapshot()
+    request = replace(
+        request,
+        broker_symbol="XAUUSD+",
+        expected_account_identity=snapshot.account.identity,
+        expected_spec_revision=snapshot.specs[0].revision,
+    )
+    calls = []
+    native.order_calc_profit = lambda action, name, volume, entry, stop: (
+        calls.append(name) or (stop - entry) * volume * 97 * (1 if action == 0 else -1)
+    )
+    native.order_calc_margin = lambda action, name, volume, entry: (
+        calls.append(name) or volume * 200
+    )
+    audit = reader.audit_size(request, policy)
+    assert replay(audit).status == "BROKER_SIZE_APPROVED"
+    assert calls == ["XAUUSD+"] * 3
+
+
+@pytest.mark.parametrize("name", ["XAUUSD+ ", "XAUUSD/", "XAUUSD;send", "x" * 65])
+def test_plus_suffix_fix_preserves_symbol_bounds(name):
+    with pytest.raises(ValueError):
+        MT5Reader(None, {"metals:XAU/USD": name}, b"x" * 32)
+
+
 NOW = datetime(2026, 10, 4, 12, tzinfo=UTC)
 D = Decimal
 

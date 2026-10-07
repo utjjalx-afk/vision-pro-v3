@@ -4,6 +4,7 @@ import argparse
 import hmac
 import json
 import os
+import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from vision.analysis.contracts import wire
@@ -13,7 +14,7 @@ from vision.broker.mt5_bridge import MT5Reader
 from vision.strategies.dsl import strict_json
 
 
-def make_server(reader, token, *, port=8765):
+def make_server(reader, token, *, port=8765, demo_gateway=None):
     if (
         not isinstance(token, str)
         or not 32 <= len(token) <= 256
@@ -56,7 +57,13 @@ def make_server(reader, token, *, port=8765):
             if not self.authorized():
                 return
             try:
-                if self.path == "/v1/health":
+                if self.path == "/v1/demo/status" and demo_gateway is not None:
+                    result = {
+                        "state": str(demo_gateway.state),
+                        "armed_until": wire(demo_gateway.armed_until),
+                        "live_enabled": False,
+                    }
+                elif self.path == "/v1/health":
                     result = reader.health()
                 elif self.path == "/v1/symbols":
                     result = reader.discovery()
@@ -72,7 +79,17 @@ def make_server(reader, token, *, port=8765):
         def do_POST(self):
             if not self.authorized():
                 return
-            if self.path not in {"/v1/size", "/v1/size-audit"}:
+            demo_routes = {
+                "/v1/demo/arm",
+                "/v1/demo/disarm",
+                "/v1/demo/halt",
+                "/v1/demo/execute",
+                "/v1/demo/monitor",
+                "/v1/demo/close",
+            }
+            if self.path not in {"/v1/size", "/v1/size-audit"} and not (
+                demo_gateway is not None and self.path in demo_routes
+            ):
                 self.response(404, {"error": "ENDPOINT_UNAVAILABLE"})
                 return
             try:
@@ -83,6 +100,11 @@ def make_server(reader, token, *, port=8765):
                 if not 1 <= length <= 100000:
                     raise ValueError("Body bound exceeded")
                 value = strict_json(self.rfile.read(length).decode())
+                if self.path in demo_routes:
+                    from vision.execution.demo.api import dispatch
+
+                    self.response(200, dispatch(demo_gateway, self.path, value))
+                    return
                 if type(value) is not dict or set(value) != {"request", "policy"}:
                     raise ValueError("Exact sizing request envelope required")
                 method = reader.audit_size if self.path == "/v1/size-audit" else reader.size
@@ -96,6 +118,22 @@ def make_server(reader, token, *, port=8765):
                 self.response(400, {"error": "INVALID_SIZING_REQUEST"})
 
     class SilentServer(HTTPServer):
+        last_monitor = 0.0
+
+        def service_actions(self):
+            # Read-only reconciliation continues after halt/disarm and unknown sends.
+            if demo_gateway is None or time.monotonic() - self.last_monitor < 1:
+                return
+            self.last_monitor = time.monotonic()
+            try:
+                for cid, head in demo_gateway.journal.heads().items():
+                    if head["state"] not in {"CLOSED", "REJECTED"}:
+                        demo_gateway.monitor(cid)
+            except Exception:
+                from vision.execution.demo.models import GatewayState
+
+                demo_gateway.state = GatewayState.BROKER_UNAVAILABLE
+
         def handle_error(self, *_):
             pass  # Never print socket/native exception text or request data.
 
